@@ -42,7 +42,8 @@ export async function PATCH(
 
   // Only allow safe fields to be updated
   const allowed = [
-    'full_name', 'email', 'phone', 'source', 'stage', 'status', 'notes',
+    'full_name', 'email', 'email_2', 'phone', 'phone_2', 'co_buyer_name',
+    'source', 'stage', 'status', 'notes',
     'budget_min', 'budget_max', 'timeline', 'pre_approved', 'property_type',
     'bedrooms', 'areas_of_interest', 'tags', 'assigned_to', 'lead_score',
     'last_contacted_at', 'next_followup_at',

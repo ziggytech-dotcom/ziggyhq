@@ -9,6 +9,9 @@ interface Lead {
   full_name: string
   email: string | null
   phone: string | null
+  phone_2: string | null
+  email_2: string | null
+  co_buyer_name: string | null
   source: string | null
   stage: string | null
   status: string
@@ -153,8 +156,26 @@ export default function LeadDetail({
 
   const saveEdit = async () => {
     if (!editField) return
-    await updateLead({ [editField]: editValue || null })
+    // Strip formatting for phone fields before saving
+    const phoneFields = ['phone', 'phone_2']
+    const valueToSave = phoneFields.includes(editField)
+      ? editValue.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
+      : editValue
+    await updateLead({ [editField]: valueToSave || null })
     setEditField(null)
+  }
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const phoneFields = ['phone', 'phone_2']
+    if (editField && phoneFields.includes(editField)) {
+      const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
+      let formatted = digits
+      if (digits.length > 6) formatted = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+      else if (digits.length > 3) formatted = `(${digits.slice(0,3)}) ${digits.slice(3)}`
+      setEditValue(formatted)
+    } else {
+      setEditValue(e.target.value)
+    }
   }
 
   const addNote = async (e: React.FormEvent) => {
@@ -244,8 +265,11 @@ export default function LeadDetail({
             <div className="space-y-3">
               {[
                 { key: 'full_name', label: 'Name', value: lead.full_name },
+                { key: 'co_buyer_name', label: 'Co-Buyer / Partner', value: lead.co_buyer_name },
                 { key: 'email', label: 'Email', value: lead.email },
+                { key: 'email_2', label: 'Email 2', value: lead.email_2 },
                 { key: 'phone', label: 'Phone', value: lead.phone },
+                { key: 'phone_2', label: 'Phone 2', value: lead.phone_2 },
               ].map((field) => (
                 <div key={field.key}>
                   <div className="text-xs text-[#b3b3b3] mb-0.5">{field.label}</div>
@@ -254,7 +278,7 @@ export default function LeadDetail({
                       <input
                         autoFocus
                         value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
+                        onChange={handleEditChange}
                         onKeyDown={(e) => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') setEditField(null) }}
                         className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none"
                       />
