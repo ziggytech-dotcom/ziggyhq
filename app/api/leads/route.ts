@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { calculateLeadScore } from '@/lib/lead-score'
 
 async function getOrgId() {
   const supabase = await createClient()
@@ -95,7 +96,8 @@ export async function POST(request: Request) {
       areas_of_interest: areas_of_interest || [],
       tags: tags || [],
       assigned_to: assigned_to || null,
-      lead_score,
+      lead_score: calculateLeadScore({ source, email, phone, budget_min, budget_max, timeline, pre_approved, property_type, areas_of_interest, tags }).total,
+      score_breakdown_json: calculateLeadScore({ source, email, phone, budget_min, budget_max, timeline, pre_approved, property_type, areas_of_interest, tags }),
     })
     .select()
     .single()

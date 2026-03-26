@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import NotificationBell from './NotificationBell'
 
 const navItems = [
   {
@@ -15,11 +16,11 @@ const navItems = [
     ),
   },
   {
-    href: '/app/follow-ups',
-    label: 'Follow-Ups',
+    href: '/app/pipeline',
+    label: 'Pipeline',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
       </svg>
     ),
   },
@@ -33,14 +34,31 @@ const navItems = [
     ),
   },
   {
-    href: '/app/contacts',
-    label: 'Contacts',
+    href: '/app/smart-lists',
+    label: 'Smart Lists',
     icon: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
       </svg>
     ),
-    comingSoon: true,
+  },
+  {
+    href: '/app/follow-ups',
+    label: 'Follow-Ups',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  {
+    href: '/app/sequences',
+    label: 'Sequences',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    ),
   },
   {
     href: '/app/action-plans',
@@ -132,10 +150,11 @@ export default function Sidebar({ orgName, userEmail, userName }: SidebarProps) 
           <div className="w-9 h-9 rounded-lg bg-[#ff006e] flex items-center justify-center flex-shrink-0">
             <span style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '20px', color: 'white', letterSpacing: '0.05em' }}>Z</span>
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <div style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '20px', color: '#ededed', letterSpacing: '0.05em' }}>ZIGGYCRM</div>
             <div className="text-xs text-[#b3b3b3] truncate max-w-[120px]">{orgName}</div>
           </div>
+          <NotificationBell />
         </div>
       </div>
 
@@ -145,25 +164,17 @@ export default function Sidebar({ orgName, userEmail, userName }: SidebarProps) 
           const isActive = pathname === item.href || (item.href !== '/app/dashboard' && pathname.startsWith(item.href))
           return (
             <div key={item.href} className="relative">
-              {item.comingSoon ? (
-                <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#b3b3b3]/40 cursor-not-allowed">
-                  {item.icon}
-                  <span className="text-sm font-medium">{item.label}</span>
-                  <span className="ml-auto text-[10px] bg-[#2d2d2d] text-[#b3b3b3]/60 px-1.5 py-0.5 rounded">Soon</span>
-                </div>
-              ) : (
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
-                    isActive
-                      ? 'bg-[#ff006e]/10 text-[#ff006e] border border-[#ff006e]/20'
-                      : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'
-                  }`}
-                >
-                  {item.icon}
-                  {item.label}
-                </Link>
-              )}
+              <Link
+                href={item.href}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+                  isActive
+                    ? 'bg-[#ff006e]/10 text-[#ff006e] border border-[#ff006e]/20'
+                    : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'
+                }`}
+              >
+                {item.icon}
+                {item.label}
+              </Link>
             </div>
           )
         })}
@@ -182,6 +193,27 @@ export default function Sidebar({ orgName, userEmail, userName }: SidebarProps) 
             <div className="text-xs text-[#b3b3b3] truncate">{userEmail}</div>
           </div>
         </div>
+
+        {/* Settings quick links */}
+        <div className="flex items-center gap-1 mb-2">
+          <Link
+            href="/app/settings/integrations"
+            className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/integrations') ? 'text-[#ff006e] bg-[#ff006e]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
+            title="Integrations"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+            Integrations
+          </Link>
+          <Link
+            href="/app/settings/lead-form"
+            className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/lead-form') ? 'text-[#ff006e] bg-[#ff006e]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
+            title="Lead Form Widget"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+            Widget
+          </Link>
+        </div>
+
         <button
           onClick={handleSignOut}
           className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50 transition-colors text-sm"

@@ -1,238 +1,242 @@
-import { createAdminClient } from '@/lib/supabase/admin'
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
+'use client'
 
-function Bar({ value, max, color }: { value: number; max: number; color: string }) {
-  const pct = max > 0 ? Math.round((value / max) * 100) : 0
-  return (
-    <div className="h-2 bg-[#2d2d2d] rounded-full overflow-hidden">
-      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: color }} />
-    </div>
-  )
+import { useState, useEffect, useCallback } from 'react'
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell,
+  LineChart, Line,
+  FunnelChart, Funnel, LabelList,
+} from 'recharts'
+
+interface ReportData {
+  stageCounts: Record<string, number>
+  sourceCounts: Record<string, number>
+  monthlyLeads: Record<string, number>
+  agentPerformance: { name: string; leads: number; contacted: number; closed: number }[]
+  funnelData: { stage: string; count: number }[]
+  avgResponseHours: number | null
+  totalLeads: number
+  newInRange: number
+  wonLeads: number
+  conversionRate: number
+  range: string
 }
 
-export default async function ReportsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+const COLORS = ['#ff006e', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899']
+const RANGES = [
+  { label: 'Last 7 days', value: '7d' },
+  { label: 'Last 30 days', value: '30d' },
+  { label: 'Last 90 days', value: '90d' },
+  { label: 'All time', value: 'all' },
+]
 
-  const admin = createAdminClient()
-  const { data: userRecord } = await admin.from('crm_users').select('org_id').eq('email', user.email!).single()
-  if (!userRecord?.org_id) redirect('/login')
-  const orgId = userRecord.org_id
+const tooltipStyle = {
+  backgroundColor: '#1a1a1a',
+  border: '1px solid #2d2d2d',
+  borderRadius: '8px',
+  color: '#ededed',
+  fontSize: '12px',
+}
 
-  const now = new Date()
-  const thirtyDaysAgo = new Date(now.getTime() - 30 * 86400000)
-  const sevenDaysAgo = new Date(now.getTime() - 7 * 86400000)
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+export default function ReportsPage() {
+  const [data, setData] = useState<ReportData | null>(null)
+  const [range, setRange] = useState('30d')
+  const [loading, setLoading] = useState(true)
 
-  const [leadsRes, activitiesRes, activitiesTodayRes, notesRes] = await Promise.all([
-    admin.from('crm_leads').select('id, stage, status, source, lead_score, pre_approved, created_at, next_followup_at').eq('org_id', orgId),
-    admin.from('crm_lead_activities').select('type, created_at').eq('org_id', orgId).gte('created_at', sevenDaysAgo.toISOString()),
-    admin.from('crm_lead_activities').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', todayStart.toISOString()),
-    admin.from('crm_lead_notes').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', sevenDaysAgo.toISOString()),
-  ])
+  const load = useCallback(async () => {
+    setLoading(true)
+    const res = await fetch(`/api/reports?range=${range}`)
+    if (res.ok) setData(await res.json())
+    setLoading(false)
+  }, [range])
 
-  const leads = leadsRes.data ?? []
-  const activities = activitiesRes.data ?? []
+  useEffect(() => { load() }, [load])
 
-  // Stage breakdown
-  const stageCounts: Record<string, number> = {}
-  for (const l of leads) { if (l.stage) stageCounts[l.stage] = (stageCounts[l.stage] ?? 0) + 1 }
-
-  // Source breakdown
-  const sourceCounts: Record<string, number> = {}
-  for (const l of leads) {
-    const s = l.source ?? 'Unknown'
-    sourceCounts[s] = (sourceCounts[s] ?? 0) + 1
-  }
-
-  // Status breakdown
-  const statusCounts: Record<string, number> = {}
-  for (const l of leads) {
-    const s = l.status ?? 'active'
-    statusCounts[s] = (statusCounts[s] ?? 0) + 1
-  }
-
-  // Activity breakdown this week
-  const activityCounts: Record<string, number> = {}
-  for (const a of activities) { activityCounts[a.type] = (activityCounts[a.type] ?? 0) + 1 }
-
-  // New leads last 30 days by week
-  const weekBuckets: Record<string, number> = {}
-  for (let i = 3; i >= 0; i--) {
-    const start = new Date(now.getTime() - (i + 1) * 7 * 86400000)
-    const end = new Date(now.getTime() - i * 7 * 86400000)
-    const label = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-    weekBuckets[label] = leads.filter((l) => {
-      const d = new Date(l.created_at)
-      return d >= start && d < end
-    }).length
-  }
-
-  // Key metrics
-  const totalLeads = leads.length
-  const newLast30 = leads.filter((l) => new Date(l.created_at) >= thirtyDaysAgo).length
-  const wonLeads = leads.filter((l) => l.status === 'won').length
-  const conversionRate = totalLeads > 0 ? Math.round((wonLeads / totalLeads) * 100) : 0
-  const preApprovedCount = leads.filter((l) => l.pre_approved).length
-  const avgScore = totalLeads > 0 ? Math.round(leads.reduce((sum, l) => sum + (l.lead_score ?? 0), 0) / totalLeads) : 0
-  const withFollowup = leads.filter((l) => l.next_followup_at).length
-  const overdueFollowups = leads.filter((l) => l.next_followup_at && new Date(l.next_followup_at) < now).length
-
-  const maxStage = Math.max(...Object.values(stageCounts), 1)
-  const maxSource = Math.max(...Object.values(sourceCounts), 1)
-  const maxActivity = Math.max(...Object.values(activityCounts), 1)
-  const maxWeek = Math.max(...Object.values(weekBuckets), 1)
-
-  const activityColors: Record<string, string> = {
-    call: '#3b82f6', sms: '#22c55e', email: '#f59e0b', note: '#b3b3b3',
-    stage_change: '#ff006e', meeting: '#8b5cf6', task: '#06b6d4',
-  }
-
-  const statusColors: Record<string, string> = {
-    active: '#22c55e', won: '#ff006e', lost: '#b3b3b3', paused: '#f59e0b',
-  }
+  const stageData = data ? Object.entries(data.stageCounts).map(([stage, count]) => ({ stage, count })) : []
+  const sourceData = data ? Object.entries(data.sourceCounts).map(([source, count]) => ({ source, count })) : []
+  const monthlyData = data ? Object.entries(data.monthlyLeads).map(([month, count]) => ({ month, count })) : []
 
   return (
     <div className="p-8">
-      <div className="mb-8">
-        <h1 style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '36px', letterSpacing: '0.05em', color: '#ededed' }}>
-          REPORTS
-        </h1>
-        <p className="text-[#b3b3b3] text-sm mt-1">Pipeline analytics and team performance</p>
-      </div>
-
-      {/* KPI Row */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
-        {[
-          { label: 'Total Leads', value: totalLeads, sub: `+${newLast30} last 30 days`, color: '#3b82f6' },
-          { label: 'Conversion Rate', value: `${conversionRate}%`, sub: `${wonLeads} won`, color: '#ff006e' },
-          { label: 'Avg Lead Score', value: avgScore, sub: 'across all active leads', color: avgScore >= 70 ? '#22c55e' : avgScore >= 40 ? '#f59e0b' : '#ff006e' },
-          { label: 'Pre-Approved', value: preApprovedCount, sub: `${totalLeads > 0 ? Math.round((preApprovedCount/totalLeads)*100) : 0}% of pipeline`, color: '#22c55e' },
-        ].map((card) => (
-          <div key={card.label} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
-            <div className="text-3xl font-bold mb-1" style={{ color: card.color }}>{card.value}</div>
-            <div className="text-sm font-medium text-white mb-0.5">{card.label}</div>
-            <div className="text-xs text-[#b3b3b3]">{card.sub}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-3 gap-6 mb-6">
-        {/* Pipeline by Stage */}
-        <div className="col-span-2 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white mb-5">Pipeline by Stage</h2>
-          {Object.keys(stageCounts).length === 0 ? (
-            <p className="text-[#b3b3b3] text-sm">No stage data yet</p>
-          ) : (
-            <div className="space-y-3">
-              {Object.entries(stageCounts).sort((a, b) => b[1] - a[1]).map(([stage, count]) => (
-                <div key={stage}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-[#b3b3b3] truncate">{stage}</span>
-                    <span className="text-white font-semibold ml-2">{count}</span>
-                  </div>
-                  <Bar value={count} max={maxStage} color="#ff006e" />
-                </div>
-              ))}
-            </div>
-          )}
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '36px', letterSpacing: '0.05em', color: '#ededed' }}>
+            REPORTS
+          </h1>
+          <p className="text-[#b3b3b3] text-sm mt-1">Pipeline analytics and performance</p>
         </div>
+        <div className="flex rounded-lg border border-[#2d2d2d] overflow-hidden">
+          {RANGES.map((r) => (
+            <button
+              key={r.value}
+              onClick={() => setRange(r.value)}
+              className={`px-3 py-2 text-xs transition-colors ${range === r.value ? 'bg-[#ff006e] text-white' : 'bg-[#1a1a1a] text-[#b3b3b3] hover:text-white'}`}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
-        {/* Lead Status */}
-        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white mb-5">Lead Status</h2>
-          <div className="space-y-3">
-            {Object.entries(statusCounts).sort((a, b) => b[1] - a[1]).map(([status, count]) => (
-              <div key={status}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-[#b3b3b3] capitalize">{status}</span>
-                  <span className="text-white font-semibold">{count}</span>
-                </div>
-                <Bar value={count} max={totalLeads} color={statusColors[status] ?? '#b3b3b3'} />
+      {loading ? (
+        <div className="text-[#b3b3b3] text-sm py-12 text-center">Loading reports...</div>
+      ) : !data ? null : (
+        <>
+          {/* KPI row */}
+          <div className="grid grid-cols-4 gap-4 mb-6">
+            {[
+              { label: 'Total Leads', value: data.totalLeads, sub: `+${data.newInRange} in period`, color: '#3b82f6' },
+              { label: 'Closed Won', value: data.wonLeads, sub: `${data.conversionRate}% conversion`, color: '#22c55e' },
+              { label: 'Avg Response', value: data.avgResponseHours != null ? `${data.avgResponseHours}h` : '—', sub: 'time to first contact', color: '#f59e0b' },
+              { label: 'Conversion Rate', value: `${data.conversionRate}%`, sub: `${data.wonLeads} of ${data.totalLeads} leads`, color: '#ff006e' },
+            ].map((card) => (
+              <div key={card.label} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
+                <div className="text-3xl font-bold mb-1" style={{ color: card.color }}>{card.value}</div>
+                <div className="text-sm font-medium text-white mb-0.5">{card.label}</div>
+                <div className="text-xs text-[#b3b3b3]">{card.sub}</div>
               </div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t border-[#2d2d2d] space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-[#b3b3b3]">With Follow-up</span>
-              <span className="text-white font-medium">{withFollowup}</span>
-            </div>
-            <div className="flex justify-between text-xs">
-              <span className="text-[#ff006e]">Overdue Follow-ups</span>
-              <span className="text-[#ff006e] font-medium">{overdueFollowups}</span>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-3 gap-6 mb-6">
-        {/* Lead Sources */}
-        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white mb-5">Lead Sources</h2>
-          {Object.keys(sourceCounts).length === 0 ? (
-            <p className="text-[#b3b3b3] text-sm">No source data yet</p>
-          ) : (
-            <div className="space-y-3">
-              {Object.entries(sourceCounts).sort((a, b) => b[1] - a[1]).map(([source, count]) => (
-                <div key={source}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="text-[#b3b3b3] truncate">{source}</span>
-                    <span className="text-white font-semibold ml-2">{count}</span>
+          {/* Row 1: Pipeline bar + Sources pie */}
+          <div className="grid grid-cols-3 gap-6 mb-6">
+            <div className="col-span-2 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+              <h2 className="text-sm font-semibold text-white mb-4">Pipeline Overview — Leads by Stage</h2>
+              {stageData.length === 0 ? (
+                <p className="text-[#b3b3b3] text-sm">No stage data</p>
+              ) : (
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={stageData} margin={{ top: 0, right: 0, bottom: 40, left: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#2d2d2d" />
+                    <XAxis dataKey="stage" tick={{ fill: '#b3b3b3', fontSize: 11 }} angle={-30} textAnchor="end" />
+                    <YAxis tick={{ fill: '#b3b3b3', fontSize: 11 }} />
+                    <Tooltip contentStyle={tooltipStyle} />
+                    <Bar dataKey="count" fill="#ff006e" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+
+            <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+              <h2 className="text-sm font-semibold text-white mb-4">Lead Sources</h2>
+              {sourceData.length === 0 ? (
+                <p className="text-[#b3b3b3] text-sm">No source data</p>
+              ) : (
+                <>
+                  <ResponsiveContainer width="100%" height={160}>
+                    <PieChart>
+                      <Pie data={sourceData} dataKey="count" nameKey="source" cx="50%" cy="50%" outerRadius={70} paddingAngle={2}>
+                        {sourceData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                      </Pie>
+                      <Tooltip contentStyle={tooltipStyle} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="space-y-1.5 mt-2">
+                    {sourceData.slice(0, 5).map((d, i) => (
+                      <div key={d.source} className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                          <span className="text-[#b3b3b3] truncate">{d.source}</span>
+                        </div>
+                        <span className="text-white font-medium ml-2">{d.count}</span>
+                      </div>
+                    ))}
                   </div>
-                  <Bar value={count} max={maxSource} color="#3b82f6" />
-                </div>
-              ))}
+                </>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Activity This Week */}
-        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white mb-1">Activity This Week</h2>
-          <div className="text-xs text-[#b3b3b3] mb-4">
-            {activities.length} activities + {notesRes.count ?? 0} notes · {activitiesTodayRes.count ?? 0} today
-          </div>
-          {Object.keys(activityCounts).length === 0 ? (
-            <p className="text-[#b3b3b3] text-sm">No activity this week</p>
-          ) : (
-            <div className="space-y-3">
-              {Object.entries(activityCounts).sort((a, b) => b[1] - a[1]).map(([type, count]) => (
-                <div key={type}>
-                  <div className="flex justify-between text-xs mb-1">
-                    <span className="capitalize" style={{ color: activityColors[type] ?? '#b3b3b3' }}>{type.replace('_', ' ')}</span>
-                    <span className="text-white font-semibold">{count}</span>
-                  </div>
-                  <Bar value={count} max={maxActivity} color={activityColors[type] ?? '#b3b3b3'} />
-                </div>
-              ))}
+          {/* Row 2: Monthly trends + Agent performance */}
+          <div className="grid grid-cols-3 gap-6 mb-6">
+            <div className="col-span-2 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+              <h2 className="text-sm font-semibold text-white mb-4">Monthly Trends — New Leads</h2>
+              <ResponsiveContainer width="100%" height={200}>
+                <LineChart data={monthlyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2d2d2d" />
+                  <XAxis dataKey="month" tick={{ fill: '#b3b3b3', fontSize: 11 }} />
+                  <YAxis tick={{ fill: '#b3b3b3', fontSize: 11 }} />
+                  <Tooltip contentStyle={tooltipStyle} />
+                  <Line type="monotone" dataKey="count" stroke="#ff006e" strokeWidth={2} dot={{ fill: '#ff006e', r: 4 }} activeDot={{ r: 6 }} />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-          )}
-        </div>
 
-        {/* New Leads by Week */}
-        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white mb-5">New Leads (Last 4 Weeks)</h2>
-          <div className="space-y-3">
-            {Object.entries(weekBuckets).map(([week, count]) => (
-              <div key={week}>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="text-[#b3b3b3]">{week}</span>
-                  <span className="text-white font-semibold">{count}</span>
+            <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+              <h2 className="text-sm font-semibold text-white mb-4">Conversion Funnel</h2>
+              {data.funnelData.every((d) => d.count === 0) ? (
+                <p className="text-[#b3b3b3] text-sm">No funnel data</p>
+              ) : (
+                <div className="space-y-2">
+                  {data.funnelData.filter((d) => d.count > 0).map((d, i, arr) => {
+                    const pct = arr[0].count > 0 ? Math.round((d.count / arr[0].count) * 100) : 0
+                    return (
+                      <div key={d.stage}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-[#b3b3b3] truncate">{d.stage}</span>
+                          <span className="text-white font-medium ml-2">{d.count} <span className="text-[#b3b3b3]">({pct}%)</span></span>
+                        </div>
+                        <div className="h-2 bg-[#2d2d2d] rounded-full overflow-hidden">
+                          <div className="h-full rounded-full bg-[#ff006e] transition-all" style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
-                <Bar value={count} max={maxWeek} color="#22c55e" />
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 pt-4 border-t border-[#2d2d2d]">
-            <div className="flex justify-between text-xs">
-              <span className="text-[#b3b3b3]">Total last 30 days</span>
-              <span className="text-[#22c55e] font-semibold">{newLast30}</span>
+              )}
             </div>
           </div>
-        </div>
-      </div>
+
+          {/* Agent performance table */}
+          <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden">
+            <div className="px-6 py-4 border-b border-[#2d2d2d]">
+              <h2 className="text-sm font-semibold text-white">Agent Performance</h2>
+            </div>
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-[#2d2d2d]">
+                  {['Agent', 'Leads Assigned', 'Contacted', 'Closed Won', 'Close Rate'].map((h) => (
+                    <th key={h} className="text-left text-xs font-medium text-[#b3b3b3] px-6 py-3 uppercase tracking-wider">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#2d2d2d]">
+                {data.agentPerformance.length === 0 ? (
+                  <tr><td colSpan={5} className="text-center py-8 text-[#b3b3b3] text-sm">No agent data</td></tr>
+                ) : (
+                  data.agentPerformance.sort((a, b) => b.leads - a.leads).map((a) => {
+                    const closeRate = a.leads > 0 ? Math.round((a.closed / a.leads) * 100) : 0
+                    return (
+                      <tr key={a.name} className="hover:bg-[#2d2d2d]/20">
+                        <td className="px-6 py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-[#ff006e]/20 flex items-center justify-center">
+                              <span className="text-xs text-[#ff006e] font-semibold">{a.name.charAt(0).toUpperCase()}</span>
+                            </div>
+                            <span className="text-sm text-white">{a.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-3 text-sm text-white font-medium">{a.leads}</td>
+                        <td className="px-6 py-3 text-sm text-[#b3b3b3]">{a.contacted}</td>
+                        <td className="px-6 py-3 text-sm text-[#22c55e] font-medium">{a.closed}</td>
+                        <td className="px-6 py-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-16 h-1.5 bg-[#2d2d2d] rounded-full overflow-hidden">
+                              <div className="h-full rounded-full bg-[#22c55e]" style={{ width: `${closeRate}%` }} />
+                            </div>
+                            <span className="text-xs text-[#b3b3b3]">{closeRate}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   )
 }
