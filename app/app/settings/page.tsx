@@ -219,6 +219,23 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Quick Links */}
+        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-white mb-4">More Settings</h2>
+          <div className="space-y-2">
+            <a href="/app/settings/lenders" className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] hover:border-[#ff006e]/40 transition-colors group">
+              <div className="flex items-center gap-3">
+                <span className="text-lg">🏦</span>
+                <div>
+                  <div className="text-sm font-medium text-white">Partner Lenders</div>
+                  <div className="text-xs text-[#b3b3b3]">Manage preferred lenders for lead financing</div>
+                </div>
+              </div>
+              <svg className="w-4 h-4 text-[#b3b3b3] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+            </a>
+          </div>
+        </div>
+
         {/* Save Button */}
         <div className="flex items-center gap-3">
           <button

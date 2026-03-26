@@ -11,16 +11,14 @@ async function getOrgId() {
   return data?.org_id ?? null
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const orgId = await getOrgId()
   if (!orgId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
-  const { data, error } = await admin
-    .from('crm_lenders')
-    .select('*')
-    .eq('org_id', orgId)
-    .eq('status', 'active')
-    .order('name')
+  const activeOnly = request.nextUrl.searchParams.get('active') === '1'
+  let query = admin.from('crm_lenders').select('*').eq('org_id', orgId).order('name')
+  if (activeOnly) query = query.eq('status', 'active')
+  const { data, error } = await query
   if (error) return Response.json({ error: error.message }, { status: 500 })
   return Response.json({ lenders: data })
 }

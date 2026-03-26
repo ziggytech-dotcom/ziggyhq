@@ -32,7 +32,7 @@ export default async function LeadDetailPage({
     admin.from('crm_organizations').select('settings_json').eq('id', userRecord.org_id).single(),
     admin.from('crm_action_plans').select('id, name, trigger_event, is_active').eq('org_id', userRecord.org_id).eq('is_active', true),
     admin.from('crm_action_plan_enrollments').select('*, action_plans(name)').eq('lead_id', id).order('created_at', { ascending: false }),
-    admin.from('crm_lenders').select('id, name, company, phone, email').eq('org_id', userRecord.org_id).eq('status', 'active').order('name'),
+    admin.from('crm_lenders').select('id, name, company, phone, email').eq('org_id', userRecord.org_id).eq('status', 'active').order('name', { ascending: true }),
   ])
 
   if (!leadRes.data) notFound()
