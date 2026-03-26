@@ -24,7 +24,7 @@ export default async function LeadDetailPage({
 
   if (!userRecord?.org_id) redirect('/login')
 
-  const [leadRes, activitiesRes, notesRes, teamRes, settingsRes, plansRes, enrollmentsRes] = await Promise.all([
+  const [leadRes, activitiesRes, notesRes, teamRes, settingsRes, plansRes, enrollmentsRes, lendersRes] = await Promise.all([
     admin.from('crm_leads').select('*, crm_users(id, full_name, email)').eq('id', id).eq('org_id', userRecord.org_id).single(),
     admin.from('crm_lead_activities').select('*, crm_users(full_name, email)').eq('lead_id', id).order('created_at', { ascending: false }).limit(50),
     admin.from('crm_lead_notes').select('*, crm_users(full_name, email)').eq('lead_id', id).order('created_at', { ascending: false }),
@@ -32,6 +32,7 @@ export default async function LeadDetailPage({
     admin.from('crm_organizations').select('settings_json').eq('id', userRecord.org_id).single(),
     admin.from('crm_action_plans').select('id, name, trigger_event, is_active').eq('org_id', userRecord.org_id).eq('is_active', true),
     admin.from('crm_action_plan_enrollments').select('*, action_plans(name)').eq('lead_id', id).order('created_at', { ascending: false }),
+    admin.from('crm_lenders').select('id, name, company, phone, email').eq('org_id', userRecord.org_id).eq('status', 'active').order('name'),
   ])
 
   if (!leadRes.data) notFound()
@@ -48,6 +49,7 @@ export default async function LeadDetailPage({
       sources={settings.lead_sources ?? []}
       actionPlans={plansRes.data ?? []}
       enrollments={enrollmentsRes.data ?? []}
+      lenders={lendersRes.data ?? []}
       orgId={userRecord.org_id}
     />
   )

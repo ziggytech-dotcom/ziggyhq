@@ -47,6 +47,7 @@ export async function PATCH(
     'budget_min', 'budget_max', 'timeline', 'pre_approved', 'property_type',
     'bedrooms', 'areas_of_interest', 'tags', 'assigned_to', 'lead_score',
     'last_contacted_at', 'next_followup_at',
+    'loan_amount', 'loan_type', 'lender_id', 'lender_name', 'lender_phone', 'lender_email',
   ]
   const updates: Record<string, unknown> = {}
   for (const key of allowed) {
