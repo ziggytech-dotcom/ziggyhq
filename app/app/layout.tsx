@@ -20,7 +20,7 @@ export default async function AppLayout({
   // Get user record
   const { data: userRecord } = await admin
     .from('crm_users')
-    .select('*, organizations(*)')
+    .select('*, crm_organizations(*)')
     .eq('email', user.email!)
     .single()
 

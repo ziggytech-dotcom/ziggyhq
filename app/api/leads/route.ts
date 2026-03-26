@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
   const admin = createAdminClient()
   let query = admin
     .from('crm_leads')
-    .select('*, users(id, full_name, email)')
+    .select('*, crm_users(id, full_name, email)')
     .eq('org_id', orgId)
 
   if (search) {

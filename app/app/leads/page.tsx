@@ -3,6 +3,24 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 
+// ── Formatters ────────────────────────────────────────────────────────────────
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 10)
+  if (digits.length <= 3) return digits
+  if (digits.length <= 6) return `(${digits.slice(0,3)}) ${digits.slice(3)}`
+  return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`
+}
+
+function formatCurrency(value: string): string {
+  const digits = value.replace(/\D/g, '')
+  if (!digits) return ''
+  return parseInt(digits).toLocaleString('en-US')
+}
+
+function parseCurrency(value: string): string {
+  return value.replace(/\D/g, '')
+}
+
 interface Lead {
   id: string
   full_name: string
@@ -144,7 +162,7 @@ function NewLeadSlideOver({
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Phone</label>
-              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} placeholder="(702) 555-1234" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm" />
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Source</label>
@@ -178,11 +196,11 @@ function NewLeadSlideOver({
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Budget Min ($)</label>
-              <input type="number" value={form.budget_min} onChange={(e) => setForm({ ...form, budget_min: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input type="text" inputMode="numeric" value={form.budget_min ? '$' + formatCurrency(form.budget_min) : ''} onChange={(e) => setForm({ ...form, budget_min: parseCurrency(e.target.value) })} placeholder="$500,000" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm" />
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Budget Max ($)</label>
-              <input type="number" value={form.budget_max} onChange={(e) => setForm({ ...form, budget_max: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input type="text" inputMode="numeric" value={form.budget_max ? '$' + formatCurrency(form.budget_max) : ''} onChange={(e) => setForm({ ...form, budget_max: parseCurrency(e.target.value) })} placeholder="$800,000" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm" />
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Timeline</label>

@@ -21,7 +21,7 @@ export async function GET(
   const admin = createAdminClient()
   const { data, error } = await admin
     .from('crm_lead_activities')
-    .select('*, users(full_name, email)')
+    .select('*, crm_users(full_name, email)')
     .eq('lead_id', id)
     .eq('org_id', user.org_id)
     .order('created_at', { ascending: false })
@@ -58,7 +58,7 @@ export async function POST(
       status: status || null,
       metadata_json: metadata_json || {},
     })
-    .select('*, users(full_name, email)')
+    .select('*, crm_users(full_name, email)')
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })

@@ -21,7 +21,7 @@ export async function GET(
   const admin = createAdminClient()
   const { data, error } = await admin
     .from('crm_leads')
-    .select('*, users(id, full_name, email)')
+    .select('*, crm_users(id, full_name, email)')
     .eq('id', id)
     .eq('org_id', orgId)
     .single()
