@@ -37,3 +37,22 @@ export async function PATCH(
   if (error) return Response.json({ error: error.message }, { status: 500 })
   return Response.json({ plan: data })
 }
+
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  const orgId = await getOrgId()
+  if (!orgId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const admin = createAdminClient()
+  const { error } = await admin
+    .from('crm_action_plans')
+    .delete()
+    .eq('id', id)
+    .eq('org_id', orgId)
+
+  if (error) return Response.json({ error: error.message }, { status: 500 })
+  return Response.json({ success: true })
+}
