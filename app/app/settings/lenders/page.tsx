@@ -15,7 +15,7 @@ interface Lender {
   created_at: string
 }
 
-const LOAN_TYPES = ['Conventional', 'FHA', 'VA', 'USDA', 'Jumbo', 'Cash', 'Other']
+const LOAN_TYPES = ['Conventional', 'FHA', 'VA', 'USDA', 'Jumbo', 'Non-QM', 'Cash', 'Other']
 
 function formatPhone(value: string) {
   const digits = value.replace(/\D/g, '').slice(0, 10)

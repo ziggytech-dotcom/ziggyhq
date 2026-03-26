@@ -18,6 +18,10 @@ interface Lead {
   lender_name: string | null
   lender_phone: string | null
   lender_email: string | null
+  commission_split: string | null
+  referral_agent_name: string | null
+  referral_agent_phone: string | null
+  referral_fee_pct: number | null
   source: string | null
   stage: string | null
   status: string
@@ -71,7 +75,7 @@ interface Lender {
 }
 
 const PROPERTY_TYPES = ['Single Family', 'Condo/Townhouse', 'Multi-Family', 'Land', 'Commercial', 'Mobile/Manufactured', 'Other']
-const LOAN_TYPES = ['Conventional', 'FHA', 'VA', 'USDA', 'Jumbo', 'Cash', 'Other']
+const LOAN_TYPES = ['Conventional', 'FHA', 'VA', 'USDA', 'Jumbo', 'Non-QM', 'Cash', 'Other']
 
 function formatCurrency(val: number | null) {
   if (!val) return ''
@@ -536,6 +540,50 @@ export default function LeadDetail({
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Commission & Referral */}
+          <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
+            <h3 className="text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider mb-4">Commission & Referral</h3>
+            <div className="space-y-3">
+              <div>
+                <div className="text-xs text-[#b3b3b3] mb-0.5">Commission Split</div>
+                {editField === 'commission_split' ? (
+                  <div className="flex gap-2">
+                    <input autoFocus value={editValue} onChange={handleEditChange} placeholder="e.g. 70/30" onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none" />
+                    <button onClick={saveEdit} className="text-[#22c55e] text-xs hover:underline">Save</button>
+                  </div>
+                ) : (
+                  <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit('commission_split', lead.commission_split ?? '')}>
+                    {lead.commission_split ?? <span className="text-[#b3b3b3]/50 italic">Not set</span>}
+                    <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                  </div>
+                )}
+              </div>
+              <div className="pt-2 border-t border-[#2d2d2d]">
+                <div className="text-xs text-[#b3b3b3] mb-2 font-medium">Referral</div>
+                {[
+                  { key: 'referral_agent_name', label: 'Referral Agent' },
+                  { key: 'referral_agent_phone', label: 'Referral Phone' },
+                  { key: 'referral_fee_pct', label: 'Referral Fee %' },
+                ].map((field) => (
+                  <div key={field.key} className="mb-2">
+                    <div className="text-xs text-[#b3b3b3] mb-0.5">{field.label}</div>
+                    {editField === field.key ? (
+                      <div className="flex gap-2">
+                        <input autoFocus value={editValue} onChange={field.key === 'referral_agent_phone' ? (e) => { const d = e.target.value.replace(/\D/g,'').slice(0,10); let f = d; if (d.length>6) f=`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`; else if (d.length>3) f=`(${d.slice(0,3)}) ${d.slice(3)}`; setEditValue(f) } : handleEditChange} onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none" />
+                        <button onClick={saveEdit} className="text-[#22c55e] text-xs hover:underline">Save</button>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit(field.key, (lead as Record<string, unknown>)[field.key] as string ?? '')}>
+                        {(lead as Record<string, unknown>)[field.key] as string ?? <span className="text-[#b3b3b3]/50 italic">Not set</span>}
+                        <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

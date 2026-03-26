@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
   if (stage) query = query.eq('stage', stage)
   if (source) query = query.eq('source', source)
   if (assignedTo) query = query.eq('assigned_to', assignedTo)
+  if (searchParams.get('has_followup') === '1') query = query.not('next_followup_at', 'is', null).eq('status', 'active')
 
   const validSortFields = ['full_name', 'stage', 'source', 'lead_score', 'last_contacted_at', 'next_followup_at', 'created_at']
   const sortField = validSortFields.includes(sort) ? sort : 'created_at'
