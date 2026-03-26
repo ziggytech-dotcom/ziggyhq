@@ -576,8 +576,8 @@ export default function LeadDetail({
                         <button onClick={saveEdit} className="text-[#22c55e] text-xs hover:underline">Save</button>
                       </div>
                     ) : (
-                      <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit(field.key, (lead as Record<string, unknown>)[field.key] as string ?? '')}>
-                        {(lead as Record<string, unknown>)[field.key] as string ?? <span className="text-[#b3b3b3]/50 italic">Not set</span>}
+                      <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit(field.key, ((lead as unknown) as Record<string, string>)[field.key] ?? '')}>
+                        {((lead as unknown) as Record<string, string>)[field.key] ?? <span className="text-[#b3b3b3]/50 italic">Not set</span>}
                         <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                       </div>
                     )}
