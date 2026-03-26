@@ -359,6 +359,10 @@ export default function LeadsPage() {
           </h1>
           <p className="text-[#b3b3b3] text-sm mt-1">{leads.length} lead{leads.length !== 1 ? 's' : ''}</p>
         </div>
+        <Link href="/app/import" className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm font-medium hover:text-white hover:bg-[#3d3d3d] transition-colors">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+          Import
+        </Link>
         <button
           onClick={() => setShowNewLead(true)}
           className="flex items-center gap-2 px-4 py-2 bg-[#ff006e] text-white rounded-lg text-sm font-medium hover:bg-[#ff006e]/90 transition-colors"
