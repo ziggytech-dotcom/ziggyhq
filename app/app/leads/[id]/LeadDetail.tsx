@@ -162,6 +162,8 @@ export default function LeadDetail({
   const [enrollingPlan, setEnrollingPlan] = useState('')
   const [editField, setEditField] = useState<string | null>(null)
   const [editValue, setEditValue] = useState('')
+  const [aiCalling, setAiCalling] = useState(false)
+  const [aiCallStatus, setAiCallStatus] = useState<string | null>(null)
 
   const updateLead = async (updates: Partial<Lead>) => {
     setSaving(true)
@@ -221,6 +223,27 @@ export default function LeadDetail({
       setNewNote('')
     }
     setAddingNote(false)
+  }
+
+  const initiateAiCall = async () => {
+    if (!lead.phone) return
+    setAiCalling(true)
+    setAiCallStatus(null)
+    const res = await fetch('/api/calls', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead_id: lead.id, phone: lead.phone, lead_name: lead.full_name }),
+    })
+    const data = await res.json()
+    if (res.ok) {
+      setAiCallStatus(`AI call initiated ✓ (ID: ${data.call_id})`)
+      const activity: Activity = { id: data.call_id, type: 'call', direction: null, content: `AI call initiated to ${data.phone} via Bland.ai`, created_at: new Date().toISOString(), duration_seconds: null, users: null }
+      setActivities((prev) => [activity, ...prev])
+    } else {
+      setAiCallStatus(`Error: ${data.error}`)
+    }
+    setAiCalling(false)
+    setTimeout(() => setAiCallStatus(null), 6000)
   }
 
   const deleteLead = async () => {
@@ -300,12 +323,29 @@ export default function LeadDetail({
               Email
             </a>
           )}
+          {lead.phone && (
+            <button
+              onClick={initiateAiCall}
+              disabled={aiCalling}
+              title="AI calls the lead, qualifies them, and logs the transcript automatically"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#8b5cf6]/20 text-[#8b5cf6] border border-[#8b5cf6]/30 text-sm hover:bg-[#8b5cf6]/30 disabled:opacity-50 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" /></svg>
+              {aiCalling ? 'Calling...' : 'AI Call'}
+            </button>
+          )}
           <button onClick={deleteLead} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-900/20 text-red-400 border border-red-900/40 text-sm hover:bg-red-900/30 transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
             Delete
           </button>
         </div>
       </div>
+
+      {aiCallStatus && (
+        <div className={`mb-4 px-4 py-3 rounded-lg text-sm font-medium ${aiCallStatus.startsWith('Error') ? 'bg-red-900/20 border border-red-900/40 text-red-400' : 'bg-[#8b5cf6]/10 border border-[#8b5cf6]/30 text-[#8b5cf6]'}`}>
+          {aiCallStatus}
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-6">
         {/* Left: Lead Info */}
