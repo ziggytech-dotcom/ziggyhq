@@ -206,18 +206,32 @@ export default function LeadDetail({
     e.preventDefault()
     if (!newNote.trim()) return
     setAddingNote(true)
-    const res = await fetch(`/api/leads/${lead.id}/activities`, {
+    const res = await fetch(`/api/leads/${lead.id}/notes`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type: 'note', content: newNote }),
+      body: JSON.stringify({ content: newNote }),
     })
     if (res.ok) {
       const data = await res.json()
-      setActivities((prev) => [data.activity, ...prev])
+      setNotes((prev) => [data.note, ...prev])
       setNewNote('')
     }
     setAddingNote(false)
   }
+
+  const deleteLead = async () => {
+    if (!confirm(`Delete "${lead.full_name}"? This cannot be undone.`)) return
+    await fetch(`/api/leads/${lead.id}`, { method: 'DELETE' })
+    router.push('/app/leads')
+  }
+
+  const toggleTag = async (tag: string) => {
+    const current = lead.tags ?? []
+    const updated = current.includes(tag) ? current.filter((t) => t !== tag) : [...current, tag]
+    await updateLead({ tags: updated })
+  }
+
+  const COMMON_TAGS = ['Hot', 'Warm', 'Cold', 'Investor', 'First-Time Buyer', 'Relocating', 'Downsizing', 'Upsizing', 'Cash Buyer', 'Military', 'Referral']
 
   const enrollInPlan = async () => {
     if (!enrollingPlan) return
@@ -258,7 +272,12 @@ export default function LeadDetail({
             <div className="flex items-center gap-4 text-sm text-[#b3b3b3]">
               {lead.stage && <span className="text-[#ff006e]">{lead.stage}</span>}
               {lead.source && <span>{lead.source}</span>}
-              <span>Score: <span className="text-white font-medium">{lead.lead_score}</span></span>
+              <span className="flex items-center gap-1.5">Score:
+                <span className="text-white font-medium">{lead.lead_score}</span>
+                <div className="w-16 h-1.5 rounded-full bg-[#2d2d2d] overflow-hidden">
+                  <div className="h-full rounded-full transition-all" style={{ width: `${lead.lead_score}%`, backgroundColor: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#ff006e' }} />
+                </div>
+              </span>
               <span>Added {timeAgo(lead.created_at)}</span>
             </div>
           </div>
@@ -277,6 +296,10 @@ export default function LeadDetail({
               Email
             </a>
           )}
+          <button onClick={deleteLead} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-900/20 text-red-400 border border-red-900/40 text-sm hover:bg-red-900/30 transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            Delete
+          </button>
         </div>
       </div>
 
@@ -516,6 +539,38 @@ export default function LeadDetail({
             </div>
           </div>
 
+          {/* Tags */}
+          <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
+            <h3 className="text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider mb-3">Tags</h3>
+            <div className="flex flex-wrap gap-1.5">
+              {COMMON_TAGS.map((tag) => {
+                const active = (lead.tags ?? []).includes(tag)
+                return (
+                  <button key={tag} onClick={() => toggleTag(tag)}
+                    className={`px-2 py-1 rounded-full text-xs transition-colors ${active ? 'bg-[#ff006e] text-white' : 'bg-[#2d2d2d] text-[#b3b3b3] hover:bg-[#3d3d3d]'}`}>
+                    {tag}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Lead Score */}
+          <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
+            <h3 className="text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider mb-3">Lead Score</h3>
+            <div className="flex items-center gap-3">
+              <input type="range" min={0} max={100} value={lead.lead_score}
+                onChange={(e) => setLead((prev) => ({ ...prev, lead_score: parseInt(e.target.value) }))}
+                onMouseUp={(e) => updateLead({ lead_score: parseInt((e.target as HTMLInputElement).value) })}
+                onTouchEnd={(e) => updateLead({ lead_score: parseInt((e.target as HTMLInputElement).value) })}
+                className="flex-1 accent-[#ff006e]" />
+              <span className="text-white font-bold text-lg w-8 text-right">{lead.lead_score}</span>
+            </div>
+            <div className="mt-2 h-2 rounded-full bg-[#2d2d2d] overflow-hidden">
+              <div className="h-full rounded-full transition-all" style={{ width: `${lead.lead_score}%`, backgroundColor: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#ff006e' }} />
+            </div>
+          </div>
+
           {/* Action Plans */}
           <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
             <h3 className="text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider mb-4">Action Plans</h3>
@@ -561,6 +616,26 @@ export default function LeadDetail({
               </button>
             </form>
           </div>
+
+          {/* Notes */}
+          {notes.length > 0 && (
+            <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
+              <h3 className="text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider mb-4">Notes</h3>
+              <div className="space-y-3">
+                {notes.map((note) => (
+                  <div key={note.id} className={`p-3 rounded-lg ${note.pinned ? 'bg-[#ff006e]/10 border border-[#ff006e]/20' : 'bg-[#0a0a0a] border border-[#2d2d2d]'}`}>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <p className="text-sm text-white whitespace-pre-wrap flex-1">{note.content}</p>
+                      {note.pinned && <span className="text-[#ff006e] text-xs flex-shrink-0">📌 Pinned</span>}
+                    </div>
+                    <div className="text-xs text-[#b3b3b3]/60">
+                      {note.users?.full_name ?? note.users?.email} · {timeAgo(note.created_at)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Activity Feed */}
           <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">

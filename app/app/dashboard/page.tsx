@@ -13,7 +13,7 @@ async function getStats(orgId: string) {
     admin.from('crm_leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', weekAgo.toISOString()),
     admin.from('crm_lead_activities').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', todayStart.toISOString()),
     admin.from('crm_leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId).eq('status', 'won'),
-    admin.from('crm_lead_activities').select('*, leads(full_name)').eq('org_id', orgId).order('created_at', { ascending: false }).limit(10),
+    admin.from('crm_lead_activities').select('*, crm_leads(full_name, id)').eq('org_id', orgId).order('created_at', { ascending: false }).limit(10),
     admin.from('crm_leads').select('stage').eq('org_id', orgId).not('stage', 'is', null),
   ])
 
@@ -122,7 +122,7 @@ export default async function DashboardPage() {
             {stats.recentActivities.length === 0 ? (
               <p className="text-[#b3b3b3] text-sm">No recent activity</p>
             ) : (
-              stats.recentActivities.map((activity: { id: string; type: string; content: string; created_at: string; leads?: { full_name: string } | null }) => (
+              stats.recentActivities.map((activity: { id: string; type: string; content: string; created_at: string; lead_id?: string; crm_leads?: { full_name: string; id: string } | null }) => (
                 <div key={activity.id} className="flex items-start gap-3">
                   <div
                     className="w-2 h-2 rounded-full mt-2 flex-shrink-0"
@@ -131,8 +131,8 @@ export default async function DashboardPage() {
                   <div className="flex-1 min-w-0">
                     <div className="text-sm text-white">
                       <span className="font-medium capitalize">{activity.type}</span>
-                      {activity.leads && (
-                        <span className="text-[#b3b3b3]"> — {(activity.leads as { full_name: string }).full_name}</span>
+                      {activity.crm_leads && (
+                        <span className="text-[#b3b3b3]"> — {activity.crm_leads.full_name}</span>
                       )}
                     </div>
                     {activity.content && (
