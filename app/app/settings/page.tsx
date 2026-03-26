@@ -10,6 +10,12 @@ interface OrgSettings {
   settings_json: {
     pipeline_stages?: string[]
     lead_sources?: string[]
+    ai_caller?: {
+      name?: string
+      voice?: string
+      brokerage?: string
+      callback_phone?: string
+    }
   }
 }
 
@@ -29,6 +35,7 @@ export default function SettingsPage() {
   const [industry, setIndustry] = useState('')
   const [stages, setStages] = useState<string[]>([])
   const [sources, setSources] = useState<string[]>([])
+  const [aiCaller, setAiCaller] = useState({ name: 'Emma', voice: 'maya', brokerage: '', callback_phone: '' })
   const [newStage, setNewStage] = useState('')
   const [newSource, setNewSource] = useState('')
 
@@ -46,6 +53,8 @@ export default function SettingsPage() {
         setIndustry(data.industry)
         setStages(data.settings_json?.pipeline_stages ?? [])
         setSources(data.settings_json?.lead_sources ?? [])
+        const ai = data.settings_json?.ai_caller ?? {}
+        setAiCaller({ name: ai.name ?? 'Emma', voice: ai.voice ?? 'maya', brokerage: ai.brokerage ?? data.name ?? '', callback_phone: ai.callback_phone ?? '' })
       }
       setLoading(false)
     }
@@ -64,6 +73,7 @@ export default function SettingsPage() {
         settings_json: {
           ...org.settings_json,
           pipeline_stages: stages,
+          ai_caller: aiCaller,
           lead_sources: sources,
         },
       }),
@@ -217,6 +227,49 @@ export default function SettingsPage() {
             />
             <button onClick={addSource} className="px-3 py-1.5 rounded-lg bg-[#2d2d2d] text-white text-sm hover:bg-[#3d3d3d] transition-colors">Add</button>
           </div>
+        </div>
+
+        {/* AI Caller Settings */}
+        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
+            <span className="w-5 h-5 text-[#8b5cf6]">🤖</span> AI Caller Settings
+          </h2>
+          <p className="text-xs text-[#b3b3b3] mb-4">Configure the AI that calls your leads via Bland.ai.</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs text-[#b3b3b3] mb-1">AI Caller Name</label>
+              <input value={aiCaller.name} onChange={(e) => setAiCaller((p) => ({ ...p, name: e.target.value }))}
+                placeholder="Emma" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#8b5cf6]" />
+            </div>
+            <div>
+              <label className="block text-xs text-[#b3b3b3] mb-1">Voice</label>
+              <select value={aiCaller.voice} onChange={(e) => setAiCaller((p) => ({ ...p, voice: e.target.value }))}
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#8b5cf6]">
+                <optgroup label="Female (Recommended)">
+                  <option value="maya">Maya — Warm, professional ⭐</option>
+                  <option value="evelyn">Evelyn — Polished, confident</option>
+                  <option value="june">June — Friendly, casual</option>
+                  <option value="sarah">Sarah — Clear, trustworthy</option>
+                </optgroup>
+                <optgroup label="Male">
+                  <option value="ryan">Ryan — Friendly, approachable</option>
+                  <option value="derek">Derek — Professional, calm</option>
+                  <option value="josh">Josh — Energetic, warm</option>
+                </optgroup>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-[#b3b3b3] mb-1">Brokerage Name</label>
+              <input value={aiCaller.brokerage} onChange={(e) => setAiCaller((p) => ({ ...p, brokerage: e.target.value }))}
+                placeholder="Jerry Abbott Realty" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#8b5cf6]" />
+            </div>
+            <div>
+              <label className="block text-xs text-[#b3b3b3] mb-1">Callback Phone (for voicemail)</label>
+              <input value={aiCaller.callback_phone} onChange={(e) => setAiCaller((p) => ({ ...p, callback_phone: e.target.value }))}
+                placeholder="(725) 425-6788" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#8b5cf6]" />
+            </div>
+          </div>
+          <p className="text-xs text-[#b3b3b3]/60 mt-3">The AI will introduce itself as <span className="text-white">{aiCaller.name || 'Emma'}</span> calling from <span className="text-white">{aiCaller.brokerage || 'your brokerage'}</span>.</p>
         </div>
 
         {/* Quick Links */}

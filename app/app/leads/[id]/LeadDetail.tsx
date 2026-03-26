@@ -164,6 +164,8 @@ export default function LeadDetail({
   const [editValue, setEditValue] = useState('')
   const [aiCalling, setAiCalling] = useState(false)
   const [aiCallStatus, setAiCallStatus] = useState<string | null>(null)
+  const [aiScriptType, setAiScriptType] = useState('new_lead')
+  const [showAiMenu, setShowAiMenu] = useState(false)
 
   const updateLead = async (updates: Partial<Lead>) => {
     setSaving(true)
@@ -232,7 +234,7 @@ export default function LeadDetail({
     const res = await fetch('/api/calls', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lead_id: lead.id, phone: lead.phone, lead_name: lead.full_name }),
+      body: JSON.stringify({ lead_id: lead.id, phone: lead.phone, lead_name: lead.full_name, script_type: aiScriptType }),
     })
     const data = await res.json()
     if (res.ok) {
@@ -324,15 +326,35 @@ export default function LeadDetail({
             </a>
           )}
           {lead.phone && (
-            <button
-              onClick={initiateAiCall}
-              disabled={aiCalling}
-              title="AI calls the lead, qualifies them, and logs the transcript automatically"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#8b5cf6]/20 text-[#8b5cf6] border border-[#8b5cf6]/30 text-sm hover:bg-[#8b5cf6]/30 disabled:opacity-50 transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" /></svg>
-              {aiCalling ? 'Calling...' : 'AI Call'}
-            </button>
+            <div className="relative">
+              <div className="flex items-center rounded-lg overflow-hidden border border-[#8b5cf6]/30">
+                <button
+                  onClick={initiateAiCall}
+                  disabled={aiCalling}
+                  title="AI calls the lead, qualifies them, and logs the transcript automatically"
+                  className="flex items-center gap-2 px-3 py-2 bg-[#8b5cf6]/20 text-[#8b5cf6] text-sm hover:bg-[#8b5cf6]/30 disabled:opacity-50 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" /></svg>
+                  {aiCalling ? 'Calling...' : `AI Call`}
+                </button>
+                <button onClick={() => setShowAiMenu((p) => !p)} className="px-2 py-2 bg-[#8b5cf6]/20 text-[#8b5cf6] hover:bg-[#8b5cf6]/30 border-l border-[#8b5cf6]/20 transition-colors text-xs">▾</button>
+              </div>
+              {showAiMenu && (
+                <div className="absolute right-0 top-full mt-1 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-2 z-20 min-w-[180px] shadow-xl">
+                  <div className="text-[10px] text-[#b3b3b3] uppercase tracking-wider px-2 mb-1">Script Type</div>
+                  {[
+                    { key: 'new_lead', label: '🏠 New Lead' },
+                    { key: 'home_value', label: '💰 Home Value Request' },
+                    { key: 'listing_inquiry', label: '📋 Listing Inquiry' },
+                  ].map((s) => (
+                    <button key={s.key} onClick={() => { setAiScriptType(s.key); setShowAiMenu(false) }}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${aiScriptType === s.key ? 'bg-[#8b5cf6]/20 text-[#8b5cf6]' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]'}`}>
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
           <button onClick={deleteLead} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-900/20 text-red-400 border border-red-900/40 text-sm hover:bg-red-900/30 transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
