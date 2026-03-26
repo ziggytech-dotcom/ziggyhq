@@ -31,8 +31,9 @@ export default async function AppLayout({
 
   if (userRecord) {
     userFullName = userRecord.full_name ?? ''
-    if (userRecord.organizations) {
-      orgName = (userRecord.organizations as { name: string }).name
+    const orgData = userRecord.crm_organizations ?? userRecord.organizations
+    if (orgData) {
+      orgName = (orgData as { name: string }).name
     }
   } else {
     // Create a user record for first-time login
