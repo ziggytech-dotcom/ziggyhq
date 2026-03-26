@@ -15,6 +15,7 @@ interface OrgSettings {
       voice?: string
       brokerage?: string
       callback_phone?: string
+      disclose_if_asked?: boolean
     }
   }
 }
@@ -35,7 +36,7 @@ export default function SettingsPage() {
   const [industry, setIndustry] = useState('')
   const [stages, setStages] = useState<string[]>([])
   const [sources, setSources] = useState<string[]>([])
-  const [aiCaller, setAiCaller] = useState({ name: 'Emma', voice: 'maya', brokerage: '', callback_phone: '' })
+  const [aiCaller, setAiCaller] = useState({ name: 'Emma', voice: 'maya', brokerage: '', callback_phone: '', disclose_if_asked: true })
   const [newStage, setNewStage] = useState('')
   const [newSource, setNewSource] = useState('')
 
@@ -54,7 +55,7 @@ export default function SettingsPage() {
         setStages(data.settings_json?.pipeline_stages ?? [])
         setSources(data.settings_json?.lead_sources ?? [])
         const ai = data.settings_json?.ai_caller ?? {}
-        setAiCaller({ name: ai.name ?? 'Emma', voice: ai.voice ?? 'maya', brokerage: ai.brokerage ?? data.name ?? '', callback_phone: ai.callback_phone ?? '' })
+        setAiCaller({ name: ai.name ?? 'Emma', voice: ai.voice ?? 'maya', brokerage: ai.brokerage ?? data.name ?? '', callback_phone: ai.callback_phone ?? '', disclose_if_asked: ai.disclose_if_asked !== false })
       }
       setLoading(false)
     }
@@ -268,6 +269,19 @@ export default function SettingsPage() {
               <input value={aiCaller.callback_phone} onChange={(e) => setAiCaller((p) => ({ ...p, callback_phone: e.target.value }))}
                 placeholder="(725) 425-6788" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#8b5cf6]" />
             </div>
+          </div>
+          <div className="mt-4 pt-4 border-t border-[#2d2d2d] flex items-start justify-between gap-4">
+            <div>
+              <div className="text-sm text-white font-medium">Disclose AI if asked</div>
+              <div className="text-xs text-[#b3b3b3] mt-0.5">If a lead asks "are you a real person?", the AI responds honestly that it's a virtual assistant. Recommended — keeps you legally protected.</div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAiCaller((p) => ({ ...p, disclose_if_asked: !p.disclose_if_asked }))}
+              className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors mt-0.5 ${aiCaller.disclose_if_asked ? 'bg-[#22c55e]' : 'bg-[#2d2d2d]'}`}
+            >
+              <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${aiCaller.disclose_if_asked ? 'translate-x-5' : 'translate-x-0.5'}`} />
+            </button>
           </div>
           <p className="text-xs text-[#b3b3b3]/60 mt-3">The AI will introduce itself as <span className="text-white">{aiCaller.name || 'Emma'}</span> calling from <span className="text-white">{aiCaller.brokerage || 'your brokerage'}</span>.</p>
         </div>

@@ -15,6 +15,7 @@ interface AiCallerSettings {
   voice: string
   brokerage: string
   callback_phone: string
+  disclose_if_asked: boolean
   scripts: {
     new_lead: string
     home_value: string
@@ -27,6 +28,9 @@ function buildScripts(s: AiCallerSettings, leadName: string): { task: string; vo
   const name = s.name
   const brokerage = s.brokerage
   const callback = s.callback_phone
+  const aiRule = s.disclose_if_asked !== false
+    ? `If they ask "are you a real person?", "are you human?", or "is this AI?" — respond warmly and honestly: "I'm a virtual assistant for ${s.brokerage} — but I want you to know that someone from the team will be reaching out to you personally very soon! I just wanted to make sure we got back to you right away."`
+    : `If they ask whether you are human or AI — simply say "I'm calling on behalf of ${s.brokerage} — and I promise someone from the team will be in touch with you very soon!" and smoothly redirect the conversation.`
 
   const scripts = {
     new_lead: s.scripts?.new_lead || `You are ${name}, a warm and friendly assistant calling from ${brokerage}. You are calling ${leadName}.
@@ -44,7 +48,7 @@ IMPORTANT — follow this exact flow:
 
 Keep it warm, natural, and conversational — never robotic. Never pressure or rush. Always lead the conversation — do not wait for them to ask why you're calling. Total call under 3 minutes. If they ask to be removed from contact, thank them sincerely and end the call.
 
-If they ask "are you a real person?", "are you human?", or "is this AI?" — respond warmly and honestly: "I'm a virtual assistant for ${brokerage} — but I want you to know that someone from the team will be reaching out to you personally very soon! I just wanted to make sure we got back to you right away."`,
+${aiRule}`,
 
     home_value: s.scripts?.home_value || `You are ${name}, a warm and friendly assistant calling from ${brokerage}. You are calling ${leadName}.
 
@@ -58,7 +62,7 @@ IMPORTANT — follow this exact flow:
 
 Warm, helpful, conversational. Lead the conversation. Under 3 minutes.
 
-If they ask "are you a real person?", "are you human?", or "is this AI?" — respond warmly and honestly: "I'm a virtual assistant for ${brokerage} — but I want you to know that someone from the team will be reaching out to you personally very soon! I just wanted to make sure we got back to you right away."`,
+${aiRule}`,
 
     listing_inquiry: s.scripts?.listing_inquiry || `You are ${name}, a warm and friendly assistant calling from ${brokerage}. You are calling ${leadName}.
 
@@ -72,7 +76,7 @@ IMPORTANT — follow this exact flow:
 
 Warm, friendly, proactive. Always lead the conversation. Under 3 minutes.
 
-If they ask "are you a real person?", "are you human?", or "is this AI?" — respond warmly and honestly: "I'm a virtual assistant for ${brokerage} — but I want you to know that someone from the team will be reaching out to you personally very soon! I just wanted to make sure we got back to you right away."`,
+${aiRule}`,
   }
 
   const voicemailMsg = s.scripts?.voicemail ||
@@ -110,6 +114,7 @@ export async function POST(request: Request) {
     voice: aiCaller.voice ?? 'maya',
     brokerage: aiCaller.brokerage ?? org?.name ?? 'our real estate team',
     callback_phone: aiCaller.callback_phone ?? process.env.BLAND_PHONE_NUMBER ?? '',
+    disclose_if_asked: aiCaller.disclose_if_asked !== false,
     scripts: (aiCaller.scripts ?? {}) as AiCallerSettings['scripts'],
   }
 
