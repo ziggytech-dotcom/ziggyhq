@@ -1,6 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+
+function generateKey() {
+  return 'wh_' + Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b => b.toString(16).padStart(2,'0')).join('')
+}
 import { createClient } from '@/lib/supabase/client'
 
 interface OrgSettings {
@@ -10,6 +14,8 @@ interface OrgSettings {
   settings_json: {
     pipeline_stages?: string[]
     lead_sources?: string[]
+    webhook_key?: string
+    auto_call_new_leads?: boolean
     ai_caller?: {
       name?: string
       voice?: string
@@ -37,6 +43,8 @@ export default function SettingsPage() {
   const [stages, setStages] = useState<string[]>([])
   const [sources, setSources] = useState<string[]>([])
   const [aiCaller, setAiCaller] = useState({ name: 'Emma', voice: 'maya', brokerage: '', callback_phone: '', disclose_if_asked: true })
+  const [webhookKey, setWebhookKey] = useState('')
+  const [autoCallNewLeads, setAutoCallNewLeads] = useState(true)
   const [newStage, setNewStage] = useState('')
   const [newSource, setNewSource] = useState('')
 
@@ -56,6 +64,8 @@ export default function SettingsPage() {
         setSources(data.settings_json?.lead_sources ?? [])
         const ai = data.settings_json?.ai_caller ?? {}
         setAiCaller({ name: ai.name ?? 'Emma', voice: ai.voice ?? 'maya', brokerage: ai.brokerage ?? data.name ?? '', callback_phone: ai.callback_phone ?? '', disclose_if_asked: ai.disclose_if_asked !== false })
+        setWebhookKey(data.settings_json?.webhook_key ?? generateKey())
+        setAutoCallNewLeads(data.settings_json?.auto_call_new_leads !== false)
       }
       setLoading(false)
     }
@@ -75,6 +85,8 @@ export default function SettingsPage() {
           ...org.settings_json,
           pipeline_stages: stages,
           ai_caller: aiCaller,
+          webhook_key: webhookKey,
+          auto_call_new_leads: autoCallNewLeads,
           lead_sources: sources,
         },
       }),
@@ -227,6 +239,46 @@ export default function SettingsPage() {
               className="flex-1 px-3 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm"
             />
             <button onClick={addSource} className="px-3 py-1.5 rounded-lg bg-[#2d2d2d] text-white text-sm hover:bg-[#3d3d3d] transition-colors">Add</button>
+          </div>
+        </div>
+
+        {/* Lead Capture & Auto-Call */}
+        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
+            ⚡ Lead Capture & Auto-Call
+          </h2>
+          <p className="text-xs text-[#b3b3b3] mb-4">New leads submitted via your website or Zapier are automatically added to your CRM — and Emma calls them within 60 seconds.</p>
+
+          {/* Auto-call toggle */}
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <div className="text-sm text-white font-medium">Auto-call new leads</div>
+              <div className="text-xs text-[#b3b3b3] mt-0.5">Emma automatically calls every new inbound lead within 60 seconds of them submitting.</div>
+            </div>
+            <button type="button" onClick={() => setAutoCallNewLeads((p) => !p)}
+              className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors mt-0.5 ${autoCallNewLeads ? 'bg-[#22c55e]' : 'bg-[#2d2d2d]'}`}>
+              <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${autoCallNewLeads ? 'translate-x-5' : 'translate-x-0.5'}`} />
+            </button>
+          </div>
+
+          {/* Webhook key */}
+          <div>
+            <label className="block text-xs text-[#b3b3b3] mb-1">Webhook API Key</label>
+            <div className="flex gap-2">
+              <input readOnly value={webhookKey} className="flex-1 px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm font-mono focus:outline-none select-all" onClick={(e) => (e.target as HTMLInputElement).select()} />
+              <button type="button" onClick={() => { navigator.clipboard.writeText(webhookKey) }} className="px-3 py-2 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-sm hover:text-white hover:bg-[#3d3d3d] transition-colors">Copy</button>
+              <button type="button" onClick={() => setWebhookKey(generateKey())} className="px-3 py-2 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-sm hover:text-white hover:bg-[#3d3d3d] transition-colors">Regen</button>
+            </div>
+          </div>
+
+          {/* Webhook URL */}
+          <div className="mt-3 p-3 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d]">
+            <div className="text-xs text-[#b3b3b3] mb-1 font-medium">Webhook URL</div>
+            <code className="text-xs text-[#22c55e] break-all">https://ziggy-crm.vercel.app/api/webhooks/lead?api_key={webhookKey || 'YOUR_KEY'}</code>
+          </div>
+
+          <div className="mt-3 text-xs text-[#b3b3b3]">
+            POST <code className="text-white">{'{ full_name, email, phone, source, notes }'}</code> to this URL from your website form, Zapier, IDX Broker, or Facebook Lead Ads.
           </div>
         </div>
 
