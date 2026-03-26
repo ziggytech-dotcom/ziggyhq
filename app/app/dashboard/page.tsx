@@ -9,12 +9,12 @@ async function getStats(orgId: string) {
   const todayStart = new Date(now.setHours(0, 0, 0, 0))
 
   const [totalLeads, newThisWeek, contactedToday, wonLeads, activities, leads] = await Promise.all([
-    admin.from('leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId),
-    admin.from('leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', weekAgo.toISOString()),
-    admin.from('lead_activities').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', todayStart.toISOString()),
-    admin.from('leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId).eq('status', 'won'),
-    admin.from('lead_activities').select('*, leads(full_name)').eq('org_id', orgId).order('created_at', { ascending: false }).limit(10),
-    admin.from('leads').select('stage').eq('org_id', orgId).not('stage', 'is', null),
+    admin.from('crm_leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId),
+    admin.from('crm_leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', weekAgo.toISOString()),
+    admin.from('crm_lead_activities').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', todayStart.toISOString()),
+    admin.from('crm_leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId).eq('status', 'won'),
+    admin.from('crm_lead_activities').select('*, leads(full_name)').eq('org_id', orgId).order('created_at', { ascending: false }).limit(10),
+    admin.from('crm_leads').select('stage').eq('org_id', orgId).not('stage', 'is', null),
   ])
 
   const total = totalLeads.count ?? 0
@@ -70,7 +70,7 @@ export default async function DashboardPage() {
 
   const admin = createAdminClient()
   const { data: userRecord } = await admin
-    .from('users')
+    .from('crm_users')
     .select('org_id')
     .eq('email', user.email!)
     .single()

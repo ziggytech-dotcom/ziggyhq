@@ -11,7 +11,7 @@ export async function POST(
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const admin = createAdminClient()
-  const { data: userRecord } = await admin.from('users').select('org_id').eq('email', user.email!).single()
+  const { data: userRecord } = await admin.from('crm_users').select('org_id').eq('email', user.email!).single()
   if (!userRecord?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
@@ -20,7 +20,7 @@ export async function POST(
 
   // Check plan exists and belongs to org
   const { data: plan } = await admin
-    .from('action_plans')
+    .from('crm_action_plans')
     .select('id')
     .eq('id', planId)
     .eq('org_id', userRecord.org_id)
@@ -30,7 +30,7 @@ export async function POST(
 
   // Check if already enrolled
   const { data: existing } = await admin
-    .from('action_plan_enrollments')
+    .from('crm_action_plan_enrollments')
     .select('id, status')
     .eq('lead_id', lead_id)
     .eq('plan_id', planId)
@@ -40,7 +40,7 @@ export async function POST(
   if (existing) return Response.json({ error: 'Lead is already enrolled in this plan' }, { status: 409 })
 
   const { data, error } = await admin
-    .from('action_plan_enrollments')
+    .from('crm_action_plan_enrollments')
     .insert({
       lead_id,
       plan_id: planId,

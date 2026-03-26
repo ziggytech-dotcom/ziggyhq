@@ -11,11 +11,11 @@ export async function POST(
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const admin = createAdminClient()
-  const { data: userRecord } = await admin.from('users').select('org_id').eq('email', user.email!).single()
+  const { data: userRecord } = await admin.from('crm_users').select('org_id').eq('email', user.email!).single()
   if (!userRecord?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   // Verify plan ownership
-  const { data: plan } = await admin.from('action_plans').select('id').eq('id', planId).eq('org_id', userRecord.org_id).single()
+  const { data: plan } = await admin.from('crm_action_plans').select('id').eq('id', planId).eq('org_id', userRecord.org_id).single()
   if (!plan) return Response.json({ error: 'Plan not found' }, { status: 404 })
 
   const body = await request.json()
@@ -24,7 +24,7 @@ export async function POST(
   if (!type) return Response.json({ error: 'type is required' }, { status: 400 })
 
   const { data, error } = await admin
-    .from('action_plan_steps')
+    .from('crm_action_plan_steps')
     .insert({
       plan_id: planId,
       step_order: step_order ?? 1,

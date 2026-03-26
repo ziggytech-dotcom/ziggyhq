@@ -7,11 +7,11 @@ export async function GET() {
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const admin = createAdminClient()
-  const { data: userRecord } = await admin.from('users').select('org_id').eq('email', user.email!).single()
+  const { data: userRecord } = await admin.from('crm_users').select('org_id').eq('email', user.email!).single()
   if (!userRecord?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { data, error } = await admin
-    .from('users')
+    .from('crm_users')
     .select('id, full_name, email, role, status')
     .eq('org_id', userRecord.org_id)
     .eq('status', 'active')

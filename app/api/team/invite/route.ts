@@ -8,7 +8,7 @@ export async function POST(request: Request) {
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const admin = createAdminClient()
-  const { data: userRecord } = await admin.from('users').select('org_id, role').eq('email', user.email!).single()
+  const { data: userRecord } = await admin.from('crm_users').select('org_id, role').eq('email', user.email!).single()
   if (!userRecord?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
   if (userRecord.role !== 'admin') return Response.json({ error: 'Only admins can invite team members' }, { status: 403 })
 
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   expiresAt.setDate(expiresAt.getDate() + 7) // 7 days
 
   const { data, error } = await admin
-    .from('team_invites')
+    .from('crm_team_invites')
     .insert({
       org_id: userRecord.org_id,
       email,

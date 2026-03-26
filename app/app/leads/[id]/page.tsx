@@ -17,7 +17,7 @@ export default async function LeadDetailPage({
   const admin = createAdminClient()
 
   const { data: userRecord } = await admin
-    .from('users')
+    .from('crm_users')
     .select('org_id')
     .eq('email', user.email!)
     .single()
@@ -25,13 +25,13 @@ export default async function LeadDetailPage({
   if (!userRecord?.org_id) redirect('/login')
 
   const [leadRes, activitiesRes, notesRes, teamRes, settingsRes, plansRes, enrollmentsRes] = await Promise.all([
-    admin.from('leads').select('*, users(id, full_name, email)').eq('id', id).eq('org_id', userRecord.org_id).single(),
-    admin.from('lead_activities').select('*, users(full_name, email)').eq('lead_id', id).order('created_at', { ascending: false }).limit(50),
-    admin.from('lead_notes').select('*, users(full_name, email)').eq('lead_id', id).order('created_at', { ascending: false }),
-    admin.from('users').select('id, full_name, email').eq('org_id', userRecord.org_id).eq('status', 'active'),
-    admin.from('organizations').select('settings_json').eq('id', userRecord.org_id).single(),
-    admin.from('action_plans').select('id, name, trigger_event, is_active').eq('org_id', userRecord.org_id).eq('is_active', true),
-    admin.from('action_plan_enrollments').select('*, action_plans(name)').eq('lead_id', id).order('created_at', { ascending: false }),
+    admin.from('crm_leads').select('*, users(id, full_name, email)').eq('id', id).eq('org_id', userRecord.org_id).single(),
+    admin.from('crm_lead_activities').select('*, users(full_name, email)').eq('lead_id', id).order('created_at', { ascending: false }).limit(50),
+    admin.from('crm_lead_notes').select('*, users(full_name, email)').eq('lead_id', id).order('created_at', { ascending: false }),
+    admin.from('crm_users').select('id, full_name, email').eq('org_id', userRecord.org_id).eq('status', 'active'),
+    admin.from('crm_organizations').select('settings_json').eq('id', userRecord.org_id).single(),
+    admin.from('crm_action_plans').select('id, name, trigger_event, is_active').eq('org_id', userRecord.org_id).eq('is_active', true),
+    admin.from('crm_action_plan_enrollments').select('*, action_plans(name)').eq('lead_id', id).order('created_at', { ascending: false }),
   ])
 
   if (!leadRes.data) notFound()

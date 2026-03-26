@@ -6,7 +6,7 @@ async function getOrgId() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   const admin = createAdminClient()
-  const { data } = await admin.from('users').select('org_id').eq('email', user.email!).single()
+  const { data } = await admin.from('crm_users').select('org_id').eq('email', user.email!).single()
   return data?.org_id ?? null
 }
 
@@ -16,7 +16,7 @@ export async function GET() {
 
   const admin = createAdminClient()
   const { data, error } = await admin
-    .from('organizations')
+    .from('crm_organizations')
     .select('id, name, industry, settings_json, subscription_tier, status')
     .eq('id', orgId)
     .single()
@@ -38,7 +38,7 @@ export async function PATCH(request: Request) {
 
   const admin = createAdminClient()
   const { data, error } = await admin
-    .from('organizations')
+    .from('crm_organizations')
     .update(updates)
     .eq('id', orgId)
     .select()

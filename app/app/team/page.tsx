@@ -16,7 +16,7 @@ export default async function TeamPage() {
 
   const admin = createAdminClient()
   const { data: userRecord } = await admin
-    .from('users')
+    .from('crm_users')
     .select('org_id, role')
     .eq('email', user.email!)
     .single()
@@ -24,14 +24,14 @@ export default async function TeamPage() {
   if (!userRecord?.org_id) return <div className="p-8 text-[#b3b3b3]">Loading...</div>
 
   const { data: members } = await admin
-    .from('users')
+    .from('crm_users')
     .select('*')
     .eq('org_id', userRecord.org_id)
     .order('created_at', { ascending: true })
 
   // Get lead counts per user
   const { data: leadCounts } = await admin
-    .from('leads')
+    .from('crm_leads')
     .select('assigned_to')
     .eq('org_id', userRecord.org_id)
     .not('assigned_to', 'is', null)
@@ -46,7 +46,7 @@ export default async function TeamPage() {
   }
 
   const { data: pendingInvites } = await admin
-    .from('team_invites')
+    .from('crm_team_invites')
     .select('*')
     .eq('org_id', userRecord.org_id)
     .is('accepted_at', null)

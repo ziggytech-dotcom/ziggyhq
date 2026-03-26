@@ -16,11 +16,11 @@ export default async function ActionPlanDetailPage({
   if (!user) redirect('/login')
 
   const admin = createAdminClient()
-  const { data: userRecord } = await admin.from('users').select('org_id').eq('email', user.email!).single()
+  const { data: userRecord } = await admin.from('crm_users').select('org_id').eq('email', user.email!).single()
   if (!userRecord?.org_id) redirect('/login')
 
   const { data: plan } = await admin
-    .from('action_plans')
+    .from('crm_action_plans')
     .select('*')
     .eq('id', id)
     .eq('org_id', userRecord.org_id)
@@ -29,13 +29,13 @@ export default async function ActionPlanDetailPage({
   if (!plan) notFound()
 
   const { data: steps } = await admin
-    .from('action_plan_steps')
+    .from('crm_action_plan_steps')
     .select('*')
     .eq('plan_id', id)
     .order('step_order', { ascending: true })
 
   const { data: enrollments } = await admin
-    .from('action_plan_enrollments')
+    .from('crm_action_plan_enrollments')
     .select('*, leads(full_name, email, phone)')
     .eq('plan_id', id)
     .order('created_at', { ascending: false })

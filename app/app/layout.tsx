@@ -19,7 +19,7 @@ export default async function AppLayout({
 
   // Get user record
   const { data: userRecord } = await admin
-    .from('users')
+    .from('crm_users')
     .select('*, organizations(*)')
     .eq('email', user.email!)
     .single()
@@ -37,14 +37,14 @@ export default async function AppLayout({
   } else {
     // Create a user record for first-time login
     const { data: org } = await admin
-      .from('organizations')
+      .from('crm_organizations')
       .select('id, name')
       .limit(1)
       .single()
 
     if (org) {
       orgName = org.name
-      await admin.from('users').upsert({
+      await admin.from('crm_users').upsert({
         id: user.id,
         email: user.email!,
         org_id: org.id,

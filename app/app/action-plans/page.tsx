@@ -11,11 +11,11 @@ export default async function ActionPlansPage() {
   if (!user) redirect('/login')
 
   const admin = createAdminClient()
-  const { data: userRecord } = await admin.from('users').select('org_id').eq('email', user.email!).single()
+  const { data: userRecord } = await admin.from('crm_users').select('org_id').eq('email', user.email!).single()
   if (!userRecord?.org_id) return <div className="p-8 text-[#b3b3b3]">Loading...</div>
 
   const { data: plans } = await admin
-    .from('action_plans')
+    .from('crm_action_plans')
     .select('*')
     .eq('org_id', userRecord.org_id)
     .order('created_at', { ascending: false })
@@ -23,7 +23,7 @@ export default async function ActionPlansPage() {
   // Get step counts per plan
   const planIds = (plans ?? []).map((p) => p.id)
   const { data: steps } = planIds.length > 0
-    ? await admin.from('action_plan_steps').select('plan_id').in('plan_id', planIds)
+    ? await admin.from('crm_action_plan_steps').select('plan_id').in('plan_id', planIds)
     : { data: [] }
 
   const stepCounts: Record<string, number> = {}
@@ -33,7 +33,7 @@ export default async function ActionPlansPage() {
 
   // Get active enrollment counts
   const { data: enrollments } = planIds.length > 0
-    ? await admin.from('action_plan_enrollments').select('plan_id').in('plan_id', planIds).eq('status', 'active')
+    ? await admin.from('crm_action_plan_enrollments').select('plan_id').in('plan_id', planIds).eq('status', 'active')
     : { data: [] }
 
   const enrollCounts: Record<string, number> = {}

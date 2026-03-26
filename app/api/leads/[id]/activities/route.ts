@@ -6,7 +6,7 @@ async function getUser() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
   const admin = createAdminClient()
-  const { data } = await admin.from('users').select('id, org_id').eq('email', user.email!).single()
+  const { data } = await admin.from('crm_users').select('id, org_id').eq('email', user.email!).single()
   return data
 }
 
@@ -20,7 +20,7 @@ export async function GET(
 
   const admin = createAdminClient()
   const { data, error } = await admin
-    .from('lead_activities')
+    .from('crm_lead_activities')
     .select('*, users(full_name, email)')
     .eq('lead_id', id)
     .eq('org_id', user.org_id)
@@ -46,7 +46,7 @@ export async function POST(
 
   const admin = createAdminClient()
   const { data, error } = await admin
-    .from('lead_activities')
+    .from('crm_lead_activities')
     .insert({
       lead_id: id,
       org_id: userRecord.org_id,
@@ -65,7 +65,7 @@ export async function POST(
 
   // Update last_contacted_at
   await admin
-    .from('leads')
+    .from('crm_leads')
     .update({ last_contacted_at: new Date().toISOString() })
     .eq('id', id)
     .eq('org_id', userRecord.org_id)
