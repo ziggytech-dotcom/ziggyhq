@@ -1,5 +1,55 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 
+// Returns a Unix timestamp (seconds) for when the call should fire
+// Respects call hours in America/Los_Angeles
+function getScheduledCallTime(delayMinutes: number, callStart: number, callEnd: number): number {
+  const scheduledMs = Date.now() + delayMinutes * 60 * 1000
+  const scheduled = new Date(scheduledMs)
+
+  // Get PST/PDT offset (e.g. "GMT-7" → -7)
+  const tzStr = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles', timeZoneName: 'shortOffset'
+  }).formatToParts(scheduled).find(p => p.type === 'timeZoneName')?.value ?? 'GMT-7'
+  const tzOffset = parseInt(tzStr.replace('GMT', '')) // -7 or -8
+
+  // Get PST date parts
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Los_Angeles',
+    year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', hourCycle: 'h23'
+  }).formatToParts(scheduled)
+  const pstYear  = parseInt(parts.find(p => p.type === 'year')!.value)
+  const pstMonth = parseInt(parts.find(p => p.type === 'month')!.value)
+  const pstDay   = parseInt(parts.find(p => p.type === 'day')!.value)
+  const pstHour  = parseInt(parts.find(p => p.type === 'hour')!.value)
+
+  // Within hours — return as-is
+  if (pstHour >= callStart && pstHour < callEnd) {
+    return Math.floor(scheduledMs / 1000)
+  }
+
+  // Outside hours — find next callStart window
+  let targetYear = pstYear, targetMonth = pstMonth, targetDay = pstDay, targetOffset = tzOffset
+
+  if (pstHour >= callEnd) {
+    // After hours — push to next day
+    const next = new Date(Date.UTC(pstYear, pstMonth - 1, pstDay + 1))
+    const np = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles', year: 'numeric', month: 'numeric', day: 'numeric'
+    }).formatToParts(next)
+    targetYear  = parseInt(np.find(p => p.type === 'year')!.value)
+    targetMonth = parseInt(np.find(p => p.type === 'month')!.value)
+    targetDay   = parseInt(np.find(p => p.type === 'day')!.value)
+    const nextTzStr = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles', timeZoneName: 'shortOffset'
+    }).formatToParts(next).find(p => p.type === 'timeZoneName')?.value ?? 'GMT-7'
+    targetOffset = parseInt(nextTzStr.replace('GMT', ''))
+  }
+  // Before hours — same day, just push to callStart
+
+  // UTC = local_hour - tz_offset  (e.g. 9 AM PDT → 9 - (-7) = 16:00 UTC)
+  return Math.floor(Date.UTC(targetYear, targetMonth - 1, targetDay, callStart - targetOffset, 0, 0) / 1000)
+}
+
 // Inbound lead webhook — accepts new leads from any source
 // Auth: ?api_key=ORG_WEBHOOK_KEY or Authorization: Bearer ORG_WEBHOOK_KEY
 // POST body (all optional except at least one of: full_name, email, phone)
@@ -66,6 +116,9 @@ export async function POST(request: Request) {
 
   const settings = (org.settings_json ?? {}) as Record<string, unknown>
   const aiCaller = (settings.ai_caller ?? {}) as Record<string, unknown>
+  const callDelayMinutes = typeof settings.call_delay_minutes === 'number' ? settings.call_delay_minutes : 2.5
+  const callHoursStart  = typeof settings.call_hours_start === 'number' ? settings.call_hours_start : 9
+  const callHoursEnd    = typeof settings.call_hours_end === 'number' ? settings.call_hours_end : 21
 
   // Insert lead
   const { data: lead, error } = await admin
@@ -139,6 +192,12 @@ ${aiRule}`
       const digits = phone.replace(/\D/g, '')
       const e164 = `+1${digits}`
 
+      const scheduledTime = getScheduledCallTime(callDelayMinutes, callHoursStart, callHoursEnd)
+      const callAt = new Date(scheduledTime * 1000)
+      const delayedMsg = scheduledTime > Math.floor((Date.now() + callDelayMinutes * 60 * 1000) / 1000) + 60
+        ? ` (scheduled for ${callAt.toLocaleString('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit', hour12: true, month: 'short', day: 'numeric' })} PST — outside call hours)`
+        : ` (calling in ~${Math.round(callDelayMinutes)} min)`
+
       const blandRes = await fetch('https://api.bland.ai/v1/calls', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'authorization': blandKey },
@@ -149,6 +208,7 @@ ${aiRule}`
           voice: (aiCaller.voice as string) ?? 'maya',
           reduce_latency: true,
           record: true,
+          start_time: scheduledTime,
           metadata: { lead_id: lead.id, org_id: org.id, called_by: 'auto', script_type: scriptType },
           webhook: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://ziggy-crm.vercel.app'}/api/calls/webhook`,
           answered_by_enabled: true,
@@ -167,7 +227,7 @@ ${aiRule}`
           lead_id: lead.id,
           org_id: org.id,
           type: 'call',
-          content: `Auto AI call initiated to ${e164} via Bland.ai [${callerName}] (call ID: ${blandData.call_id})`,
+          content: `Auto AI call scheduled to ${e164} via Bland.ai [${callerName}]${delayedMsg} (call ID: ${blandData.call_id})`,
         })
         await admin.from('crm_leads').update({ last_contacted_at: new Date().toISOString() }).eq('id', lead.id)
       }

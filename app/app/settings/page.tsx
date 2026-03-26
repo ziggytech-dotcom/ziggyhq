@@ -45,6 +45,9 @@ export default function SettingsPage() {
   const [aiCaller, setAiCaller] = useState({ name: 'Emma', voice: 'maya', brokerage: '', callback_phone: '', disclose_if_asked: true })
   const [webhookKey, setWebhookKey] = useState('')
   const [autoCallNewLeads, setAutoCallNewLeads] = useState(true)
+  const [callDelayMinutes, setCallDelayMinutes] = useState(2.5)
+  const [callHoursStart, setCallHoursStart] = useState(9)
+  const [callHoursEnd, setCallHoursEnd] = useState(21)
   const [newStage, setNewStage] = useState('')
   const [newSource, setNewSource] = useState('')
 
@@ -66,6 +69,9 @@ export default function SettingsPage() {
         setAiCaller({ name: ai.name ?? 'Emma', voice: ai.voice ?? 'maya', brokerage: ai.brokerage ?? data.name ?? '', callback_phone: ai.callback_phone ?? '', disclose_if_asked: ai.disclose_if_asked !== false })
         setWebhookKey(data.settings_json?.webhook_key ?? generateKey())
         setAutoCallNewLeads(data.settings_json?.auto_call_new_leads !== false)
+        setCallDelayMinutes(data.settings_json?.call_delay_minutes ?? 2.5)
+        setCallHoursStart(data.settings_json?.call_hours_start ?? 9)
+        setCallHoursEnd(data.settings_json?.call_hours_end ?? 21)
       }
       setLoading(false)
     }
@@ -87,6 +93,9 @@ export default function SettingsPage() {
           ai_caller: aiCaller,
           webhook_key: webhookKey,
           auto_call_new_leads: autoCallNewLeads,
+          call_delay_minutes: callDelayMinutes,
+          call_hours_start: callHoursStart,
+          call_hours_end: callHoursEnd,
           lead_sources: sources,
         },
       }),
@@ -260,6 +269,37 @@ export default function SettingsPage() {
               <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${autoCallNewLeads ? 'translate-x-5' : 'translate-x-0.5'}`} />
             </button>
           </div>
+
+          {/* Call delay + hours */}
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <div>
+              <label className="block text-xs text-[#b3b3b3] mb-1">Call delay (minutes)</label>
+              <select value={callDelayMinutes} onChange={e => setCallDelayMinutes(parseFloat(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]">
+                <option value={1}>1 min</option>
+                <option value={2}>2 min</option>
+                <option value={2.5}>2.5 min</option>
+                <option value={3}>3 min</option>
+                <option value={5}>5 min</option>
+                <option value={10}>10 min</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-[#b3b3b3] mb-1">Calls start (PST)</label>
+              <select value={callHoursStart} onChange={e => setCallHoursStart(parseInt(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]">
+                {[7,8,9,10].map(h => <option key={h} value={h}>{h === 12 ? '12 PM' : h > 12 ? `${h-12} PM` : `${h} AM`}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-[#b3b3b3] mb-1">Calls end (PST)</label>
+              <select value={callHoursEnd} onChange={e => setCallHoursEnd(parseInt(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]">
+                {[18,19,20,21,22].map(h => <option key={h} value={h}>{h === 12 ? '12 PM' : h > 12 ? `${h-12} PM` : `${h} AM`}</option>)}
+              </select>
+            </div>
+          </div>
+          <p className="text-xs text-[#b3b3b3]/60 mb-4">Leads outside call hours are queued — Emma calls at {callHoursStart >= 12 ? `${callHoursStart-12} PM` : `${callHoursStart} AM`} PST next window. Required by TCPA.</p>
 
           {/* Webhook key */}
           <div>
