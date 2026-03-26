@@ -181,7 +181,7 @@ export default function LeadDetail({
   const saveEdit = async () => {
     if (!editField) return
     // Strip formatting for phone fields before saving
-    const phoneFields = ['phone', 'phone_2']
+    const phoneFields = ['phone', 'phone_2', 'lender_phone']
     const valueToSave = phoneFields.includes(editField)
       ? editValue.replace(/\D/g, '').replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
       : editValue
@@ -190,7 +190,7 @@ export default function LeadDetail({
   }
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const phoneFields = ['phone', 'phone_2']
+    const phoneFields = ['phone', 'phone_2', 'lender_phone']
     if (editField && phoneFields.includes(editField)) {
       const digits = e.target.value.replace(/\D/g, '').slice(0, 10)
       let formatted = digits
