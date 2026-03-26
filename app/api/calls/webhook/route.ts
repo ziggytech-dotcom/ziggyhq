@@ -21,49 +21,51 @@ export async function POST(request: Request) {
 
   const admin = createAdminClient()
 
-  // Build activity content from transcript summary
+  // Build activity content
   const lines: string[] = []
   if (answered_by) lines.push(`Answered by: ${answered_by}`)
-  if (call_length) lines.push(`Duration: ${Math.round(call_length / 60)}:${String(Math.round(call_length % 60)).padStart(2, '0')}`)
-  if (summary) lines.push(`\nSummary:\n${summary}`)
-  if (transcript) lines.push(`\nTranscript:\n${transcript}`)
+  if (call_length) {
+    const mins = Math.floor(call_length / 60)
+    const secs = String(Math.round(call_length % 60)).padStart(2, '0')
+    lines.push(`Duration: ${mins}:${secs}`)
+  }
+  if (summary) lines.push(`\n📋 Summary:\n${summary}`)
+  if (recording_url) lines.push(`\n🎙️ Recording: ${recording_url}`)
+  if (transcript) lines.push(`\n📝 Transcript:\n${transcript}`)
 
   const content = lines.join('\n') || `Call ${status ?? 'completed'}`
 
-  // Update the initiated activity with full details
+  // Find the initial "call initiated" activity by searching for the call_id in content
+  // Use ilike instead of jsonb contains — more reliable
   const { data: existing } = await admin
     .from('crm_lead_activities')
     .select('id')
     .eq('lead_id', metadata.lead_id)
-    .contains('metadata', { bland_call_id: call_id })
-    .single()
+    .eq('type', 'call')
+    .ilike('content', `%${call_id}%`)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
   if (existing?.id) {
-    await admin.from('crm_lead_activities').update({
-      content,
-      duration_seconds: call_length ? Math.round(call_length) : null,
-      metadata: {
-        bland_call_id: call_id,
-        status,
-        answered_by,
-        recording_url,
-        summary,
-        variables,
-      },
-    }).eq('id', existing.id)
+    await admin.from('crm_lead_activities')
+      .update({
+        content,
+        duration_seconds: call_length ? Math.round(call_length) : null,
+      })
+      .eq('id', existing.id)
   } else {
-    // Fallback: insert new activity
+    // No initial entry found — insert fresh
     await admin.from('crm_lead_activities').insert({
       lead_id: metadata.lead_id,
       org_id: metadata.org_id,
       type: 'call',
       content,
       duration_seconds: call_length ? Math.round(call_length) : null,
-      metadata: { bland_call_id: call_id, status, answered_by, recording_url, summary },
     })
   }
 
-  // Auto-extract lead info from variables if Bland filled them in
+  // Auto-extract lead info from Bland variables
   const updates: Record<string, unknown> = {}
   if (variables?.timeline) updates.timeline = variables.timeline
   if (variables?.budget) {
@@ -72,7 +74,6 @@ export async function POST(request: Request) {
   }
   if (variables?.pre_approved === 'yes' || variables?.pre_approved === true) updates.pre_approved = true
   if (variables?.areas) updates.areas_of_interest = variables.areas
-
   if (Object.keys(updates).length > 0) {
     await admin.from('crm_leads').update(updates).eq('id', metadata.lead_id).eq('org_id', metadata.org_id)
   }
