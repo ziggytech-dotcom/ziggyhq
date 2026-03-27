@@ -2,8 +2,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 function applyMergeTags(text: string, lead: Record<string, string | null>, agentName: string): string {
   return text
     .replace(/\{\{first_name\}\}/g, lead.full_name?.split(' ')[0] ?? 'there')
@@ -20,6 +18,7 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  const resend = new Resend(process.env.RESEND_API_KEY)
   const admin = createAdminClient()
   const now = new Date().toISOString()
 
