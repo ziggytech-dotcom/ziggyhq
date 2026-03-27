@@ -17,7 +17,7 @@ export async function GET() {
   const admin = createAdminClient()
   const { data, error } = await admin
     .from('crm_organizations')
-    .select('id, name, industry, settings_json, subscription_tier, status')
+    .select('id, name, industry, industry_template, onboarding_complete, settings_json, subscription_tier, status')
     .eq('id', orgId)
     .single()
 
@@ -30,7 +30,7 @@ export async function PATCH(request: Request) {
   if (!orgId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
-  const allowed = ['name', 'industry', 'settings_json', 'logo_url']
+  const allowed = ['name', 'industry', 'industry_template', 'onboarding_complete', 'settings_json', 'logo_url']
   const updates: Record<string, unknown> = {}
   for (const key of allowed) {
     if (key in body) updates[key] = body[key]

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { TEMPLATE_LIST, getTemplate } from '@/lib/industry-templates'
 
 function generateKey() {
   return 'wh_' + Array.from(crypto.getRandomValues(new Uint8Array(24))).map(b => b.toString(16).padStart(2,'0')).join('')
@@ -11,6 +12,8 @@ interface OrgSettings {
   id: string
   name: string
   industry: string
+  industry_template: string
+  onboarding_complete: boolean
   settings_json: {
     pipeline_stages?: string[]
     lead_sources?: string[]
@@ -25,13 +28,6 @@ interface OrgSettings {
     }
   }
 }
-
-const INDUSTRIES = [
-  { value: 'real_estate', label: 'Real Estate' },
-  { value: 'hvac', label: 'HVAC' },
-  { value: 'legal', label: 'Legal' },
-  { value: 'generic', label: 'Generic / Other' },
-]
 
 export default function SettingsPage() {
   const [org, setOrg] = useState<OrgSettings | null>(null)
@@ -165,16 +161,32 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm text-[#b3b3b3] mb-1.5">Industry</label>
-              <select
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
-              >
-                {INDUSTRIES.map((ind) => (
-                  <option key={ind.value} value={ind.value}>{ind.label}</option>
-                ))}
-              </select>
+              <label className="block text-sm text-[#b3b3b3] mb-1.5">Industry Template</label>
+              <div className="flex gap-2">
+                <select
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  className="flex-1 px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
+                >
+                  {TEMPLATE_LIST.map((t) => (
+                    <option key={t.id} value={t.id}>{t.icon} {t.label}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const tmpl = getTemplate(industry)
+                    if (confirm(`Apply "${tmpl.label}" template? This will replace your pipeline stages and lead sources.`)) {
+                      setStages(tmpl.pipeline_stages)
+                      setSources(tmpl.lead_sources)
+                    }
+                  }}
+                  className="px-3 py-2 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-xs hover:text-white hover:bg-[#3d3d3d] transition-colors whitespace-nowrap"
+                >
+                  Apply Template
+                </button>
+              </div>
+              <p className="text-xs text-[#b3b3b3]/60 mt-1">Switch vertical and click &quot;Apply Template&quot; to load preset pipeline stages &amp; sources.</p>
             </div>
           </div>
         </div>
