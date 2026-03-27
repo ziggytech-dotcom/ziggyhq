@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { applyRoutingRules } from '@/lib/lead-router'
 
 // Returns a Unix timestamp (seconds) for when the call should fire
 // Respects call hours in America/Los_Angeles
@@ -146,12 +147,24 @@ export async function POST(request: Request) {
     return Response.json({ error: error.message }, { status: 500 })
   }
 
+  // Apply routing rules — auto-assign if a rule matches
+  const assignedTo = await applyRoutingRules({
+    id: lead.id,
+    org_id: org.id,
+    source: lead.source,
+    lead_score: lead.lead_score,
+    stage: lead.stage,
+  })
+  if (assignedTo) {
+    await admin.from('crm_leads').update({ assigned_to: assignedTo }).eq('id', lead.id)
+  }
+
   // Log the inbound activity
   await admin.from('crm_lead_activities').insert({
     lead_id: lead.id,
     org_id: org.id,
     type: 'note',
-    content: `New lead received via webhook (source: ${lead.source})`,
+    content: `New lead received via webhook (source: ${lead.source})${assignedTo ? ` — auto-assigned via routing rule` : ''}`,
   })
 
   // Auto-call if enabled and phone exists
