@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
@@ -136,6 +137,7 @@ interface SidebarProps {
 export default function Sidebar({ orgName, userEmail, userName }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   const handleSignOut = async () => {
     const supabase = createClient()
@@ -143,85 +145,136 @@ export default function Sidebar({ orgName, userEmail, userName }: SidebarProps) 
     router.push('/login')
   }
 
+  const closeMobile = () => setMobileOpen(false)
+
   return (
-    <aside className="fixed inset-y-0 left-0 w-64 bg-[#1a1a1a] border-r border-[#2d2d2d] flex flex-col z-10">
-      {/* Logo */}
-      <div className="p-6 border-b border-[#2d2d2d]">
-        <div className="flex items-center gap-3">
-          <div className="flex-1 min-w-0">
-            <ZiggyHQLogo />
-            <div className="text-xs text-[#b3b3b3] truncate max-w-[140px] mt-0.5">{orgName}</div>
+    <>
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-20 lg:hidden"
+          onClick={closeMobile}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 w-64 bg-[#1a1a1a] border-r border-[#2d2d2d] flex flex-col z-30 transition-transform duration-300 ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
+      >
+        {/* Logo */}
+        <div className="p-6 border-b border-[#2d2d2d]">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <ZiggyHQLogo />
+              <div className="text-xs text-[#b3b3b3] truncate max-w-[140px] mt-0.5">{orgName}</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <NotificationBell />
+              {/* Close button — mobile only */}
+              <button
+                onClick={closeMobile}
+                className="lg:hidden p-1 text-[#b3b3b3] hover:text-white transition-colors"
+                aria-label="Close menu"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
+        </div>
+
+        {/* Nav */}
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href || (item.href !== '/app/dashboard' && pathname.startsWith(item.href))
+            return (
+              <div key={item.href} className="relative">
+                <Link
+                  href={item.href}
+                  onClick={closeMobile}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
+                    isActive
+                      ? 'bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/20'
+                      : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'
+                  }`}
+                >
+                  {item.icon}
+                  {item.label}
+                </Link>
+              </div>
+            )
+          })}
+        </nav>
+
+        {/* User */}
+        <div className="p-4 border-t border-[#2d2d2d]">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-8 h-8 rounded-full bg-[#0ea5e9]/20 border border-[#0ea5e9]/30 flex items-center justify-center flex-shrink-0">
+              <span className="text-xs font-semibold text-[#0ea5e9]">
+                {userName ? userName.charAt(0).toUpperCase() : userEmail.charAt(0).toUpperCase()}
+              </span>
+            </div>
+            <div className="min-w-0">
+              <div className="text-sm font-medium text-white truncate">{userName || 'User'}</div>
+              <div className="text-xs text-[#b3b3b3] truncate">{userEmail}</div>
+            </div>
+          </div>
+
+          {/* Settings quick links */}
+          <div className="flex items-center gap-1 mb-2">
+            <Link
+              href="/app/settings/integrations"
+              onClick={closeMobile}
+              className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/integrations') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
+              title="Integrations"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+              Integrations
+            </Link>
+            <Link
+              href="/app/settings/lead-form"
+              onClick={closeMobile}
+              className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/lead-form') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
+              title="Lead Form Widget"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+              Widget
+            </Link>
+          </div>
+
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50 transition-colors text-sm"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Sign out
+          </button>
+        </div>
+      </aside>
+
+      {/* Mobile top bar — hamburger button */}
+      <div className="fixed top-0 left-0 right-0 h-14 bg-[#1a1a1a] border-b border-[#2d2d2d] flex items-center px-4 z-10 lg:hidden">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-2 text-[#b3b3b3] hover:text-white transition-colors"
+          aria-label="Open menu"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div className="ml-3">
+          <ZiggyHQLogo />
+        </div>
+        <div className="ml-auto">
           <NotificationBell />
         </div>
       </div>
-
-      {/* Nav */}
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
-          const isActive = pathname === item.href || (item.href !== '/app/dashboard' && pathname.startsWith(item.href))
-          return (
-            <div key={item.href} className="relative">
-              <Link
-                href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-sm font-medium ${
-                  isActive
-                    ? 'bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/20'
-                    : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'
-                }`}
-              >
-                {item.icon}
-                {item.label}
-              </Link>
-            </div>
-          )
-        })}
-      </nav>
-
-      {/* User */}
-      <div className="p-4 border-t border-[#2d2d2d]">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 rounded-full bg-[#0ea5e9]/20 border border-[#0ea5e9]/30 flex items-center justify-center flex-shrink-0">
-            <span className="text-xs font-semibold text-[#0ea5e9]">
-              {userName ? userName.charAt(0).toUpperCase() : userEmail.charAt(0).toUpperCase()}
-            </span>
-          </div>
-          <div className="min-w-0">
-            <div className="text-sm font-medium text-white truncate">{userName || 'User'}</div>
-            <div className="text-xs text-[#b3b3b3] truncate">{userEmail}</div>
-          </div>
-        </div>
-
-        {/* Settings quick links */}
-        <div className="flex items-center gap-1 mb-2">
-          <Link
-            href="/app/settings/integrations"
-            className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/integrations') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
-            title="Integrations"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-            Integrations
-          </Link>
-          <Link
-            href="/app/settings/lead-form"
-            className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/lead-form') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
-            title="Lead Form Widget"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
-            Widget
-          </Link>
-        </div>
-
-        <button
-          onClick={handleSignOut}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50 transition-colors text-sm"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
-          Sign out
-        </button>
-      </div>
-    </aside>
+    </>
   )
 }

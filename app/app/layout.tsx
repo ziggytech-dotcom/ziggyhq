@@ -63,7 +63,7 @@ export default async function AppLayout({
         userEmail={user.email ?? ''}
         userName={userFullName || userName}
       />
-      <main className="flex-1 ml-64 min-h-screen overflow-y-auto">
+      <main className="flex-1 lg:ml-64 min-h-screen overflow-y-auto pt-14 lg:pt-0">
         {children}
       </main>
     </div>

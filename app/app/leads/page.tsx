@@ -482,8 +482,8 @@ export default function LeadsPage() {
       ) : view === 'kanban' ? (
         <KanbanView leads={leads} stages={stages} />
       ) : (
-        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden">
-          <table className="w-full">
+        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden overflow-x-auto">
+          <table className="w-full min-w-[640px]">
             <thead>
               <tr className="border-b border-[#2d2d2d]">
                 {[
