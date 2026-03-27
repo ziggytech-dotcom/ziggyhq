@@ -314,7 +314,7 @@ export default function SettingsPage() {
           {/* Webhook URL */}
           <div className="mt-3 p-3 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d]">
             <div className="text-xs text-[#b3b3b3] mb-1 font-medium">Webhook URL</div>
-            <code className="text-xs text-[#22c55e] break-all">https://ziggy-crm.vercel.app/api/webhooks/lead?api_key={webhookKey || 'YOUR_KEY'}</code>
+            <code className="text-xs text-[#22c55e] break-all">https://app.ziggyhq.com/api/webhooks/lead?api_key={webhookKey || 'YOUR_KEY'}</code>
           </div>
 
           <div className="mt-3 text-xs text-[#b3b3b3]">

@@ -149,7 +149,7 @@ export async function POST(request: Request) {
       called_by: caller.email,
       script_type,
     },
-    webhook: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://ziggy-crm.vercel.app'}/api/calls/webhook`,
+    webhook: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.ziggyhq.com'}/api/calls/webhook`,
     answered_by_enabled: true,
     voicemail_message: voicemail,
     wait_for_greeting: true,

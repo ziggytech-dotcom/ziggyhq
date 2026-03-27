@@ -210,7 +210,7 @@ ${aiRule}`
           record: true,
           start_time: scheduledTime,
           metadata: { lead_id: lead.id, org_id: org.id, called_by: 'auto', script_type: scriptType },
-          webhook: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://ziggy-crm.vercel.app'}/api/calls/webhook`,
+          webhook: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.ziggyhq.com'}/api/calls/webhook`,
           answered_by_enabled: true,
           voicemail_message: `Hi ${fullName ?? 'there'}! This is ${callerName} calling from ${brokerage}. We just received your inquiry and wanted to reach out right away! Please call us back at ${aiCaller.callback_phone ?? fromNumber} or we'll try you again soon. Have a great day!`,
           wait_for_greeting: true,

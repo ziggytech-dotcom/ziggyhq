@@ -112,7 +112,7 @@ function downloadTemplate(type: 'fub' | 'generic') {
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = type === 'fub' ? 'ziggycrm-fub-import.csv' : 'ziggycrm-import-template.csv'
+  a.download = type === 'fub' ? 'ziggyhq-fub-import.csv' : 'ziggyhq-import-template.csv'
   a.click()
 }
 
