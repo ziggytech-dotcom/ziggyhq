@@ -119,12 +119,12 @@ function SequenceEditor({
           <div className="p-6 space-y-5">
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Sequence Name *</label>
-              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. New Buyer Welcome" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. New Buyer Welcome" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
             </div>
 
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Trigger</label>
-              <select value={trigger} onChange={(e) => setTrigger(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+              <select value={trigger} onChange={(e) => setTrigger(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
                 {Object.entries(TRIGGER_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
               </select>
             </div>
@@ -132,7 +132,7 @@ function SequenceEditor({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="text-sm font-medium text-white">Steps ({steps.length})</div>
-                <button onClick={addStep} className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#ff006e]/10 text-[#ff006e] text-xs hover:bg-[#ff006e]/20 transition-colors">
+                <button onClick={addStep} className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#0ea5e9]/10 text-[#0ea5e9] text-xs hover:bg-[#0ea5e9]/20 transition-colors">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
                   Add Step
                 </button>
@@ -143,7 +143,7 @@ function SequenceEditor({
                 <div className="text-xs text-[#b3b3b3] mb-2">Available merge tags:</div>
                 <div className="flex flex-wrap gap-1">
                   {MERGE_TAGS.map((t) => (
-                    <code key={t} className="text-xs px-1.5 py-0.5 rounded bg-[#2d2d2d] text-[#ff006e]">{t}</code>
+                    <code key={t} className="text-xs px-1.5 py-0.5 rounded bg-[#2d2d2d] text-[#0ea5e9]">{t}</code>
                   ))}
                 </div>
               </div>
@@ -152,28 +152,28 @@ function SequenceEditor({
                 {steps.map((step, i) => (
                   <div key={i} className="bg-[#0a0a0a] border border-[#2d2d2d] rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-semibold text-[#ff006e] uppercase tracking-wider">Step {i + 1}</span>
-                      <button onClick={() => removeStep(i)} className="text-[#b3b3b3] hover:text-[#ff006e] text-xs">Remove</button>
+                      <span className="text-xs font-semibold text-[#0ea5e9] uppercase tracking-wider">Step {i + 1}</span>
+                      <button onClick={() => removeStep(i)} className="text-[#b3b3b3] hover:text-[#0ea5e9] text-xs">Remove</button>
                     </div>
                     <div className="space-y-3">
                       <div>
                         <label className="block text-xs text-[#b3b3b3] mb-1">Send after (hours)</label>
-                        <input type="number" min="1" value={step.delay_hours} onChange={(e) => updateStep(i, 'delay_hours', parseInt(e.target.value) || 24)} className="w-full px-3 py-1.5 rounded bg-[#1a1a1a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+                        <input type="number" min="1" value={step.delay_hours} onChange={(e) => updateStep(i, 'delay_hours', parseInt(e.target.value) || 24)} className="w-full px-3 py-1.5 rounded bg-[#1a1a1a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
                       </div>
                       <div>
                         <label className="block text-xs text-[#b3b3b3] mb-1">Subject *</label>
-                        <input value={step.subject} onChange={(e) => updateStep(i, 'subject', e.target.value)} placeholder="e.g. Welcome {{first_name}}!" className="w-full px-3 py-1.5 rounded bg-[#1a1a1a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+                        <input value={step.subject} onChange={(e) => updateStep(i, 'subject', e.target.value)} placeholder="e.g. Welcome {{first_name}}!" className="w-full px-3 py-1.5 rounded bg-[#1a1a1a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
                       </div>
                       <div>
                         <label className="block text-xs text-[#b3b3b3] mb-1">Body *</label>
-                        <textarea value={step.body} onChange={(e) => updateStep(i, 'body', e.target.value)} rows={5} placeholder="Hi {{first_name}}, ..." className="w-full px-3 py-1.5 rounded bg-[#1a1a1a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm resize-none" />
+                        <textarea value={step.body} onChange={(e) => updateStep(i, 'body', e.target.value)} rows={5} placeholder="Hi {{first_name}}, ..." className="w-full px-3 py-1.5 rounded bg-[#1a1a1a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm resize-none" />
                       </div>
                     </div>
                   </div>
                 ))}
                 {steps.length === 0 && (
                   <div className="text-center py-6 text-[#b3b3b3] text-sm border border-dashed border-[#2d2d2d] rounded-lg">
-                    No steps yet — <button onClick={addStep} className="text-[#ff006e] hover:underline">add first step →</button>
+                    No steps yet — <button onClick={addStep} className="text-[#0ea5e9] hover:underline">add first step →</button>
                   </div>
                 )}
               </div>
@@ -181,7 +181,7 @@ function SequenceEditor({
 
             <div className="flex gap-3 pt-2">
               <button onClick={onClose} className="flex-1 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
-              <button onClick={handleSave} disabled={saving || !name.trim()} className="flex-1 py-2.5 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 transition-colors disabled:opacity-50">
+              <button onClick={handleSave} disabled={saving || !name.trim()} className="flex-1 py-2.5 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors disabled:opacity-50">
                 {saving ? 'Saving...' : 'Save Sequence'}
               </button>
             </div>
@@ -240,14 +240,14 @@ function EnrollModal({
           <div className="p-8 text-center">
             <div className="text-3xl mb-2">✅</div>
             <div className="text-white font-medium">{selected.size} lead{selected.size !== 1 ? 's' : ''} enrolled!</div>
-            <button onClick={onClose} className="mt-4 px-4 py-2 bg-[#ff006e] text-white rounded-lg text-sm">Done</button>
+            <button onClick={onClose} className="mt-4 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm">Done</button>
           </div>
         ) : (
           <>
             <div className="overflow-y-auto flex-1">
               {leads.filter((l) => l.email).map((lead) => (
                 <label key={lead.id} className="flex items-center gap-3 px-5 py-3 hover:bg-[#2d2d2d]/30 cursor-pointer border-b border-[#2d2d2d]">
-                  <input type="checkbox" checked={selected.has(lead.id)} onChange={() => toggle(lead.id)} className="w-4 h-4 rounded border-[#2d2d2d] bg-[#0a0a0a] accent-[#ff006e]" />
+                  <input type="checkbox" checked={selected.has(lead.id)} onChange={() => toggle(lead.id)} className="w-4 h-4 rounded border-[#2d2d2d] bg-[#0a0a0a] accent-[#0ea5e9]" />
                   <div>
                     <div className="text-sm text-white font-medium">{lead.full_name}</div>
                     <div className="text-xs text-[#b3b3b3]">{lead.email}</div>
@@ -257,7 +257,7 @@ function EnrollModal({
             </div>
             <div className="p-4 border-t border-[#2d2d2d] flex gap-3">
               <button onClick={onClose} className="flex-1 py-2 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm">Cancel</button>
-              <button onClick={handleEnroll} disabled={enrolling || selected.size === 0} className="flex-1 py-2 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 disabled:opacity-50">
+              <button onClick={handleEnroll} disabled={enrolling || selected.size === 0} className="flex-1 py-2 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50">
                 {enrolling ? 'Enrolling...' : `Enroll ${selected.size}`}
               </button>
             </div>
@@ -308,7 +308,7 @@ export default function SequencesPage() {
         </div>
         <button
           onClick={() => setEditingSeq({})}
-          className="flex items-center gap-2 px-4 py-2 bg-[#ff006e] text-white rounded-lg text-sm font-medium hover:bg-[#ff006e]/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
           New Sequence
@@ -322,7 +322,7 @@ export default function SequencesPage() {
           <div className="text-4xl mb-3">✉️</div>
           <div className="text-white font-medium mb-1">No sequences yet</div>
           <div className="text-[#b3b3b3] text-sm mb-4">Create automated email follow-up sequences for your leads</div>
-          <button onClick={() => setEditingSeq({})} className="px-4 py-2 bg-[#ff006e] text-white rounded-lg text-sm font-medium">
+          <button onClick={() => setEditingSeq({})} className="px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium">
             Create First Sequence
           </button>
         </div>
@@ -367,7 +367,7 @@ export default function SequencesPage() {
                   </button>
                   <button
                     onClick={() => handleDelete(seq.id)}
-                    className="px-3 py-1.5 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] hover:text-[#ff006e] text-xs transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] hover:text-[#0ea5e9] text-xs transition-colors"
                   >
                     Delete
                   </button>

@@ -71,7 +71,7 @@ export default async function ActionPlanDetailPage({
           </div>
           <div className="flex items-center gap-3 text-sm text-[#b3b3b3] mt-0.5">
             <span>Trigger: <span className="text-white">{triggerLabels[plan.trigger_event] ?? plan.trigger_event}</span></span>
-            {plan.trigger_stage && <span>Stage: <span className="text-[#ff006e]">{plan.trigger_stage}</span></span>}
+            {plan.trigger_stage && <span>Stage: <span className="text-[#0ea5e9]">{plan.trigger_stage}</span></span>}
             {plan.description && <span>{plan.description}</span>}
           </div>
         </div>

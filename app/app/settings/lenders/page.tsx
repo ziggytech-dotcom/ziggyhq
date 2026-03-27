@@ -148,7 +148,7 @@ export default function LendersPage() {
       <p className="text-[#b3b3b3] text-sm mb-6 ml-8">Add your preferred lenders — they'll appear in the lead detail financing section for quick selection.</p>
 
       <div className="ml-8">
-        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 transition-colors mb-6">
+        <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors mb-6">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
           Add Lender
         </button>
@@ -205,12 +205,12 @@ export default function LendersPage() {
             <div className="p-6 space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-xs text-[#b3b3b3] mb-1">Name <span className="text-[#ff006e]">*</span></label>
+                <label className="block text-xs text-[#b3b3b3] mb-1">Name <span className="text-[#0ea5e9]">*</span></label>
                 <input
                   value={form.name}
                   onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                   placeholder="John Smith"
-                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e] placeholder-[#b3b3b3]/40"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9] placeholder-[#b3b3b3]/40"
                 />
               </div>
 
@@ -221,7 +221,7 @@ export default function LendersPage() {
                   value={form.company}
                   onChange={(e) => setForm((p) => ({ ...p, company: e.target.value }))}
                   placeholder="Nevada Mortgage Co."
-                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e] placeholder-[#b3b3b3]/40"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9] placeholder-[#b3b3b3]/40"
                 />
               </div>
 
@@ -233,7 +233,7 @@ export default function LendersPage() {
                     value={form.phone}
                     onChange={(e) => setForm((p) => ({ ...p, phone: formatPhone(e.target.value) }))}
                     placeholder="(702) 555-1234"
-                    className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e] placeholder-[#b3b3b3]/40"
+                    className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9] placeholder-[#b3b3b3]/40"
                   />
                 </div>
                 <div>
@@ -243,7 +243,7 @@ export default function LendersPage() {
                     value={form.email}
                     onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
                     placeholder="john@lender.com"
-                    className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e] placeholder-[#b3b3b3]/40"
+                    className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9] placeholder-[#b3b3b3]/40"
                   />
                 </div>
               </div>
@@ -256,7 +256,7 @@ export default function LendersPage() {
                     const active = form.loan_types.includes(type)
                     return (
                       <button key={type} type="button" onClick={() => toggleLoanType(type)}
-                        className={`px-2.5 py-1 rounded-full text-xs transition-colors ${active ? 'bg-[#ff006e] text-white' : 'bg-[#2d2d2d] text-[#b3b3b3] hover:bg-[#3d3d3d]'}`}>
+                        className={`px-2.5 py-1 rounded-full text-xs transition-colors ${active ? 'bg-[#0ea5e9] text-white' : 'bg-[#2d2d2d] text-[#b3b3b3] hover:bg-[#3d3d3d]'}`}>
                         {type}
                       </button>
                     )
@@ -272,7 +272,7 @@ export default function LendersPage() {
                   onChange={(e) => setForm((p) => ({ ...p, notes: e.target.value }))}
                   placeholder="e.g. Great with first-time buyers, fast closings..."
                   rows={2}
-                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e] placeholder-[#b3b3b3]/40 resize-none"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9] placeholder-[#b3b3b3]/40 resize-none"
                 />
               </div>
 
@@ -281,7 +281,7 @@ export default function LendersPage() {
                 <div>
                   <label className="block text-xs text-[#b3b3b3] mb-1">Status</label>
                   <select value={form.status} onChange={(e) => setForm((p) => ({ ...p, status: e.target.value }))}
-                    className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]">
+                    className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]">
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>
@@ -294,7 +294,7 @@ export default function LendersPage() {
               <button onClick={closeForm} className="flex-1 px-4 py-2 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] text-sm hover:text-white hover:border-[#b3b3b3] transition-colors">
                 Cancel
               </button>
-              <button onClick={save} disabled={saving || !form.name.trim()} className="flex-1 px-4 py-2 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 disabled:opacity-50 transition-colors">
+              <button onClick={save} disabled={saving || !form.name.trim()} className="flex-1 px-4 py-2 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
                 {saving ? 'Saving...' : editingId ? 'Save Changes' : 'Add Lender'}
               </button>
             </div>
@@ -314,8 +314,8 @@ function LenderCard({ lender, onEdit, onDelete, deleting }: {
   return (
     <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-4 flex items-start gap-4">
       {/* Avatar */}
-      <div className="w-10 h-10 rounded-full bg-[#ff006e]/20 border border-[#ff006e]/30 flex items-center justify-center flex-shrink-0">
-        <span className="text-sm font-bold text-[#ff006e]">{lender.name.charAt(0).toUpperCase()}</span>
+      <div className="w-10 h-10 rounded-full bg-[#0ea5e9]/20 border border-[#0ea5e9]/30 flex items-center justify-center flex-shrink-0">
+        <span className="text-sm font-bold text-[#0ea5e9]">{lender.name.charAt(0).toUpperCase()}</span>
       </div>
 
       {/* Info */}

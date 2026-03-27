@@ -83,11 +83,11 @@ function IntegrationsContent() {
         <h1 style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '36px', letterSpacing: '0.05em', color: '#ededed' }}>
           INTEGRATIONS
         </h1>
-        <p className="text-[#b3b3b3] text-sm mt-1">Connect external services to ZiggyCRM</p>
+        <p className="text-[#b3b3b3] text-sm mt-1">Connect external services to ZiggyHQ</p>
       </div>
 
       {banner && (
-        <div className={`mb-6 px-4 py-3 rounded-lg text-sm border ${banner.type === 'success' ? 'bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20' : 'bg-[#ff006e]/10 text-[#ff006e] border-[#ff006e]/20'}`}>
+        <div className={`mb-6 px-4 py-3 rounded-lg text-sm border ${banner.type === 'success' ? 'bg-[#22c55e]/10 text-[#22c55e] border-[#22c55e]/20' : 'bg-[#0ea5e9]/10 text-[#0ea5e9] border-[#0ea5e9]/20'}`}>
           {banner.msg}
         </div>
       )}
@@ -108,7 +108,7 @@ function IntegrationsContent() {
           </div>
           <a
             href="/api/gmail/connect"
-            className="flex items-center gap-2 px-4 py-2 bg-[#ff006e] text-white rounded-lg text-sm font-medium hover:bg-[#ff006e]/90 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
             Connect Gmail
@@ -127,8 +127,8 @@ function IntegrationsContent() {
             {accounts.map((account) => (
               <div key={account.id} className="px-6 py-4 flex items-center justify-between border-b border-[#2d2d2d] last:border-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-[#ff006e]/20 flex items-center justify-center">
-                    <span className="text-xs text-[#ff006e] font-semibold">{account.email.charAt(0).toUpperCase()}</span>
+                  <div className="w-8 h-8 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center">
+                    <span className="text-xs text-[#0ea5e9] font-semibold">{account.email.charAt(0).toUpperCase()}</span>
                   </div>
                   <div>
                     <div className="text-sm text-white font-medium">{account.email}</div>
@@ -139,7 +139,7 @@ function IntegrationsContent() {
                   <span className="text-xs text-[#22c55e] bg-[#22c55e]/10 border border-[#22c55e]/20 px-2 py-0.5 rounded">Connected</span>
                   <button
                     onClick={() => handleDisconnect(account.id)}
-                    className="text-xs text-[#b3b3b3] hover:text-[#ff006e] px-2 py-1 rounded bg-[#2d2d2d] transition-colors"
+                    className="text-xs text-[#b3b3b3] hover:text-[#0ea5e9] px-2 py-1 rounded bg-[#2d2d2d] transition-colors"
                   >
                     Disconnect
                   </button>
@@ -170,13 +170,13 @@ function IntegrationsContent() {
         <ul className="space-y-2">
           {[
             'Connect your Gmail account via secure OAuth',
-            'ZiggyCRM scans your inbox for emails matching lead email addresses',
+            'ZiggyHQ scans your inbox for emails matching lead email addresses',
             'Matching emails are logged as activities on the lead profile',
             'New emails auto-sync every 15 minutes in the background',
             'Sent emails are tagged "email_sent", received as "email_received"',
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-[#b3b3b3]">
-              <span className="text-[#ff006e] flex-shrink-0 mt-0.5">→</span>
+              <span className="text-[#0ea5e9] flex-shrink-0 mt-0.5">→</span>
               {item}
             </li>
           ))}

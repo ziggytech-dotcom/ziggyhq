@@ -59,7 +59,7 @@ const activityTypeColors: Record<string, string> = {
   sms: '#22c55e',
   email: '#f59e0b',
   note: '#b3b3b3',
-  stage_change: '#ff006e',
+  stage_change: '#0ea5e9',
   assignment: '#8b5cf6',
 }
 
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
     { label: 'Total Leads', value: stats.totalLeads, icon: '👥', color: '#3b82f6' },
     { label: 'New This Week', value: stats.newThisWeek, icon: '📈', color: '#22c55e' },
     { label: 'Contacted Today', value: stats.contactedToday, icon: '📞', color: '#f59e0b' },
-    { label: 'Conversion Rate', value: `${stats.conversionRate}%`, icon: '🎯', color: '#ff006e' },
+    { label: 'Conversion Rate', value: `${stats.conversionRate}%`, icon: '🎯', color: '#0ea5e9' },
   ]
 
   return (
@@ -161,7 +161,7 @@ export default async function DashboardPage() {
                   </div>
                   <div className="h-1.5 bg-[#2d2d2d] rounded-full overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-[#ff006e] transition-all"
+                      className="h-full rounded-full bg-[#0ea5e9] transition-all"
                       style={{ width: `${Math.round((count / maxStageCount) * 100)}%` }}
                     />
                   </div>

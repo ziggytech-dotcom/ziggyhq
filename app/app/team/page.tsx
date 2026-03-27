@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import InviteModal from './InviteModal'
 
 const roleColors: Record<string, string> = {
-  admin: '#ff006e',
+  admin: '#0ea5e9',
   agent: '#3b82f6',
   partner: '#8b5cf6',
 }
@@ -81,8 +81,8 @@ export default async function TeamPage() {
               <tr key={member.id} className="hover:bg-[#2d2d2d]/20 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-[#ff006e]/20 border border-[#ff006e]/30 flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-semibold text-[#ff006e]">
+                    <div className="w-8 h-8 rounded-full bg-[#0ea5e9]/20 border border-[#0ea5e9]/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-xs font-semibold text-[#0ea5e9]">
                         {(member.full_name ?? member.email).charAt(0).toUpperCase()}
                       </span>
                     </div>

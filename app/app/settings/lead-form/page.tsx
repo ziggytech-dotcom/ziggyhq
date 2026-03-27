@@ -60,7 +60,7 @@ export default function LeadFormPage() {
                 </button>
                 <button
                   onClick={copyEmbed}
-                  className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded transition-colors ${copied ? 'bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20' : 'bg-[#ff006e]/10 text-[#ff006e] border border-[#ff006e]/20 hover:bg-[#ff006e]/20'}`}
+                  className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded transition-colors ${copied ? 'bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20' : 'bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/20 hover:bg-[#0ea5e9]/20'}`}
                 >
                   {copied ? (
                     <>
@@ -82,7 +82,7 @@ export default function LeadFormPage() {
             </div>
 
             <p className="text-xs text-[#b3b3b3] mt-3">
-              Paste this code before the <code className="text-[#ff006e]">&lt;/body&gt;</code> tag of your website.
+              Paste this code before the <code className="text-[#0ea5e9]">&lt;/body&gt;</code> tag of your website.
             </p>
           </div>
 
@@ -106,10 +106,10 @@ export default function LeadFormPage() {
                 'Auto-calculates lead score based on the data submitted',
                 'Triggers your webhook and AI caller if enabled in settings',
                 'Mobile responsive with smooth animations',
-                'Matches ZiggyCRM dark theme (customizable)',
+                'Matches ZiggyHQ dark theme (customizable)',
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-[#b3b3b3]">
-                  <span className="text-[#ff006e] flex-shrink-0 mt-0.5">→</span>
+                  <span className="text-[#0ea5e9] flex-shrink-0 mt-0.5">→</span>
                   {item}
                 </li>
               ))}

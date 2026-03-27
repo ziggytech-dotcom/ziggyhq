@@ -48,7 +48,7 @@ export default function AddStepForm({ planId, nextOrder }: { planId: string; nex
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs text-[#b3b3b3] mb-1">Type</label>
-            <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+            <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
               <option value="email">Email</option>
               <option value="sms">SMS</option>
               <option value="call">Call</option>
@@ -57,7 +57,7 @@ export default function AddStepForm({ planId, nextOrder }: { planId: string; nex
           </div>
           <div>
             <label className="block text-xs text-[#b3b3b3] mb-1">Delay (hours)</label>
-            <input type="number" min="0" value={form.delay_hours} onChange={(e) => setForm({ ...form, delay_hours: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+            <input type="number" min="0" value={form.delay_hours} onChange={(e) => setForm({ ...form, delay_hours: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
           </div>
         </div>
         {(form.type === 'email' || form.type === 'sms') && (
@@ -65,23 +65,23 @@ export default function AddStepForm({ planId, nextOrder }: { planId: string; nex
             {form.type === 'email' && (
               <div>
                 <label className="block text-xs text-[#b3b3b3] mb-1">Subject</label>
-                <input value={form.template_subject} onChange={(e) => setForm({ ...form, template_subject: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+                <input value={form.template_subject} onChange={(e) => setForm({ ...form, template_subject: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
               </div>
             )}
             <div>
               <label className="block text-xs text-[#b3b3b3] mb-1">Message Body</label>
-              <textarea value={form.template_body} onChange={(e) => setForm({ ...form, template_body: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm resize-none" placeholder="Use {{first_name}}, {{last_name}} for personalization" />
+              <textarea value={form.template_body} onChange={(e) => setForm({ ...form, template_body: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm resize-none" placeholder="Use {{first_name}}, {{last_name}} for personalization" />
             </div>
           </>
         )}
         {(form.type === 'call' || form.type === 'task') && (
           <div>
             <label className="block text-xs text-[#b3b3b3] mb-1">Description</label>
-            <textarea value={form.task_description} onChange={(e) => setForm({ ...form, task_description: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm resize-none" />
+            <textarea value={form.task_description} onChange={(e) => setForm({ ...form, task_description: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm resize-none" />
           </div>
         )}
-        {error && <div className="text-sm text-[#ff006e] bg-[#ff006e]/10 border border-[#ff006e]/20 rounded-lg px-3 py-2">{error}</div>}
-        <button type="submit" disabled={loading} className="w-full py-2 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 disabled:opacity-50 transition-colors">
+        {error && <div className="text-sm text-[#0ea5e9] bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 rounded-lg px-3 py-2">{error}</div>}
+        <button type="submit" disabled={loading} className="w-full py-2 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
           {loading ? 'Adding...' : '+ Add Step'}
         </button>
       </form>

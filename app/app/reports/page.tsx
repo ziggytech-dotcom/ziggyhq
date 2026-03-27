@@ -22,7 +22,7 @@ interface ReportData {
   range: string
 }
 
-const COLORS = ['#ff006e', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899']
+const COLORS = ['#0ea5e9', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899']
 const RANGES = [
   { label: 'Last 7 days', value: '7d' },
   { label: 'Last 30 days', value: '30d' },
@@ -71,7 +71,7 @@ export default function ReportsPage() {
             <button
               key={r.value}
               onClick={() => setRange(r.value)}
-              className={`px-3 py-2 text-xs transition-colors ${range === r.value ? 'bg-[#ff006e] text-white' : 'bg-[#1a1a1a] text-[#b3b3b3] hover:text-white'}`}
+              className={`px-3 py-2 text-xs transition-colors ${range === r.value ? 'bg-[#0ea5e9] text-white' : 'bg-[#1a1a1a] text-[#b3b3b3] hover:text-white'}`}
             >
               {r.label}
             </button>
@@ -89,7 +89,7 @@ export default function ReportsPage() {
               { label: 'Total Leads', value: data.totalLeads, sub: `+${data.newInRange} in period`, color: '#3b82f6' },
               { label: 'Closed Won', value: data.wonLeads, sub: `${data.conversionRate}% conversion`, color: '#22c55e' },
               { label: 'Avg Response', value: data.avgResponseHours != null ? `${data.avgResponseHours}h` : '—', sub: 'time to first contact', color: '#f59e0b' },
-              { label: 'Conversion Rate', value: `${data.conversionRate}%`, sub: `${data.wonLeads} of ${data.totalLeads} leads`, color: '#ff006e' },
+              { label: 'Conversion Rate', value: `${data.conversionRate}%`, sub: `${data.wonLeads} of ${data.totalLeads} leads`, color: '#0ea5e9' },
             ].map((card) => (
               <div key={card.label} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
                 <div className="text-3xl font-bold mb-1" style={{ color: card.color }}>{card.value}</div>
@@ -112,7 +112,7 @@ export default function ReportsPage() {
                     <XAxis dataKey="stage" tick={{ fill: '#b3b3b3', fontSize: 11 }} angle={-30} textAnchor="end" />
                     <YAxis tick={{ fill: '#b3b3b3', fontSize: 11 }} />
                     <Tooltip contentStyle={tooltipStyle} />
-                    <Bar dataKey="count" fill="#ff006e" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="count" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               )}
@@ -158,7 +158,7 @@ export default function ReportsPage() {
                   <XAxis dataKey="month" tick={{ fill: '#b3b3b3', fontSize: 11 }} />
                   <YAxis tick={{ fill: '#b3b3b3', fontSize: 11 }} />
                   <Tooltip contentStyle={tooltipStyle} />
-                  <Line type="monotone" dataKey="count" stroke="#ff006e" strokeWidth={2} dot={{ fill: '#ff006e', r: 4 }} activeDot={{ r: 6 }} />
+                  <Line type="monotone" dataKey="count" stroke="#0ea5e9" strokeWidth={2} dot={{ fill: '#0ea5e9', r: 4 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -178,7 +178,7 @@ export default function ReportsPage() {
                           <span className="text-white font-medium ml-2">{d.count} <span className="text-[#b3b3b3]">({pct}%)</span></span>
                         </div>
                         <div className="h-2 bg-[#2d2d2d] rounded-full overflow-hidden">
-                          <div className="h-full rounded-full bg-[#ff006e] transition-all" style={{ width: `${pct}%` }} />
+                          <div className="h-full rounded-full bg-[#0ea5e9] transition-all" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
                     )
@@ -211,8 +211,8 @@ export default function ReportsPage() {
                       <tr key={a.name} className="hover:bg-[#2d2d2d]/20">
                         <td className="px-6 py-3">
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-[#ff006e]/20 flex items-center justify-center">
-                              <span className="text-xs text-[#ff006e] font-semibold">{a.name.charAt(0).toUpperCase()}</span>
+                            <div className="w-7 h-7 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center">
+                              <span className="text-xs text-[#0ea5e9] font-semibold">{a.name.charAt(0).toUpperCase()}</span>
                             </div>
                             <span className="text-sm text-white">{a.name}</span>
                           </div>

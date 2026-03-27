@@ -36,7 +36,7 @@ export default function CreatePlanModal({ orgId }: { orgId: string }) {
   }
 
   if (!open) return (
-    <button onClick={() => setOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-[#ff006e] text-white rounded-lg text-sm font-medium hover:bg-[#ff006e]/90 transition-colors">
+    <button onClick={() => setOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors">
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
       New Plan
     </button>
@@ -54,15 +54,15 @@ export default function CreatePlanModal({ orgId }: { orgId: string }) {
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
             <label className="block text-sm text-[#b3b3b3] mb-1.5">Plan Name *</label>
-            <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. New Lead Nurture" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm" />
+            <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. New Lead Nurture" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm" />
           </div>
           <div>
             <label className="block text-sm text-[#b3b3b3] mb-1.5">Description</label>
-            <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm resize-none" />
+            <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm resize-none" />
           </div>
           <div>
             <label className="block text-sm text-[#b3b3b3] mb-1.5">Trigger</label>
-            <select value={form.trigger_event} onChange={(e) => setForm({ ...form, trigger_event: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+            <select value={form.trigger_event} onChange={(e) => setForm({ ...form, trigger_event: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
               <option value="manual">Manual</option>
               <option value="new_lead">New Lead</option>
               <option value="stage_change">Stage Change</option>
@@ -71,13 +71,13 @@ export default function CreatePlanModal({ orgId }: { orgId: string }) {
           {form.trigger_event === 'stage_change' && (
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Trigger Stage</label>
-              <input value={form.trigger_stage} onChange={(e) => setForm({ ...form, trigger_stage: e.target.value })} placeholder="Stage name to trigger on" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input value={form.trigger_stage} onChange={(e) => setForm({ ...form, trigger_stage: e.target.value })} placeholder="Stage name to trigger on" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm" />
             </div>
           )}
-          {error && <div className="text-sm text-[#ff006e] bg-[#ff006e]/10 border border-[#ff006e]/20 rounded-lg px-3 py-2">{error}</div>}
+          {error && <div className="text-sm text-[#0ea5e9] bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 rounded-lg px-3 py-2">{error}</div>}
           <div className="flex gap-3 pt-1">
             <button type="button" onClick={() => setOpen(false)} className="flex-1 py-2 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
-            <button type="submit" disabled={loading} className="flex-1 py-2 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 disabled:opacity-50 transition-colors">
+            <button type="submit" disabled={loading} className="flex-1 py-2 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
               {loading ? 'Creating...' : 'Create Plan'}
             </button>
           </div>

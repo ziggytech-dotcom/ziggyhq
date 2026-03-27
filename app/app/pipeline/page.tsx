@@ -36,7 +36,7 @@ const STAGE_COLORS: Record<string, string> = {
   'Showing':         '#06b6d4',
   'Offer Made':      '#f97316',
   'Under Contract':  '#22c55e',
-  'Closed Won':      '#ff006e',
+  'Closed Won':      '#0ea5e9',
   'Closed Lost':     '#b3b3b3',
 }
 
@@ -57,7 +57,7 @@ function formatBudget(min: number | null, max: number | null): string {
 function LeadCard({ lead, onClick }: { lead: Lead; onClick: (l: Lead) => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id })
   const days = daysInStage(lead)
-  const scoreColor = lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#ff006e'
+  const scoreColor = lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#0ea5e9'
 
   return (
     <div
@@ -70,7 +70,7 @@ function LeadCard({ lead, onClick }: { lead: Lead; onClick: (l: Lead) => void })
         opacity: isDragging ? 0.4 : 1,
         cursor: 'grab',
       }}
-      className="bg-[#0a0a0a] border border-[#2d2d2d] rounded-lg p-3 hover:border-[#ff006e]/40 transition-colors select-none"
+      className="bg-[#0a0a0a] border border-[#2d2d2d] rounded-lg p-3 hover:border-[#0ea5e9]/40 transition-colors select-none"
     >
       <div className="font-medium text-sm text-white mb-1 truncate">{lead.full_name}</div>
       {lead.phone && <div className="text-xs text-[#b3b3b3] mb-1">{lead.phone}</div>}
@@ -92,8 +92,8 @@ function LeadCard({ lead, onClick }: { lead: Lead; onClick: (l: Lead) => void })
 
       {lead.users && (
         <div className="mt-2 flex items-center gap-1">
-          <div className="w-4 h-4 rounded-full bg-[#ff006e]/20 flex items-center justify-center">
-            <span className="text-[8px] text-[#ff006e] font-semibold">
+          <div className="w-4 h-4 rounded-full bg-[#0ea5e9]/20 flex items-center justify-center">
+            <span className="text-[8px] text-[#0ea5e9] font-semibold">
               {(lead.users.full_name ?? lead.users.email).charAt(0).toUpperCase()}
             </span>
           </div>
@@ -153,7 +153,7 @@ function StageColumn({
 function LeadSidebar({ lead, onClose }: { lead: Lead; onClose: () => void }) {
   const color = STAGE_COLORS[lead.stage ?? ''] ?? '#b3b3b3'
   const days = daysInStage(lead)
-  const scoreColor = lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#ff006e'
+  const scoreColor = lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#0ea5e9'
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -216,8 +216,8 @@ function LeadSidebar({ lead, onClose }: { lead: Lead; onClose: () => void }) {
             <div className="bg-[#0a0a0a] rounded-lg p-4">
               <div className="text-xs font-medium text-[#b3b3b3] mb-2">Assigned Agent</div>
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#ff006e]/20 border border-[#ff006e]/30 flex items-center justify-center">
-                  <span className="text-xs text-[#ff006e] font-semibold">
+                <div className="w-7 h-7 rounded-full bg-[#0ea5e9]/20 border border-[#0ea5e9]/30 flex items-center justify-center">
+                  <span className="text-xs text-[#0ea5e9] font-semibold">
                     {(lead.users.full_name ?? lead.users.email).charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -228,7 +228,7 @@ function LeadSidebar({ lead, onClose }: { lead: Lead; onClose: () => void }) {
 
           <Link
             href={`/app/leads/${lead.id}`}
-            className="block w-full py-2.5 text-center rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 transition-colors"
+            className="block w-full py-2.5 text-center rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
           >
             Open Full Lead Profile →
           </Link>
@@ -319,7 +319,7 @@ export default function PipelinePage() {
         </div>
         <Link
           href="/app/leads"
-          className="flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] border border-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm hover:text-white hover:border-[#ff006e]/40 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#1a1a1a] border border-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm hover:text-white hover:border-[#0ea5e9]/40 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
           List View
@@ -353,7 +353,7 @@ export default function PipelinePage() {
 
             <DragOverlay>
               {activeLeadObj && (
-                <div className="bg-[#0a0a0a] border border-[#ff006e]/40 rounded-lg p-3 shadow-2xl w-64 rotate-2">
+                <div className="bg-[#0a0a0a] border border-[#0ea5e9]/40 rounded-lg p-3 shadow-2xl w-64 rotate-2">
                   <div className="font-medium text-sm text-white truncate">{activeLeadObj.full_name}</div>
                   {activeLeadObj.phone && <div className="text-xs text-[#b3b3b3]">{activeLeadObj.phone}</div>}
                 </div>

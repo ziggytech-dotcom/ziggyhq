@@ -85,7 +85,7 @@ function FilterBadges({ filters }: { filters: FiltersJson }) {
   return (
     <div className="flex flex-wrap gap-1">
       {entries.map(([key, val]) => (
-        <span key={key} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-[#ff006e]/10 text-[#ff006e] border border-[#ff006e]/20">
+        <span key={key} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/20">
           {FILTER_LABELS[key] ?? key}: {Array.isArray(val) ? val.join(', ') : String(val)}
         </span>
       ))}
@@ -148,7 +148,7 @@ function EditListModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Hot Leads, No Contact 7 Days"
-              className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm"
+              className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
             />
           </div>
 
@@ -158,21 +158,21 @@ function EditListModal({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs text-[#b3b3b3] mb-1">Source</label>
-                  <select value={filters.source ?? ''} onChange={(e) => set('source', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+                  <select value={filters.source ?? ''} onChange={(e) => set('source', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
                     <option value="">Any</option>
                     {sources.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs text-[#b3b3b3] mb-1">Stage</label>
-                  <select value={filters.stage ?? ''} onChange={(e) => set('stage', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+                  <select value={filters.stage ?? ''} onChange={(e) => set('stage', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
                     <option value="">Any</option>
                     {stages.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-xs text-[#b3b3b3] mb-1">Status</label>
-                  <select value={filters.status ?? ''} onChange={(e) => set('status', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+                  <select value={filters.status ?? ''} onChange={(e) => set('status', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
                     <option value="">Any</option>
                     <option value="active">Active</option>
                     <option value="nurture">Nurture</option>
@@ -182,19 +182,19 @@ function EditListModal({
                 </div>
                 <div>
                   <label className="block text-xs text-[#b3b3b3] mb-1">Score ≥</label>
-                  <input type="number" min="0" max="100" value={filters.lead_score_min ?? ''} onChange={(e) => set('lead_score_min', e.target.value ? parseInt(e.target.value) : '')} placeholder="0–100" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+                  <input type="number" min="0" max="100" value={filters.lead_score_min ?? ''} onChange={(e) => set('lead_score_min', e.target.value ? parseInt(e.target.value) : '')} placeholder="0–100" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
                 </div>
                 <div>
                   <label className="block text-xs text-[#b3b3b3] mb-1">Budget Max ($)</label>
-                  <input type="number" min="0" value={filters.budget_max ?? ''} onChange={(e) => set('budget_max', e.target.value ? parseInt(e.target.value) : '')} placeholder="e.g. 500000" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+                  <input type="number" min="0" value={filters.budget_max ?? ''} onChange={(e) => set('budget_max', e.target.value ? parseInt(e.target.value) : '')} placeholder="e.g. 500000" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
                 </div>
                 <div>
                   <label className="block text-xs text-[#b3b3b3] mb-1">No Contact (days)</label>
-                  <input type="number" min="1" value={filters.no_contact_days ?? ''} onChange={(e) => set('no_contact_days', e.target.value ? parseInt(e.target.value) : '')} placeholder="e.g. 7" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+                  <input type="number" min="1" value={filters.no_contact_days ?? ''} onChange={(e) => set('no_contact_days', e.target.value ? parseInt(e.target.value) : '')} placeholder="e.g. 7" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
                 </div>
                 <div>
                   <label className="block text-xs text-[#b3b3b3] mb-1">Created Within (days)</label>
-                  <input type="number" min="1" value={filters.created_within_days ?? ''} onChange={(e) => set('created_within_days', e.target.value ? parseInt(e.target.value) : '')} placeholder="e.g. 7" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+                  <input type="number" min="1" value={filters.created_within_days ?? ''} onChange={(e) => set('created_within_days', e.target.value ? parseInt(e.target.value) : '')} placeholder="e.g. 7" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
                 </div>
               </div>
             </div>
@@ -202,7 +202,7 @@ function EditListModal({
 
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
-            <button onClick={handleSave} disabled={saving || !name.trim()} className="flex-1 py-2.5 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 transition-colors disabled:opacity-50">
+            <button onClick={handleSave} disabled={saving || !name.trim()} className="flex-1 py-2.5 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors disabled:opacity-50">
               {saving ? 'Saving...' : 'Save List'}
             </button>
           </div>
@@ -278,7 +278,7 @@ export default function SmartListsPage() {
         </div>
         <button
           onClick={() => setEditingList({})}
-          className="flex items-center gap-2 px-4 py-2 bg-[#ff006e] text-white rounded-lg text-sm font-medium hover:bg-[#ff006e]/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
           New List
@@ -294,7 +294,7 @@ export default function SmartListsPage() {
             {lists.length === 0 && (
               <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6 text-center">
                 <div className="text-[#b3b3b3] text-sm mb-3">No smart lists yet</div>
-                <button onClick={() => setEditingList({})} className="text-[#ff006e] text-sm hover:underline">Create your first list →</button>
+                <button onClick={() => setEditingList({})} className="text-[#0ea5e9] text-sm hover:underline">Create your first list →</button>
               </div>
             )}
             {lists.map((list) => {
@@ -304,7 +304,7 @@ export default function SmartListsPage() {
                 <div
                   key={list.id}
                   onClick={() => setActiveListId(isActive ? null : list.id)}
-                  className={`bg-[#1a1a1a] border rounded-xl p-4 cursor-pointer transition-all ${isActive ? 'border-[#ff006e]/40 bg-[#ff006e]/5' : 'border-[#2d2d2d] hover:border-[#2d2d2d]/80'}`}
+                  className={`bg-[#1a1a1a] border rounded-xl p-4 cursor-pointer transition-all ${isActive ? 'border-[#0ea5e9]/40 bg-[#0ea5e9]/5' : 'border-[#2d2d2d] hover:border-[#2d2d2d]/80'}`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
@@ -314,7 +314,7 @@ export default function SmartListsPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-lg font-bold" style={{ color: count > 0 ? '#ff006e' : '#b3b3b3' }}>{count}</span>
+                      <span className="text-lg font-bold" style={{ color: count > 0 ? '#0ea5e9' : '#b3b3b3' }}>{count}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-3">
@@ -324,7 +324,7 @@ export default function SmartListsPage() {
                     >Edit</button>
                     <button
                       onClick={(e) => { e.stopPropagation(); handleDelete(list.id) }}
-                      className="text-xs text-[#b3b3b3] hover:text-[#ff006e] px-2 py-1 rounded bg-[#2d2d2d] transition-colors"
+                      className="text-xs text-[#b3b3b3] hover:text-[#0ea5e9] px-2 py-1 rounded bg-[#2d2d2d] transition-colors"
                     >Delete</button>
                   </div>
                 </div>
@@ -355,13 +355,13 @@ export default function SmartListsPage() {
                       {filteredLeads.slice(0, 50).map((lead) => (
                         <tr key={lead.id} className="hover:bg-[#2d2d2d]/20 transition-colors">
                           <td className="px-4 py-3">
-                            <Link href={`/app/leads/${lead.id}`} className="text-sm font-medium text-white hover:text-[#ff006e]">{lead.full_name}</Link>
+                            <Link href={`/app/leads/${lead.id}`} className="text-sm font-medium text-white hover:text-[#0ea5e9]">{lead.full_name}</Link>
                             <div className="text-xs text-[#b3b3b3]">{lead.phone ?? lead.email ?? '—'}</div>
                           </td>
                           <td className="px-4 py-3 text-sm text-[#b3b3b3]">{lead.stage ?? '—'}</td>
                           <td className="px-4 py-3 text-sm text-[#b3b3b3]">{lead.source ?? '—'}</td>
                           <td className="px-4 py-3">
-                            <span className="text-sm font-medium" style={{ color: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#ff006e' }}>{lead.lead_score}</span>
+                            <span className="text-sm font-medium" style={{ color: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#0ea5e9' }}>{lead.lead_score}</span>
                           </td>
                           <td className="px-4 py-3">
                             <span className="text-xs capitalize text-[#b3b3b3]">{lead.status}</span>

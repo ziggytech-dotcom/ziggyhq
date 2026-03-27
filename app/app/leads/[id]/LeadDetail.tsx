@@ -102,7 +102,7 @@ const activityColors: Record<string, string> = {
   sms: '#22c55e',
   email: '#f59e0b',
   note: '#b3b3b3',
-  stage_change: '#ff006e',
+  stage_change: '#0ea5e9',
   assignment: '#8b5cf6',
 }
 
@@ -110,7 +110,7 @@ const statusColors: Record<string, { bg: string; text: string; border: string }>
   active: { bg: '#22c55e20', text: '#22c55e', border: '#22c55e40' },
   nurture: { bg: '#f59e0b20', text: '#f59e0b', border: '#f59e0b40' },
   dead: { bg: '#b3b3b320', text: '#b3b3b3', border: '#b3b3b340' },
-  won: { bg: '#ff006e20', text: '#ff006e', border: '#ff006e40' },
+  won: { bg: '#0ea5e920', text: '#0ea5e9', border: '#0ea5e940' },
 }
 
 function timeAgo(dateStr: string) {
@@ -299,12 +299,12 @@ export default function LeadDetail({
               {saving && <span className="text-xs text-[#b3b3b3]">Saving...</span>}
             </div>
             <div className="flex items-center gap-4 text-sm text-[#b3b3b3]">
-              {lead.stage && <span className="text-[#ff006e]">{lead.stage}</span>}
+              {lead.stage && <span className="text-[#0ea5e9]">{lead.stage}</span>}
               {lead.source && <span>{lead.source}</span>}
               <span className="flex items-center gap-1.5">Score:
                 <span className="text-white font-medium">{lead.lead_score}</span>
                 <div className="w-16 h-1.5 rounded-full bg-[#2d2d2d] overflow-hidden">
-                  <div className="h-full rounded-full transition-all" style={{ width: `${lead.lead_score}%`, backgroundColor: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#ff006e' }} />
+                  <div className="h-full rounded-full transition-all" style={{ width: `${lead.lead_score}%`, backgroundColor: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#0ea5e9' }} />
                 </div>
               </span>
               <span>Added {timeAgo(lead.created_at)}</span>
@@ -393,13 +393,13 @@ export default function LeadDetail({
                         value={editValue}
                         onChange={handleEditChange}
                         onKeyDown={(e) => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') setEditField(null) }}
-                        className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none"
+                        className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#0ea5e9] text-white text-sm focus:outline-none"
                       />
                       <button onClick={saveEdit} className="text-[#22c55e] text-xs hover:underline">Save</button>
                     </div>
                   ) : (
                     <div
-                      className="text-sm text-white cursor-pointer hover:text-[#ff006e] transition-colors group flex items-center gap-1"
+                      className="text-sm text-white cursor-pointer hover:text-[#0ea5e9] transition-colors group flex items-center gap-1"
                       onClick={() => startEdit(field.key, field.value ?? '')}
                     >
                       {field.value ?? <span className="text-[#b3b3b3]/50 italic">Not set</span>}
@@ -420,7 +420,7 @@ export default function LeadDetail({
                 <select
                   value={lead.stage ?? ''}
                   onChange={(e) => updateLead({ stage: e.target.value || null })}
-                  className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]"
+                  className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
                 >
                   <option value="">No stage</option>
                   {stages.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -431,7 +431,7 @@ export default function LeadDetail({
                 <select
                   value={lead.status}
                   onChange={(e) => updateLead({ status: e.target.value })}
-                  className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]"
+                  className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
                 >
                   <option value="active">Active</option>
                   <option value="nurture">Nurture</option>
@@ -444,7 +444,7 @@ export default function LeadDetail({
                 <select
                   value={lead.source ?? ''}
                   onChange={(e) => updateLead({ source: e.target.value || null })}
-                  className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]"
+                  className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
                 >
                   <option value="">No source</option>
                   {sources.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -455,7 +455,7 @@ export default function LeadDetail({
                 <select
                   value={lead.assigned_to ?? ''}
                   onChange={(e) => updateLead({ assigned_to: e.target.value || null })}
-                  className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]"
+                  className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
                 >
                   <option value="">Unassigned</option>
                   {team.map((m) => <option key={m.id} value={m.id}>{m.full_name ?? m.email}</option>)}
@@ -473,11 +473,11 @@ export default function LeadDetail({
                 <div className="text-xs text-[#b3b3b3] mb-0.5">Budget Min</div>
                 {editField === 'budget_min' ? (
                   <div className="flex gap-2">
-                    <input autoFocus value={editValue} onChange={(e) => { const d = e.target.value.replace(/\D/g,''); setEditValue(d ? '$'+parseInt(d).toLocaleString() : '') }} onKeyDown={(e) => { if (e.key==='Enter') { updateLead({ budget_min: editValue ? parseInt(editValue.replace(/\D/g,'')) : null }); setEditField(null) } if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none" />
+                    <input autoFocus value={editValue} onChange={(e) => { const d = e.target.value.replace(/\D/g,''); setEditValue(d ? '$'+parseInt(d).toLocaleString() : '') }} onKeyDown={(e) => { if (e.key==='Enter') { updateLead({ budget_min: editValue ? parseInt(editValue.replace(/\D/g,'')) : null }); setEditField(null) } if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#0ea5e9] text-white text-sm focus:outline-none" />
                     <button onClick={() => { updateLead({ budget_min: editValue ? parseInt(editValue.replace(/\D/g,'')) : null }); setEditField(null) }} className="text-[#22c55e] text-xs hover:underline">Save</button>
                   </div>
                 ) : (
-                  <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit('budget_min', lead.budget_min ? '$'+lead.budget_min.toLocaleString() : '')}>
+                  <div className="text-sm text-white cursor-pointer hover:text-[#0ea5e9] group flex items-center gap-1" onClick={() => startEdit('budget_min', lead.budget_min ? '$'+lead.budget_min.toLocaleString() : '')}>
                     {lead.budget_min ? formatCurrency(lead.budget_min) : <span className="text-[#b3b3b3]/50 italic">Not set</span>}
                     <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                   </div>
@@ -487,11 +487,11 @@ export default function LeadDetail({
                 <div className="text-xs text-[#b3b3b3] mb-0.5">Budget Max</div>
                 {editField === 'budget_max' ? (
                   <div className="flex gap-2">
-                    <input autoFocus value={editValue} onChange={(e) => { const d = e.target.value.replace(/\D/g,''); setEditValue(d ? '$'+parseInt(d).toLocaleString() : '') }} onKeyDown={(e) => { if (e.key==='Enter') { updateLead({ budget_max: editValue ? parseInt(editValue.replace(/\D/g,'')) : null }); setEditField(null) } if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none" />
+                    <input autoFocus value={editValue} onChange={(e) => { const d = e.target.value.replace(/\D/g,''); setEditValue(d ? '$'+parseInt(d).toLocaleString() : '') }} onKeyDown={(e) => { if (e.key==='Enter') { updateLead({ budget_max: editValue ? parseInt(editValue.replace(/\D/g,'')) : null }); setEditField(null) } if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#0ea5e9] text-white text-sm focus:outline-none" />
                     <button onClick={() => { updateLead({ budget_max: editValue ? parseInt(editValue.replace(/\D/g,'')) : null }); setEditField(null) }} className="text-[#22c55e] text-xs hover:underline">Save</button>
                   </div>
                 ) : (
-                  <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit('budget_max', lead.budget_max ? '$'+lead.budget_max.toLocaleString() : '')}>
+                  <div className="text-sm text-white cursor-pointer hover:text-[#0ea5e9] group flex items-center gap-1" onClick={() => startEdit('budget_max', lead.budget_max ? '$'+lead.budget_max.toLocaleString() : '')}>
                     {lead.budget_max ? formatCurrency(lead.budget_max) : <span className="text-[#b3b3b3]/50 italic">Not set</span>}
                     <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                   </div>
@@ -502,11 +502,11 @@ export default function LeadDetail({
                 <div className="text-xs text-[#b3b3b3] mb-0.5">Timeline</div>
                 {editField === 'timeline' ? (
                   <div className="flex gap-2">
-                    <input autoFocus value={editValue} onChange={handleEditChange} onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none" />
+                    <input autoFocus value={editValue} onChange={handleEditChange} onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#0ea5e9] text-white text-sm focus:outline-none" />
                     <button onClick={saveEdit} className="text-[#22c55e] text-xs hover:underline">Save</button>
                   </div>
                 ) : (
-                  <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit('timeline', lead.timeline ?? '')}>
+                  <div className="text-sm text-white cursor-pointer hover:text-[#0ea5e9] group flex items-center gap-1" onClick={() => startEdit('timeline', lead.timeline ?? '')}>
                     {lead.timeline ?? <span className="text-[#b3b3b3]/50 italic">Not set</span>}
                     <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                   </div>
@@ -515,7 +515,7 @@ export default function LeadDetail({
               {/* Property Type — dropdown */}
               <div>
                 <div className="text-xs text-[#b3b3b3] mb-1">Property Type</div>
-                <select value={lead.property_type ?? ''} onChange={(e) => updateLead({ property_type: e.target.value || null })} className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]">
+                <select value={lead.property_type ?? ''} onChange={(e) => updateLead({ property_type: e.target.value || null })} className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]">
                   <option value="">Not set</option>
                   {PROPERTY_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                 </select>
@@ -523,7 +523,7 @@ export default function LeadDetail({
               {/* Pre-approval */}
               <div className="pt-1 border-t border-[#2d2d2d]">
                 <div className="flex items-center gap-2 mb-3">
-                  <input type="checkbox" checked={lead.pre_approved} onChange={(e) => updateLead({ pre_approved: e.target.checked })} className="w-4 h-4 accent-[#ff006e]" id="pre_approved" />
+                  <input type="checkbox" checked={lead.pre_approved} onChange={(e) => updateLead({ pre_approved: e.target.checked })} className="w-4 h-4 accent-[#0ea5e9]" id="pre_approved" />
                   <label htmlFor="pre_approved" className="text-sm text-white font-medium">Pre-Approved</label>
                 </div>
                 {lead.pre_approved && (
@@ -533,11 +533,11 @@ export default function LeadDetail({
                       <div className="text-xs text-[#b3b3b3] mb-0.5">Loan Amount</div>
                       {editField === 'loan_amount' ? (
                         <div className="flex gap-2">
-                          <input autoFocus value={editValue} onChange={(e) => { const d = e.target.value.replace(/\D/g,''); setEditValue(d ? '$'+parseInt(d).toLocaleString() : '') }} onKeyDown={(e) => { if (e.key==='Enter') { updateLead({ loan_amount: editValue ? parseInt(editValue.replace(/\D/g,'')) : null }); setEditField(null) } if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none" />
+                          <input autoFocus value={editValue} onChange={(e) => { const d = e.target.value.replace(/\D/g,''); setEditValue(d ? '$'+parseInt(d).toLocaleString() : '') }} onKeyDown={(e) => { if (e.key==='Enter') { updateLead({ loan_amount: editValue ? parseInt(editValue.replace(/\D/g,'')) : null }); setEditField(null) } if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#0ea5e9] text-white text-sm focus:outline-none" />
                           <button onClick={() => { updateLead({ loan_amount: editValue ? parseInt(editValue.replace(/\D/g,'')) : null }); setEditField(null) }} className="text-[#22c55e] text-xs hover:underline">Save</button>
                         </div>
                       ) : (
-                        <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit('loan_amount', lead.loan_amount ? '$'+lead.loan_amount.toLocaleString() : '')}>
+                        <div className="text-sm text-white cursor-pointer hover:text-[#0ea5e9] group flex items-center gap-1" onClick={() => startEdit('loan_amount', lead.loan_amount ? '$'+lead.loan_amount.toLocaleString() : '')}>
                           {lead.loan_amount ? formatCurrency(lead.loan_amount) : <span className="text-[#b3b3b3]/50 italic">Not set</span>}
                           <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                         </div>
@@ -546,7 +546,7 @@ export default function LeadDetail({
                     {/* Loan Type */}
                     <div>
                       <div className="text-xs text-[#b3b3b3] mb-1">Loan Type</div>
-                      <select value={lead.loan_type ?? ''} onChange={(e) => updateLead({ loan_type: e.target.value || null })} className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]">
+                      <select value={lead.loan_type ?? ''} onChange={(e) => updateLead({ loan_type: e.target.value || null })} className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]">
                         <option value="">Not set</option>
                         {LOAN_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                       </select>
@@ -564,7 +564,7 @@ export default function LeadDetail({
                             updateLead({ lender_id: null })
                           }
                         }}
-                        className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e] mb-2"
+                        className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9] mb-2"
                       >
                         <option value="">Select partner lender...</option>
                         {lenders.map((l) => <option key={l.id} value={l.id}>{l.name}{l.company ? ` — ${l.company}` : ''}</option>)}
@@ -579,11 +579,11 @@ export default function LeadDetail({
                           <div className="text-xs text-[#b3b3b3] mb-0.5">{field.label}</div>
                           {editField === field.key ? (
                             <div className="flex gap-2">
-                              <input autoFocus value={editValue} onChange={handleEditChange} onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none" />
+                              <input autoFocus value={editValue} onChange={handleEditChange} onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#0ea5e9] text-white text-sm focus:outline-none" />
                               <button onClick={saveEdit} className="text-[#22c55e] text-xs hover:underline">Save</button>
                             </div>
                           ) : (
-                            <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit(field.key, field.value ?? '')}>
+                            <div className="text-sm text-white cursor-pointer hover:text-[#0ea5e9] group flex items-center gap-1" onClick={() => startEdit(field.key, field.value ?? '')}>
                               {field.value ?? <span className="text-[#b3b3b3]/50 italic">Not set</span>}
                               <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                             </div>
@@ -597,7 +597,7 @@ export default function LeadDetail({
               {lead.next_followup_at && (
                 <div>
                   <div className="text-xs text-[#b3b3b3] mb-0.5">Next Follow-up</div>
-                  <div className={`text-sm font-medium ${new Date(lead.next_followup_at) < new Date() ? 'text-[#ff006e]' : 'text-white'}`}>
+                  <div className={`text-sm font-medium ${new Date(lead.next_followup_at) < new Date() ? 'text-[#0ea5e9]' : 'text-white'}`}>
                     {new Date(lead.next_followup_at).toLocaleDateString()}
                   </div>
                 </div>
@@ -613,11 +613,11 @@ export default function LeadDetail({
                 <div className="text-xs text-[#b3b3b3] mb-0.5">Commission Split</div>
                 {editField === 'commission_split' ? (
                   <div className="flex gap-2">
-                    <input autoFocus value={editValue} onChange={handleEditChange} placeholder="e.g. 70/30" onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none" />
+                    <input autoFocus value={editValue} onChange={handleEditChange} placeholder="e.g. 70/30" onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#0ea5e9] text-white text-sm focus:outline-none" />
                     <button onClick={saveEdit} className="text-[#22c55e] text-xs hover:underline">Save</button>
                   </div>
                 ) : (
-                  <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit('commission_split', lead.commission_split ?? '')}>
+                  <div className="text-sm text-white cursor-pointer hover:text-[#0ea5e9] group flex items-center gap-1" onClick={() => startEdit('commission_split', lead.commission_split ?? '')}>
                     {lead.commission_split ?? <span className="text-[#b3b3b3]/50 italic">Not set</span>}
                     <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                   </div>
@@ -634,11 +634,11 @@ export default function LeadDetail({
                     <div className="text-xs text-[#b3b3b3] mb-0.5">{field.label}</div>
                     {editField === field.key ? (
                       <div className="flex gap-2">
-                        <input autoFocus value={editValue} onChange={field.key === 'referral_agent_phone' ? (e) => { const d = e.target.value.replace(/\D/g,'').slice(0,10); let f = d; if (d.length>6) f=`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`; else if (d.length>3) f=`(${d.slice(0,3)}) ${d.slice(3)}`; setEditValue(f) } : handleEditChange} onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-sm focus:outline-none" />
+                        <input autoFocus value={editValue} onChange={field.key === 'referral_agent_phone' ? (e) => { const d = e.target.value.replace(/\D/g,'').slice(0,10); let f = d; if (d.length>6) f=`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`; else if (d.length>3) f=`(${d.slice(0,3)}) ${d.slice(3)}`; setEditValue(f) } : handleEditChange} onKeyDown={(e) => { if (e.key==='Enter') saveEdit(); if (e.key==='Escape') setEditField(null) }} className="flex-1 px-2 py-1 rounded bg-[#0a0a0a] border border-[#0ea5e9] text-white text-sm focus:outline-none" />
                         <button onClick={saveEdit} className="text-[#22c55e] text-xs hover:underline">Save</button>
                       </div>
                     ) : (
-                      <div className="text-sm text-white cursor-pointer hover:text-[#ff006e] group flex items-center gap-1" onClick={() => startEdit(field.key, ((lead as unknown) as Record<string, string>)[field.key] ?? '')}>
+                      <div className="text-sm text-white cursor-pointer hover:text-[#0ea5e9] group flex items-center gap-1" onClick={() => startEdit(field.key, ((lead as unknown) as Record<string, string>)[field.key] ?? '')}>
                         {((lead as unknown) as Record<string, string>)[field.key] ?? <span className="text-[#b3b3b3]/50 italic">Not set</span>}
                         <svg className="w-3 h-3 opacity-0 group-hover:opacity-100 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                       </div>
@@ -657,7 +657,7 @@ export default function LeadDetail({
                 const active = (lead.tags ?? []).includes(tag)
                 return (
                   <button key={tag} onClick={() => toggleTag(tag)}
-                    className={`px-2 py-1 rounded-full text-xs transition-colors ${active ? 'bg-[#ff006e] text-white' : 'bg-[#2d2d2d] text-[#b3b3b3] hover:bg-[#3d3d3d]'}`}>
+                    className={`px-2 py-1 rounded-full text-xs transition-colors ${active ? 'bg-[#0ea5e9] text-white' : 'bg-[#2d2d2d] text-[#b3b3b3] hover:bg-[#3d3d3d]'}`}>
                     {tag}
                   </button>
                 )
@@ -673,11 +673,11 @@ export default function LeadDetail({
                 onChange={(e) => setLead((prev) => ({ ...prev, lead_score: parseInt(e.target.value) }))}
                 onMouseUp={(e) => updateLead({ lead_score: parseInt((e.target as HTMLInputElement).value) })}
                 onTouchEnd={(e) => updateLead({ lead_score: parseInt((e.target as HTMLInputElement).value) })}
-                className="flex-1 accent-[#ff006e]" />
+                className="flex-1 accent-[#0ea5e9]" />
               <span className="text-white font-bold text-lg w-8 text-right">{lead.lead_score}</span>
             </div>
             <div className="mt-2 h-2 rounded-full bg-[#2d2d2d] overflow-hidden">
-              <div className="h-full rounded-full transition-all" style={{ width: `${lead.lead_score}%`, backgroundColor: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#ff006e' }} />
+              <div className="h-full rounded-full transition-all" style={{ width: `${lead.lead_score}%`, backgroundColor: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#0ea5e9' }} />
             </div>
           </div>
 
@@ -697,11 +697,11 @@ export default function LeadDetail({
               </div>
             )}
             <div className="flex gap-2">
-              <select value={enrollingPlan} onChange={(e) => setEnrollingPlan(e.target.value)} className="flex-1 px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-xs focus:outline-none focus:border-[#ff006e]">
+              <select value={enrollingPlan} onChange={(e) => setEnrollingPlan(e.target.value)} className="flex-1 px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-xs focus:outline-none focus:border-[#0ea5e9]">
                 <option value="">Select plan...</option>
                 {actionPlans.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
-              <button onClick={enrollInPlan} disabled={!enrollingPlan} className="px-3 py-1.5 rounded-lg bg-[#ff006e] text-white text-xs hover:bg-[#ff006e]/90 disabled:opacity-50 transition-colors">
+              <button onClick={enrollInPlan} disabled={!enrollingPlan} className="px-3 py-1.5 rounded-lg bg-[#0ea5e9] text-white text-xs hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
                 Enroll
               </button>
             </div>
@@ -719,9 +719,9 @@ export default function LeadDetail({
                 onChange={(e) => setNewNote(e.target.value)}
                 placeholder="Write a note..."
                 rows={2}
-                className="flex-1 px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm resize-none"
+                className="flex-1 px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm resize-none"
               />
-              <button type="submit" disabled={addingNote || !newNote.trim()} className="px-4 py-2 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 disabled:opacity-50 self-end transition-colors">
+              <button type="submit" disabled={addingNote || !newNote.trim()} className="px-4 py-2 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 self-end transition-colors">
                 Add
               </button>
             </form>
@@ -733,10 +733,10 @@ export default function LeadDetail({
               <h3 className="text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider mb-4">Notes</h3>
               <div className="space-y-3">
                 {notes.map((note) => (
-                  <div key={note.id} className={`p-3 rounded-lg ${note.pinned ? 'bg-[#ff006e]/10 border border-[#ff006e]/20' : 'bg-[#0a0a0a] border border-[#2d2d2d]'}`}>
+                  <div key={note.id} className={`p-3 rounded-lg ${note.pinned ? 'bg-[#0ea5e9]/10 border border-[#0ea5e9]/20' : 'bg-[#0a0a0a] border border-[#2d2d2d]'}`}>
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <p className="text-sm text-white whitespace-pre-wrap flex-1">{note.content}</p>
-                      {note.pinned && <span className="text-[#ff006e] text-xs flex-shrink-0">📌 Pinned</span>}
+                      {note.pinned && <span className="text-[#0ea5e9] text-xs flex-shrink-0">📌 Pinned</span>}
                     </div>
                     <div className="text-xs text-[#b3b3b3]/60">
                       {note.users?.full_name ?? note.users?.email} · {timeAgo(note.created_at)}

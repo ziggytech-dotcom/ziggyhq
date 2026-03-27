@@ -91,7 +91,7 @@ export default function NotificationBell() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
         {unread > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#ff006e] text-white text-[10px] font-bold flex items-center justify-center">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#0ea5e9] text-white text-[10px] font-bold flex items-center justify-center">
             {unread > 99 ? '99+' : unread}
           </span>
         )}
@@ -102,7 +102,7 @@ export default function NotificationBell() {
           <div className="flex items-center justify-between px-4 py-3 border-b border-[#2d2d2d]">
             <span className="text-sm font-semibold text-white">Notifications</span>
             {unread > 0 && (
-              <button onClick={markAllRead} className="text-xs text-[#b3b3b3] hover:text-[#ff006e] transition-colors">
+              <button onClick={markAllRead} className="text-xs text-[#b3b3b3] hover:text-[#0ea5e9] transition-colors">
                 Mark all read
               </button>
             )}
@@ -116,14 +116,14 @@ export default function NotificationBell() {
                 <button
                   key={n.id}
                   onClick={() => handleClick(n)}
-                  className={`w-full text-left px-4 py-3 hover:bg-[#2d2d2d]/40 transition-colors ${!n.read ? 'bg-[#ff006e]/5' : ''}`}
+                  className={`w-full text-left px-4 py-3 hover:bg-[#2d2d2d]/40 transition-colors ${!n.read ? 'bg-[#0ea5e9]/5' : ''}`}
                 >
                   <div className="flex items-start gap-2.5">
                     <span className="text-base flex-shrink-0 mt-0.5">{TYPE_ICONS[n.type] ?? '🔔'}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <span className="text-xs font-medium text-white truncate">{n.title}</span>
-                        {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-[#ff006e] flex-shrink-0 mt-1" />}
+                        {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9] flex-shrink-0 mt-1" />}
                       </div>
                       {n.message && <div className="text-xs text-[#b3b3b3] mt-0.5 line-clamp-2">{n.message}</div>}
                       <div className="text-xs text-[#b3b3b3]/60 mt-1">{timeAgo(n.created_at)}</div>
@@ -137,7 +137,7 @@ export default function NotificationBell() {
           <div className="border-t border-[#2d2d2d] px-4 py-2">
             <button
               onClick={() => { setOpen(false); router.push('/app/notifications') }}
-              className="text-xs text-[#b3b3b3] hover:text-[#ff006e] transition-colors w-full text-center"
+              className="text-xs text-[#b3b3b3] hover:text-[#0ea5e9] transition-colors w-full text-center"
             >
               View all notifications →
             </button>

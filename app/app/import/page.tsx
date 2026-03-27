@@ -210,7 +210,7 @@ export default function ImportPage() {
       <div className="flex items-center gap-2 mb-8 ml-8">
         {(['upload', 'map', 'preview', 'done'] as Step[]).map((s, i) => (
           <div key={s} className="flex items-center gap-2">
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${step === s ? 'bg-[#ff006e] text-white' : (['upload','map','preview','done'].indexOf(step) > i) ? 'bg-[#22c55e] text-white' : 'bg-[#2d2d2d] text-[#b3b3b3]'}`}>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${step === s ? 'bg-[#0ea5e9] text-white' : (['upload','map','preview','done'].indexOf(step) > i) ? 'bg-[#22c55e] text-white' : 'bg-[#2d2d2d] text-[#b3b3b3]'}`}>
               {(['upload','map','preview','done'].indexOf(step) > i) ? '✓' : i + 1}
             </div>
             <span className={`text-xs capitalize ${step === s ? 'text-white' : 'text-[#b3b3b3]'}`}>{s}</span>
@@ -226,7 +226,7 @@ export default function ImportPage() {
         {step === 'upload' && (
           <div className="space-y-4">
             <div
-              className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${dragging ? 'border-[#ff006e] bg-[#ff006e]/5' : 'border-[#2d2d2d] hover:border-[#ff006e]/50'}`}
+              className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-colors ${dragging ? 'border-[#0ea5e9] bg-[#0ea5e9]/5' : 'border-[#2d2d2d] hover:border-[#0ea5e9]/50'}`}
               onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
               onDragLeave={() => setDragging(false)}
               onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f) handleFile(f) }}
@@ -265,7 +265,7 @@ export default function ImportPage() {
             <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden">
               <div className="grid grid-cols-2 gap-px bg-[#2d2d2d]">
                 <div className="bg-[#1a1a1a] px-4 py-2 text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider">Your Column</div>
-                <div className="bg-[#1a1a1a] px-4 py-2 text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider">Maps to ZiggyCRM Field</div>
+                <div className="bg-[#1a1a1a] px-4 py-2 text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider">Maps to ZiggyHQ Field</div>
               </div>
               <div className="divide-y divide-[#2d2d2d]">
                 {headers.map((h) => (
@@ -275,7 +275,7 @@ export default function ImportPage() {
                       <select
                         value={mapping[h] ?? ''}
                         onChange={(e) => setMapping((prev) => ({ ...prev, [h]: e.target.value }))}
-                        className="w-full px-2 py-1 rounded bg-[#0a0a0a] border border-[#2d2d2d] text-sm text-white focus:outline-none focus:border-[#ff006e]"
+                        className="w-full px-2 py-1 rounded bg-[#0a0a0a] border border-[#2d2d2d] text-sm text-white focus:outline-none focus:border-[#0ea5e9]"
                       >
                         <option value="">— Skip this column —</option>
                         {mapping[h] === '__name_part' && <option value="__name_part">Name part (auto-combined)</option>}
@@ -286,7 +286,7 @@ export default function ImportPage() {
                 ))}
               </div>
             </div>
-            <button onClick={runPreview} disabled={loading} className="px-6 py-2.5 rounded-lg bg-[#ff006e] text-white font-medium text-sm hover:bg-[#ff006e]/90 disabled:opacity-50 transition-colors">
+            <button onClick={runPreview} disabled={loading} className="px-6 py-2.5 rounded-lg bg-[#0ea5e9] text-white font-medium text-sm hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
               {loading ? 'Processing...' : 'Preview Import →'}
             </button>
           </div>
@@ -342,7 +342,7 @@ export default function ImportPage() {
 
             <div className="flex gap-3">
               <button onClick={() => setStep('map')} className="px-4 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] text-sm hover:text-white transition-colors">← Back</button>
-              <button onClick={runImport} disabled={loading || previewStats.toImport === 0} className="px-6 py-2.5 rounded-lg bg-[#ff006e] text-white font-medium text-sm hover:bg-[#ff006e]/90 disabled:opacity-50 transition-colors">
+              <button onClick={runImport} disabled={loading || previewStats.toImport === 0} className="px-6 py-2.5 rounded-lg bg-[#0ea5e9] text-white font-medium text-sm hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
                 {loading ? 'Importing...' : `Import ${previewStats.toImport} Leads →`}
               </button>
             </div>
@@ -359,7 +359,7 @@ export default function ImportPage() {
               {result.warnings.length > 0 && <div className="text-[#f59e0b] text-sm mt-1">{result.warnings.length} warnings</div>}
             </div>
             <div className="flex gap-3">
-              <Link href="/app/leads" className="px-6 py-2.5 rounded-lg bg-[#ff006e] text-white font-medium text-sm hover:bg-[#ff006e]/90 transition-colors">
+              <Link href="/app/leads" className="px-6 py-2.5 rounded-lg bg-[#0ea5e9] text-white font-medium text-sm hover:bg-[#0ea5e9]/90 transition-colors">
                 View Leads →
               </Link>
               <button onClick={reset} className="px-4 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] text-sm hover:text-white transition-colors">

@@ -68,19 +68,19 @@ export default async function ActionPlansPage() {
       ) : (
         <div className="space-y-3">
           {(plans ?? []).map((plan) => (
-            <div key={plan.id} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5 hover:border-[#ff006e]/30 transition-colors">
+            <div key={plan.id} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5 hover:border-[#0ea5e9]/30 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-start gap-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <Link href={`/app/action-plans/${plan.id}`} className="text-base font-semibold text-white hover:text-[#ff006e] transition-colors">
+                      <Link href={`/app/action-plans/${plan.id}`} className="text-base font-semibold text-white hover:text-[#0ea5e9] transition-colors">
                         {plan.name}
                       </Link>
                       <span className="text-xs px-2 py-0.5 rounded-full bg-[#2d2d2d] text-[#b3b3b3]">
                         {triggerLabels[plan.trigger_event] ?? plan.trigger_event}
                       </span>
                       {plan.trigger_stage && (
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#ff006e]/10 text-[#ff006e] border border-[#ff006e]/20">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/20">
                           {plan.trigger_stage}
                         </span>
                       )}
@@ -95,7 +95,7 @@ export default async function ActionPlansPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <TogglePlan planId={plan.id} isActive={plan.is_active} />
-                  <Link href={`/app/action-plans/${plan.id}`} className="px-3 py-1.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white hover:border-[#ff006e]/40 text-sm transition-colors">
+                  <Link href={`/app/action-plans/${plan.id}`} className="px-3 py-1.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white hover:border-[#0ea5e9]/40 text-sm transition-colors">
                     Edit
                   </Link>
                   <button

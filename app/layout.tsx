@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bebas_Neue } from "next/font/google";
+import { Bebas_Neue, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -8,9 +8,18 @@ const bebasNeue = Bebas_Neue({
   subsets: ["latin"],
 });
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-space-grotesk",
+});
+
 export const metadata: Metadata = {
-  title: "ZiggyCRM",
+  title: "ZiggyHQ",
   description: "The modern CRM for growth-focused teams",
+  openGraph: {
+    title: "ZiggyHQ",
+  },
 };
 
 export default function RootLayout({
@@ -19,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${bebasNeue.variable} h-full`}>
+    <html lang="en" className={`${bebasNeue.variable} ${spaceGrotesk.variable} h-full`}>
       <body className="h-full bg-background text-white antialiased">
         {children}
       </body>

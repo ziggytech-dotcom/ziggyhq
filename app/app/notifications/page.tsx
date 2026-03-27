@@ -87,7 +87,7 @@ export default function NotificationsPage() {
         {unread > 0 && (
           <button
             onClick={markAllRead}
-            className="px-4 py-2 bg-[#1a1a1a] border border-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm hover:text-white hover:border-[#ff006e]/40 transition-colors"
+            className="px-4 py-2 bg-[#1a1a1a] border border-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm hover:text-white hover:border-[#0ea5e9]/40 transition-colors"
           >
             Mark all read
           </button>
@@ -109,7 +109,7 @@ export default function NotificationsPage() {
               <div
                 key={n.id}
                 onClick={() => handleClick(n)}
-                className={`flex items-start gap-4 px-6 py-4 cursor-pointer hover:bg-[#2d2d2d]/30 transition-colors ${!n.read ? 'bg-[#ff006e]/5' : ''}`}
+                className={`flex items-start gap-4 px-6 py-4 cursor-pointer hover:bg-[#2d2d2d]/30 transition-colors ${!n.read ? 'bg-[#0ea5e9]/5' : ''}`}
               >
                 <div className="text-2xl flex-shrink-0 mt-0.5">{TYPE_ICONS[n.type] ?? '🔔'}</div>
                 <div className="flex-1 min-w-0">
@@ -120,7 +120,7 @@ export default function NotificationsPage() {
                       {n.message && <div className="text-sm text-[#b3b3b3] mt-1">{n.message}</div>}
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0">
-                      {!n.read && <span className="w-2 h-2 rounded-full bg-[#ff006e]" />}
+                      {!n.read && <span className="w-2 h-2 rounded-full bg-[#0ea5e9]" />}
                       <span className="text-xs text-[#b3b3b3]/60">{timeAgo(n.created_at)}</span>
                     </div>
                   </div>
@@ -128,7 +128,7 @@ export default function NotificationsPage() {
                     <Link
                       href={n.link}
                       onClick={(e) => e.stopPropagation()}
-                      className="text-xs text-[#ff006e] hover:underline mt-2 inline-block"
+                      className="text-xs text-[#0ea5e9] hover:underline mt-2 inline-block"
                     >
                       View →
                     </Link>

@@ -24,7 +24,7 @@ function formatFollowupDate(dateStr: string) {
 
   if (dDate < today) {
     const daysAgo = Math.round((today.getTime() - dDate.getTime()) / 86400000)
-    return { label: daysAgo === 1 ? '1 day overdue' : `${daysAgo} days overdue`, color: '#ff006e', group: 'overdue' }
+    return { label: daysAgo === 1 ? '1 day overdue' : `${daysAgo} days overdue`, color: '#0ea5e9', group: 'overdue' }
   }
   if (dDate.getTime() === today.getTime()) return { label: 'Today', color: '#f59e0b', group: 'today' }
   if (dDate.getTime() === tomorrow.getTime()) return { label: 'Tomorrow', color: '#22c55e', group: 'soon' }
@@ -92,7 +92,7 @@ export default function FollowUpsPage() {
   }
 
   const groupConfig = [
-    { key: 'overdue', label: 'Overdue', color: '#ff006e', emptyMsg: null },
+    { key: 'overdue', label: 'Overdue', color: '#0ea5e9', emptyMsg: null },
     { key: 'today', label: 'Today', color: '#f59e0b', emptyMsg: null },
     { key: 'soon', label: 'This Week', color: '#22c55e', emptyMsg: null },
     { key: 'later', label: 'Upcoming', color: '#b3b3b3', emptyMsg: null },
@@ -107,7 +107,7 @@ export default function FollowUpsPage() {
         <p className="text-[#b3b3b3] text-sm mt-1">
           {loading ? 'Loading...' : `${leads.length} lead${leads.length !== 1 ? 's' : ''} need follow-up`}
           {!loading && groups.overdue.length > 0 && (
-            <span className="ml-2 px-2 py-0.5 rounded-full bg-[#ff006e]/20 text-[#ff006e] text-xs font-medium">
+            <span className="ml-2 px-2 py-0.5 rounded-full bg-[#0ea5e9]/20 text-[#0ea5e9] text-xs font-medium">
               {groups.overdue.length} overdue
             </span>
           )}
@@ -121,7 +121,7 @@ export default function FollowUpsPage() {
           <div className="text-4xl mb-3">✅</div>
           <div className="text-white font-semibold text-lg mb-1">You&apos;re all caught up!</div>
           <div className="text-[#b3b3b3] text-sm">No follow-ups scheduled. Go set some on your leads.</div>
-          <Link href="/app/leads" className="inline-block mt-4 px-4 py-2 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 transition-colors">
+          <Link href="/app/leads" className="inline-block mt-4 px-4 py-2 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors">
             View Leads
           </Link>
         </div>
@@ -144,12 +144,12 @@ export default function FollowUpsPage() {
                     return (
                       <div key={lead.id} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-4 flex items-center gap-4">
                         {/* Score bar */}
-                        <div className="w-1 h-12 rounded-full flex-shrink-0" style={{ backgroundColor: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#ff006e' }} />
+                        <div className="w-1 h-12 rounded-full flex-shrink-0" style={{ backgroundColor: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#0ea5e9' }} />
 
                         {/* Lead info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <Link href={`/app/leads/${lead.id}`} className="text-white font-semibold text-sm hover:text-[#ff006e] transition-colors">
+                            <Link href={`/app/leads/${lead.id}`} className="text-white font-semibold text-sm hover:text-[#0ea5e9] transition-colors">
                               {lead.full_name}
                             </Link>
                             {lead.stage && (
@@ -166,9 +166,9 @@ export default function FollowUpsPage() {
                                 type="date"
                                 value={rescheduleDate}
                                 onChange={(e) => setRescheduleDate(e.target.value)}
-                                className="px-2 py-1 rounded bg-[#0a0a0a] border border-[#ff006e] text-white text-xs focus:outline-none"
+                                className="px-2 py-1 rounded bg-[#0a0a0a] border border-[#0ea5e9] text-white text-xs focus:outline-none"
                               />
-                              <button onClick={() => saveReschedule(lead.id)} disabled={!rescheduleDate || actionLoading === lead.id} className="px-3 py-1 rounded bg-[#ff006e] text-white text-xs hover:bg-[#ff006e]/90 disabled:opacity-50 transition-colors">
+                              <button onClick={() => saveReschedule(lead.id)} disabled={!rescheduleDate || actionLoading === lead.id} className="px-3 py-1 rounded bg-[#0ea5e9] text-white text-xs hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
                                 Save
                               </button>
                               <button onClick={() => setRescheduleId(null)} className="px-3 py-1 rounded bg-[#2d2d2d] text-[#b3b3b3] text-xs hover:text-white transition-colors">

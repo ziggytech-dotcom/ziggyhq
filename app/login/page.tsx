@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { ZiggyHQLogo } from '@/app/components/ZiggyHQLogo'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -36,13 +37,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-lg bg-[#ff006e] flex items-center justify-center">
-              <span className="font-heading text-white text-2xl tracking-widest" style={{ fontFamily: 'var(--font-bebas-neue)' }}>Z</span>
-            </div>
-            <span className="text-3xl tracking-[0.05em]" style={{ fontFamily: 'var(--font-bebas-neue)', color: '#ededed' }}>ZIGGYCRM</span>
+          <div className="inline-flex items-center justify-center mb-3">
+            <ZiggyHQLogo />
           </div>
-          <p className="text-[#b3b3b3] text-sm mt-1">The CRM built for closers</p>
+          <p className="text-[#b3b3b3] text-sm">The CRM built for closers</p>
         </div>
 
         {/* Card */}
@@ -61,7 +59,7 @@ export default function LoginPage() {
               </p>
               <button
                 onClick={() => setSent(false)}
-                className="mt-6 text-sm text-[#ff006e] hover:text-[#ff006e]/80 transition-colors"
+                className="mt-6 text-sm text-[#0ea5e9] hover:text-[#0ea5e9]/80 transition-colors"
               >
                 Use a different email
               </button>
@@ -83,12 +81,12 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="you@company.com"
                     required
-                    className="w-full px-4 py-2.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] focus:ring-1 focus:ring-[#ff006e] transition-colors text-sm"
+                    className="w-full px-4 py-2.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-colors text-sm"
                   />
                 </div>
 
                 {error && (
-                  <div className="text-sm text-[#ff006e] bg-[#ff006e]/10 border border-[#ff006e]/20 rounded-lg px-3 py-2">
+                  <div className="text-sm text-[#0ea5e9] bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 rounded-lg px-3 py-2">
                     {error}
                   </div>
                 )}
@@ -96,7 +94,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || !email}
-                  className="w-full py-2.5 rounded-lg bg-[#ff006e] text-white font-semibold text-sm hover:bg-[#ff006e]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-2.5 rounded-lg bg-[#0ea5e9] text-white font-semibold text-sm hover:bg-[#0ea5e9]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? 'Sending...' : 'Send magic link'}
                 </button>

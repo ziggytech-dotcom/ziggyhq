@@ -35,7 +35,7 @@ export default function InviteModal({ orgId }: { orgId: string }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 px-4 py-2 bg-[#ff006e] text-white rounded-lg text-sm font-medium hover:bg-[#ff006e]/90 transition-colors"
+        className="flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -60,7 +60,7 @@ export default function InviteModal({ orgId }: { orgId: string }) {
         {success ? (
           <div className="text-center py-4">
             <div className="text-[#22c55e] text-sm font-medium mb-2">Invite sent!</div>
-            <button onClick={() => setSuccess(false)} className="text-[#ff006e] text-sm hover:underline">Send another</button>
+            <button onClick={() => setSuccess(false)} className="text-[#0ea5e9] text-sm hover:underline">Send another</button>
           </div>
         ) : (
           <form onSubmit={handleInvite} className="space-y-4">
@@ -72,7 +72,7 @@ export default function InviteModal({ orgId }: { orgId: string }) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="colleague@company.com"
                 required
-                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm"
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm"
               />
             </div>
             <div>
@@ -80,17 +80,17 @@ export default function InviteModal({ orgId }: { orgId: string }) {
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm"
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
               >
                 <option value="agent">Agent</option>
                 <option value="admin">Admin</option>
                 <option value="partner">Partner</option>
               </select>
             </div>
-            {error && <div className="text-sm text-[#ff006e] bg-[#ff006e]/10 border border-[#ff006e]/20 rounded-lg px-3 py-2">{error}</div>}
+            {error && <div className="text-sm text-[#0ea5e9] bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 rounded-lg px-3 py-2">{error}</div>}
             <div className="flex gap-3 pt-1">
               <button type="button" onClick={() => setOpen(false)} className="flex-1 py-2 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
-              <button type="submit" disabled={loading} className="flex-1 py-2 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 transition-colors disabled:opacity-50">
+              <button type="submit" disabled={loading} className="flex-1 py-2 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors disabled:opacity-50">
                 {loading ? 'Sending...' : 'Send Invite'}
               </button>
             </div>

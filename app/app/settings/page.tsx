@@ -161,7 +161,7 @@ export default function SettingsPage() {
                 type="text"
                 value={orgName}
                 onChange={(e) => setOrgName(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm"
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
               />
             </div>
             <div>
@@ -169,7 +169,7 @@ export default function SettingsPage() {
               <select
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm"
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
               >
                 {INDUSTRIES.map((ind) => (
                   <option key={ind.value} value={ind.value}>{ind.label}</option>
@@ -205,7 +205,7 @@ export default function SettingsPage() {
                 <div className="flex-1 px-3 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-sm text-white">
                   {stage}
                 </div>
-                <button onClick={() => removeStage(stage)} className="text-[#b3b3b3] hover:text-[#ff006e] transition-colors opacity-0 group-hover:opacity-100">
+                <button onClick={() => removeStage(stage)} className="text-[#b3b3b3] hover:text-[#0ea5e9] transition-colors opacity-0 group-hover:opacity-100">
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
@@ -218,7 +218,7 @@ export default function SettingsPage() {
               onChange={(e) => setNewStage(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addStage()}
               placeholder="Add a stage..."
-              className="flex-1 px-3 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm"
+              className="flex-1 px-3 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm"
             />
             <button onClick={addStage} className="px-3 py-1.5 rounded-lg bg-[#2d2d2d] text-white text-sm hover:bg-[#3d3d3d] transition-colors">Add</button>
           </div>
@@ -232,7 +232,7 @@ export default function SettingsPage() {
             {sources.map((source) => (
               <div key={source} className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#2d2d2d] text-sm text-white group">
                 {source}
-                <button onClick={() => removeSource(source)} className="text-[#b3b3b3] hover:text-[#ff006e] transition-colors">
+                <button onClick={() => removeSource(source)} className="text-[#b3b3b3] hover:text-[#0ea5e9] transition-colors">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
@@ -245,7 +245,7 @@ export default function SettingsPage() {
               onChange={(e) => setNewSource(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addSource()}
               placeholder="Add a source..."
-              className="flex-1 px-3 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm"
+              className="flex-1 px-3 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm"
             />
             <button onClick={addSource} className="px-3 py-1.5 rounded-lg bg-[#2d2d2d] text-white text-sm hover:bg-[#3d3d3d] transition-colors">Add</button>
           </div>
@@ -275,7 +275,7 @@ export default function SettingsPage() {
             <div>
               <label className="block text-xs text-[#b3b3b3] mb-1">Call delay (minutes)</label>
               <select value={callDelayMinutes} onChange={e => setCallDelayMinutes(parseFloat(e.target.value))}
-                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]">
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]">
                 <option value={1}>1 min</option>
                 <option value={2}>2 min</option>
                 <option value={2.5}>2.5 min</option>
@@ -287,14 +287,14 @@ export default function SettingsPage() {
             <div>
               <label className="block text-xs text-[#b3b3b3] mb-1">Calls start (PST)</label>
               <select value={callHoursStart} onChange={e => setCallHoursStart(parseInt(e.target.value))}
-                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]">
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]">
                 {[7,8,9,10].map(h => <option key={h} value={h}>{h === 12 ? '12 PM' : h > 12 ? `${h-12} PM` : `${h} AM`}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-xs text-[#b3b3b3] mb-1">Calls end (PST)</label>
               <select value={callHoursEnd} onChange={e => setCallHoursEnd(parseInt(e.target.value))}
-                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]">
+                className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]">
                 {[18,19,20,21,22].map(h => <option key={h} value={h}>{h === 12 ? '12 PM' : h > 12 ? `${h-12} PM` : `${h} AM`}</option>)}
               </select>
             </div>
@@ -382,7 +382,7 @@ export default function SettingsPage() {
         <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
           <h2 className="text-sm font-semibold text-white mb-4">More Settings</h2>
           <div className="space-y-2">
-            <a href="/app/settings/lenders" className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] hover:border-[#ff006e]/40 transition-colors group">
+            <a href="/app/settings/lenders" className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] hover:border-[#0ea5e9]/40 transition-colors group">
               <div className="flex items-center gap-3">
                 <span className="text-lg">🏦</span>
                 <div>
@@ -400,7 +400,7 @@ export default function SettingsPage() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-2.5 rounded-lg bg-[#ff006e] text-white font-semibold text-sm hover:bg-[#ff006e]/90 transition-colors disabled:opacity-50"
+            className="px-6 py-2.5 rounded-lg bg-[#0ea5e9] text-white font-semibold text-sm hover:bg-[#0ea5e9]/90 transition-colors disabled:opacity-50"
           >
             {saving ? 'Saving...' : 'Save Changes'}
           </button>

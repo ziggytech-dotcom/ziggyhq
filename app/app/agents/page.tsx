@@ -148,8 +148,8 @@ function AgentCard({
     <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
       <div className="flex items-start gap-4">
         {/* Avatar */}
-        <div className="w-11 h-11 rounded-full bg-[#ff006e]/20 border border-[#ff006e]/30 flex items-center justify-center flex-shrink-0">
-          <span className="text-sm font-bold text-[#ff006e]">
+        <div className="w-11 h-11 rounded-full bg-[#0ea5e9]/20 border border-[#0ea5e9]/30 flex items-center justify-center flex-shrink-0">
+          <span className="text-sm font-bold text-[#0ea5e9]">
             {(agent.full_name ?? agent.email).charAt(0).toUpperCase()}
           </span>
         </div>
@@ -164,7 +164,7 @@ function AgentCard({
                   <input
                     value={editForm.full_name ?? ''}
                     onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
-                    className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]"
+                    className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
                   />
                 </div>
                 <div>
@@ -173,7 +173,7 @@ function AgentCard({
                     value={editForm.phone ?? ''}
                     onChange={(e) => setEditForm({ ...editForm, phone: formatPhone(e.target.value) })}
                     placeholder="(702) 555-1234"
-                    className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]"
+                    className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
                   />
                 </div>
                 <div>
@@ -182,7 +182,7 @@ function AgentCard({
                     value={editForm.license_number ?? ''}
                     onChange={(e) => setEditForm({ ...editForm, license_number: e.target.value })}
                     placeholder="S.0123456"
-                    className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]"
+                    className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
                   />
                 </div>
                 <div>
@@ -191,12 +191,12 @@ function AgentCard({
                     value={editForm.commission_split ?? ''}
                     onChange={(e) => setEditForm({ ...editForm, commission_split: e.target.value })}
                     placeholder="e.g. 70/30 or 80/20"
-                    className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#ff006e]"
+                    className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
                   />
                 </div>
               </div>
               <div className="flex gap-2 pt-1">
-                <button onClick={onSave} disabled={saving} className="px-4 py-1.5 rounded-lg bg-[#ff006e] text-white text-sm hover:bg-[#ff006e]/90 disabled:opacity-50 transition-colors">
+                <button onClick={onSave} disabled={saving} className="px-4 py-1.5 rounded-lg bg-[#0ea5e9] text-white text-sm hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
                   {saving ? 'Saving...' : 'Save'}
                 </button>
                 <button onClick={onCancel} className="px-4 py-1.5 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-sm hover:text-white transition-colors">
@@ -208,7 +208,7 @@ function AgentCard({
             <>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-white font-semibold text-sm">{agent.full_name ?? '(no name)'}</span>
-                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${agent.role === 'admin' ? 'bg-[#ff006e]/20 text-[#ff006e]' : 'bg-[#2d2d2d] text-[#b3b3b3]'}`}>
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${agent.role === 'admin' ? 'bg-[#0ea5e9]/20 text-[#0ea5e9]' : 'bg-[#2d2d2d] text-[#b3b3b3]'}`}>
                   {agent.role}
                 </span>
               </div>

@@ -25,7 +25,7 @@ export default async function AppLayout({
     .single()
 
   // If no user record, try to find org and create user
-  let orgName = 'ZiggyCRM'
+  let orgName = 'ZiggyHQ'
   let userName = user.email?.split('@')[0] ?? ''
   let userFullName = ''
 

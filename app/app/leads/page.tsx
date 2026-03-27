@@ -53,11 +53,11 @@ const statusColors: Record<string, { bg: string; text: string; border: string }>
   active: { bg: '#22c55e20', text: '#22c55e', border: '#22c55e40' },
   nurture: { bg: '#f59e0b20', text: '#f59e0b', border: '#f59e0b40' },
   dead: { bg: '#b3b3b320', text: '#b3b3b3', border: '#b3b3b340' },
-  won: { bg: '#ff006e20', text: '#ff006e', border: '#ff006e40' },
+  won: { bg: '#0ea5e920', text: '#0ea5e9', border: '#0ea5e940' },
 }
 
 function ScoreBar({ score }: { score: number }) {
-  const color = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#ff006e'
+  const color = score >= 70 ? '#22c55e' : score >= 40 ? '#f59e0b' : '#0ea5e9'
   return (
     <div className="flex items-center gap-2">
       <div className="w-16 h-1.5 bg-[#2d2d2d] rounded-full overflow-hidden">
@@ -154,33 +154,33 @@ function NewLeadSlideOver({
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Full Name *</label>
-              <input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Email</label>
-              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Phone</label>
-              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} placeholder="(702) 555-1234" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} placeholder="(702) 555-1234" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm" />
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Source</label>
-              <select value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+              <select value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
                 <option value="">Select source</option>
                 {sources.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Stage</label>
-              <select value={form.stage} onChange={(e) => setForm({ ...form, stage: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+              <select value={form.stage} onChange={(e) => setForm({ ...form, stage: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
                 <option value="">Select stage</option>
                 {stages.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Status</label>
-              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
                 <option value="active">Active</option>
                 <option value="nurture">Nurture</option>
                 <option value="dead">Dead</option>
@@ -189,36 +189,36 @@ function NewLeadSlideOver({
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Assign To</label>
-              <select value={form.assigned_to} onChange={(e) => setForm({ ...form, assigned_to: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm">
+              <select value={form.assigned_to} onChange={(e) => setForm({ ...form, assigned_to: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
                 <option value="">Unassigned</option>
                 {team.map((m) => <option key={m.id} value={m.id}>{m.full_name ?? m.email}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Budget Min ($)</label>
-              <input type="text" inputMode="numeric" value={form.budget_min ? '$' + formatCurrency(form.budget_min) : ''} onChange={(e) => setForm({ ...form, budget_min: parseCurrency(e.target.value) })} placeholder="$500,000" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input type="text" inputMode="numeric" value={form.budget_min ? '$' + formatCurrency(form.budget_min) : ''} onChange={(e) => setForm({ ...form, budget_min: parseCurrency(e.target.value) })} placeholder="$500,000" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm" />
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Budget Max ($)</label>
-              <input type="text" inputMode="numeric" value={form.budget_max ? '$' + formatCurrency(form.budget_max) : ''} onChange={(e) => setForm({ ...form, budget_max: parseCurrency(e.target.value) })} placeholder="$800,000" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input type="text" inputMode="numeric" value={form.budget_max ? '$' + formatCurrency(form.budget_max) : ''} onChange={(e) => setForm({ ...form, budget_max: parseCurrency(e.target.value) })} placeholder="$800,000" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm" />
             </div>
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Timeline</label>
-              <input value={form.timeline} onChange={(e) => setForm({ ...form, timeline: e.target.value })} placeholder="e.g. 3-6 months" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm" />
+              <input value={form.timeline} onChange={(e) => setForm({ ...form, timeline: e.target.value })} placeholder="e.g. 3-6 months" className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm" />
             </div>
             <div className="col-span-2 flex items-center gap-2">
-              <input type="checkbox" id="pre_approved" checked={form.pre_approved} onChange={(e) => setForm({ ...form, pre_approved: e.target.checked })} className="w-4 h-4 rounded border-[#2d2d2d] bg-[#0a0a0a] accent-[#ff006e]" />
+              <input type="checkbox" id="pre_approved" checked={form.pre_approved} onChange={(e) => setForm({ ...form, pre_approved: e.target.checked })} className="w-4 h-4 rounded border-[#2d2d2d] bg-[#0a0a0a] accent-[#0ea5e9]" />
               <label htmlFor="pre_approved" className="text-sm text-[#b3b3b3]">Pre-approved</label>
             </div>
             <div className="col-span-2">
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Notes</label>
-              <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#ff006e] text-sm resize-none" />
+              <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm resize-none" />
             </div>
           </div>
-          {error && <div className="text-sm text-[#ff006e] bg-[#ff006e]/10 border border-[#ff006e]/20 rounded-lg px-3 py-2">{error}</div>}
+          {error && <div className="text-sm text-[#0ea5e9] bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 rounded-lg px-3 py-2">{error}</div>}
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
-            <button type="submit" disabled={loading} className="flex-1 py-2.5 rounded-lg bg-[#ff006e] text-white text-sm font-medium hover:bg-[#ff006e]/90 transition-colors disabled:opacity-50">
+            <button type="submit" disabled={loading} className="flex-1 py-2.5 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors disabled:opacity-50">
               {loading ? 'Creating...' : 'Create Lead'}
             </button>
           </div>
@@ -246,7 +246,7 @@ function KanbanView({ leads, stages }: { leads: Lead[]; stages: string[] }) {
           <div className="space-y-2">
             {(byStage[stage] ?? []).map((lead) => (
               <Link key={lead.id} href={`/app/leads/${lead.id}`}>
-                <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-lg p-3 hover:border-[#ff006e]/40 transition-colors cursor-pointer">
+                <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-lg p-3 hover:border-[#0ea5e9]/40 transition-colors cursor-pointer">
                   <div className="font-medium text-sm text-white mb-1 truncate">{lead.full_name}</div>
                   {lead.phone && <div className="text-xs text-[#b3b3b3] mb-1">{lead.phone}</div>}
                   <div className="flex items-center justify-between mt-2">
@@ -268,7 +268,7 @@ function KanbanView({ leads, stages }: { leads: Lead[]; stages: string[] }) {
           <div className="space-y-2">
             {unstagedLeads.map((lead) => (
               <Link key={lead.id} href={`/app/leads/${lead.id}`}>
-                <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-lg p-3 hover:border-[#ff006e]/40 transition-colors cursor-pointer">
+                <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-lg p-3 hover:border-[#0ea5e9]/40 transition-colors cursor-pointer">
                   <div className="font-medium text-sm text-white mb-1 truncate">{lead.full_name}</div>
                   {lead.phone && <div className="text-xs text-[#b3b3b3] mb-1">{lead.phone}</div>}
                 </div>
@@ -347,7 +347,7 @@ export default function LeadsPage() {
 
   const SortIcon = ({ field }: { field: string }) => {
     if (sortField !== field) return <span className="text-[#b3b3b3]/40 ml-1">↕</span>
-    return <span className="text-[#ff006e] ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
+    return <span className="text-[#0ea5e9] ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
   }
 
   return (
@@ -365,7 +365,7 @@ export default function LeadsPage() {
         </Link>
         <button
           onClick={() => setShowNewLead(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#ff006e] text-white rounded-lg text-sm font-medium hover:bg-[#ff006e]/90 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
           New Lead
@@ -381,18 +381,18 @@ export default function LeadsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search leads..."
-            className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#ff006e] text-sm"
+            className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm"
           />
         </div>
-        <select value={filterStage} onChange={(e) => setFilterStage(e.target.value)} className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-sm text-white focus:outline-none focus:border-[#ff006e]">
+        <select value={filterStage} onChange={(e) => setFilterStage(e.target.value)} className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-sm text-white focus:outline-none focus:border-[#0ea5e9]">
           <option value="">All Stages</option>
           {stages.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
-        <select value={filterSource} onChange={(e) => setFilterSource(e.target.value)} className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-sm text-white focus:outline-none focus:border-[#ff006e]">
+        <select value={filterSource} onChange={(e) => setFilterSource(e.target.value)} className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-sm text-white focus:outline-none focus:border-[#0ea5e9]">
           <option value="">All Sources</option>
           {sources.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
-        <select value={filterAgent} onChange={(e) => setFilterAgent(e.target.value)} className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-sm text-white focus:outline-none focus:border-[#ff006e]">
+        <select value={filterAgent} onChange={(e) => setFilterAgent(e.target.value)} className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-sm text-white focus:outline-none focus:border-[#0ea5e9]">
           <option value="">All Agents</option>
           {team.map((m) => <option key={m.id} value={m.id}>{m.full_name ?? m.email}</option>)}
         </select>
@@ -400,13 +400,13 @@ export default function LeadsPage() {
         <div className="flex rounded-lg border border-[#2d2d2d] overflow-hidden ml-auto">
           <button
             onClick={() => setView('list')}
-            className={`px-3 py-2 text-sm transition-colors ${view === 'list' ? 'bg-[#ff006e] text-white' : 'bg-[#1a1a1a] text-[#b3b3b3] hover:text-white'}`}
+            className={`px-3 py-2 text-sm transition-colors ${view === 'list' ? 'bg-[#0ea5e9] text-white' : 'bg-[#1a1a1a] text-[#b3b3b3] hover:text-white'}`}
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
           </button>
           <button
             onClick={() => setView('kanban')}
-            className={`px-3 py-2 text-sm transition-colors ${view === 'kanban' ? 'bg-[#ff006e] text-white' : 'bg-[#1a1a1a] text-[#b3b3b3] hover:text-white'}`}
+            className={`px-3 py-2 text-sm transition-colors ${view === 'kanban' ? 'bg-[#0ea5e9] text-white' : 'bg-[#1a1a1a] text-[#b3b3b3] hover:text-white'}`}
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" /></svg>
           </button>
@@ -447,7 +447,7 @@ export default function LeadsPage() {
               {leads.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="text-center py-12 text-[#b3b3b3] text-sm">
-                    No leads found. <button onClick={() => setShowNewLead(true)} className="text-[#ff006e] hover:underline">Add your first lead →</button>
+                    No leads found. <button onClick={() => setShowNewLead(true)} className="text-[#0ea5e9] hover:underline">Add your first lead →</button>
                   </td>
                 </tr>
               ) : (
@@ -457,7 +457,7 @@ export default function LeadsPage() {
                     <tr key={lead.id} className="hover:bg-[#2d2d2d]/20 transition-colors group">
                       <td className="px-4 py-3">
                         <div>
-                          <Link href={`/app/leads/${lead.id}`} className="text-sm font-medium text-white hover:text-[#ff006e] transition-colors">
+                          <Link href={`/app/leads/${lead.id}`} className="text-sm font-medium text-white hover:text-[#0ea5e9] transition-colors">
                             {lead.full_name}
                           </Link>
                           <div className="text-xs text-[#b3b3b3]">{lead.email ?? lead.phone ?? '—'}</div>
@@ -475,7 +475,7 @@ export default function LeadsPage() {
                       <td className="px-4 py-3 text-sm text-[#b3b3b3]">{timeAgo(lead.last_contacted_at)}</td>
                       <td className="px-4 py-3 text-sm text-[#b3b3b3]">
                         {lead.next_followup_at ? (
-                          <span className={new Date(lead.next_followup_at) < new Date() ? 'text-[#ff006e]' : ''}>
+                          <span className={new Date(lead.next_followup_at) < new Date() ? 'text-[#0ea5e9]' : ''}>
                             {new Date(lead.next_followup_at).toLocaleDateString()}
                           </span>
                         ) : '—'}
