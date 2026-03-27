@@ -16,9 +16,15 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: "ZiggyHQ",
-  description: "The modern CRM for growth-focused teams",
+  description: "The intelligent CRM for growth-focused teams",
   openGraph: {
     title: "ZiggyHQ",
+    description: "The intelligent CRM for growth-focused teams",
+    siteName: "ZiggyHQ",
+  },
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon-192.png',
   },
 };
 
