@@ -41,13 +41,19 @@ export async function POST(request: Request) {
   const u = await getUser()
   if (!u) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { name, trigger } = await request.json()
+  const { name, trigger, reply_stops_sequence, smart_list_id } = await request.json()
   if (!name) return Response.json({ error: 'name is required' }, { status: 400 })
 
   const admin = createAdminClient()
   const { data, error } = await admin
     .from('crm_sequences')
-    .insert({ org_id: u.org_id, name, trigger: trigger ?? 'manual' })
+    .insert({
+      org_id: u.org_id,
+      name,
+      trigger: trigger ?? 'manual',
+      reply_stops_sequence: reply_stops_sequence !== false,
+      smart_list_id: smart_list_id ?? null,
+    })
     .select()
     .single()
 

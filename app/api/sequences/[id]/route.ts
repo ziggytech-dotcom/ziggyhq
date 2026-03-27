@@ -44,6 +44,8 @@ export async function PATCH(
   if ('name' in body) updates.name = body.name
   if ('trigger' in body) updates.trigger = body.trigger
   if ('active' in body) updates.active = body.active
+  if ('reply_stops_sequence' in body) updates.reply_stops_sequence = body.reply_stops_sequence
+  if ('smart_list_id' in body) updates.smart_list_id = body.smart_list_id ?? null
 
   const admin = createAdminClient()
   const { data, error } = await admin

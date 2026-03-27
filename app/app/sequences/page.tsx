@@ -7,6 +7,8 @@ interface Sequence {
   name: string
   trigger: string
   active: boolean
+  reply_stops_sequence: boolean
+  smart_list_id: string | null
   step_count: number
   enrollment_count: number
   active_enrollments: number
@@ -18,6 +20,12 @@ interface Step {
   subject: string
   body: string
   delay_hours: number
+  condition_type?: string  // 'opened' | 'not_opened' | 'clicked' | '' (always send)
+}
+
+interface SmartList {
+  id: string
+  name: string
 }
 
 interface Lead {
@@ -48,22 +56,28 @@ function SequenceEditor({
   const isNew = !sequence?.id
   const [name, setName] = useState(sequence?.name ?? '')
   const [trigger, setTrigger] = useState(sequence?.trigger ?? 'manual')
+  const [replyStops, setReplyStops] = useState((sequence as Sequence)?.reply_stops_sequence !== false)
   const [steps, setSteps] = useState<Step[]>([])
+  const [smartLists, setSmartLists] = useState<SmartList[]>([])
+  const [smartListId, setSmartListId] = useState((sequence as Sequence)?.smart_list_id ?? '')
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(!isNew)
 
   useEffect(() => {
+    fetch('/api/smart-lists').then(r => r.json()).then(d => setSmartLists(d.lists ?? []))
     if (!isNew && sequence?.id) {
       fetch(`/api/sequences/${sequence.id}`)
         .then((r) => r.json())
         .then((d) => {
           setSteps(d.sequence?.steps ?? [])
+          setReplyStops(d.sequence?.reply_stops_sequence !== false)
+          setSmartListId(d.sequence?.smart_list_id ?? '')
           setLoading(false)
         })
     }
   }, [isNew, sequence?.id])
 
-  const addStep = () => setSteps((prev) => [...prev, { subject: '', body: '', delay_hours: 24 }])
+  const addStep = () => setSteps((prev) => [...prev, { subject: '', body: '', delay_hours: 24, condition_type: '' }])
   const removeStep = (i: number) => setSteps((prev) => prev.filter((_, idx) => idx !== i))
   const updateStep = (i: number, field: keyof Step, value: string | number) =>
     setSteps((prev) => prev.map((s, idx) => idx === i ? { ...s, [field]: value } : s))
@@ -72,12 +86,13 @@ function SequenceEditor({
     if (!name.trim()) return
     setSaving(true)
     let seqId = sequence?.id
+    const seqPayload = { name, trigger, reply_stops_sequence: replyStops, smart_list_id: smartListId || null }
 
     if (isNew) {
       const res = await fetch('/api/sequences', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, trigger }),
+        body: JSON.stringify(seqPayload),
       })
       const d = await res.json()
       seqId = d.sequence?.id
@@ -85,7 +100,7 @@ function SequenceEditor({
       await fetch(`/api/sequences/${seqId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, trigger }),
+        body: JSON.stringify(seqPayload),
       })
     }
 
@@ -129,6 +144,28 @@ function SequenceEditor({
               </select>
             </div>
 
+            {/* Smart list trigger */}
+            <div>
+              <label className="block text-sm text-[#b3b3b3] mb-1.5">Enroll From Smart List (optional)</label>
+              <select value={smartListId} onChange={(e) => setSmartListId(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
+                <option value="">None — enroll manually</option>
+                {smartLists.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
+              </select>
+              <p className="text-xs text-[#b3b3b3]/60 mt-1">When set, leads added to this smart list are auto-enrolled in this sequence.</p>
+            </div>
+
+            {/* Reply stops sequence toggle */}
+            <div className="flex items-center justify-between p-3 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d]">
+              <div>
+                <div className="text-sm text-white font-medium">Stop when lead replies</div>
+                <div className="text-xs text-[#b3b3b3] mt-0.5">If lead replies to any email in this sequence, stop sending future steps.</div>
+              </div>
+              <button type="button" onClick={() => setReplyStops(p => !p)}
+                className={`relative flex-shrink-0 w-11 h-6 rounded-full transition-colors ml-4 ${replyStops ? 'bg-[#22c55e]' : 'bg-[#2d2d2d]'}`}>
+                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${replyStops ? 'translate-x-5' : 'translate-x-0.5'}`} />
+              </button>
+            </div>
+
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="text-sm font-medium text-white">Steps ({steps.length})</div>
@@ -156,9 +193,23 @@ function SequenceEditor({
                       <button onClick={() => removeStep(i)} className="text-[#b3b3b3] hover:text-[#0ea5e9] text-xs">Remove</button>
                     </div>
                     <div className="space-y-3">
-                      <div>
-                        <label className="block text-xs text-[#b3b3b3] mb-1">Send after (hours)</label>
-                        <input type="number" min="1" value={step.delay_hours} onChange={(e) => updateStep(i, 'delay_hours', parseInt(e.target.value) || 24)} className="w-full px-3 py-1.5 rounded bg-[#1a1a1a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-[#b3b3b3] mb-1">Send after (hours)</label>
+                          <input type="number" min="1" value={step.delay_hours} onChange={(e) => updateStep(i, 'delay_hours', parseInt(e.target.value) || 24)} className="w-full px-3 py-1.5 rounded bg-[#1a1a1a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
+                        </div>
+                        {i > 0 && (
+                          <div>
+                            <label className="block text-xs text-[#b3b3b3] mb-1">Condition (based on prev step)</label>
+                            <select value={step.condition_type ?? ''} onChange={(e) => updateStep(i, 'condition_type', e.target.value)}
+                              className="w-full px-3 py-1.5 rounded bg-[#1a1a1a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
+                              <option value="">Always send</option>
+                              <option value="opened">Only if prev opened</option>
+                              <option value="not_opened">Only if prev NOT opened</option>
+                              <option value="clicked">Only if prev clicked</option>
+                            </select>
+                          </div>
+                        )}
                       </div>
                       <div>
                         <label className="block text-xs text-[#b3b3b3] mb-1">Subject *</label>

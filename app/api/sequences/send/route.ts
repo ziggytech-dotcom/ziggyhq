@@ -22,11 +22,12 @@ export async function POST(request: Request) {
   const admin = createAdminClient()
   const now = new Date().toISOString()
 
-  // Find due enrollments
+  // Find due enrollments (skip those where lead has replied)
   const { data: enrollments } = await admin
     .from('crm_sequence_enrollments')
     .select('*, crm_leads(id, full_name, email, phone, assigned_to, property_type), crm_sequences(*, crm_sequence_steps(*))')
     .eq('status', 'active')
+    .is('replied_at', null)
     .lte('next_send_at', now)
     .limit(50)
 
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     if (!lead || !sequence) continue
 
     const steps = (sequence.crm_sequence_steps ?? []).sort((a: { step_order: number }, b: { step_order: number }) => a.step_order - b.step_order)
-    const currentStep = steps[enrollment.current_step]
+    let currentStep = steps[enrollment.current_step]
     if (!currentStep) {
       // No more steps — complete enrollment
       await admin.from('crm_sequence_enrollments').update({ status: 'completed' }).eq('id', enrollment.id)
@@ -52,6 +53,40 @@ export async function POST(request: Request) {
       // Skip no email
       await admin.from('crm_sequence_enrollments').update({ status: 'completed' }).eq('id', enrollment.id)
       continue
+    }
+
+    // Check conditional logic — skip step if condition not met
+    if (currentStep.condition_type) {
+      const prevStepIndex = enrollment.current_step - 1
+      let conditionMet = true
+      if (prevStepIndex >= 0) {
+        const prevStep = steps[prevStepIndex]
+        if (prevStep?.id) {
+          const { data: prevSend } = await admin
+            .from('crm_sequence_sends')
+            .select('opened_at, clicked_at')
+            .eq('enrollment_id', enrollment.id)
+            .eq('step_id', prevStep.id)
+            .single()
+
+          if (currentStep.condition_type === 'opened') conditionMet = !!prevSend?.opened_at
+          if (currentStep.condition_type === 'not_opened') conditionMet = !prevSend?.opened_at
+          if (currentStep.condition_type === 'clicked') conditionMet = !!prevSend?.clicked_at
+        }
+      }
+
+      if (!conditionMet) {
+        // Skip this step, advance to next
+        const nextStepIndex = enrollment.current_step + 1
+        const nextStep = steps[nextStepIndex]
+        if (nextStep) {
+          const nextSendAt = new Date(Date.now() + nextStep.delay_hours * 3600000).toISOString()
+          await admin.from('crm_sequence_enrollments').update({ current_step: nextStepIndex, next_send_at: nextSendAt }).eq('id', enrollment.id)
+        } else {
+          await admin.from('crm_sequence_enrollments').update({ status: 'completed' }).eq('id', enrollment.id)
+        }
+        continue
+      }
     }
 
     // Get agent name
