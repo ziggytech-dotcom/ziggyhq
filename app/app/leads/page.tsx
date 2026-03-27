@@ -81,6 +81,16 @@ function timeAgo(dateStr: string | null) {
   return `${Math.floor(diffDays / 30)}mo ago`
 }
 
+interface DuplicateLead {
+  id: string
+  full_name: string
+  email: string | null
+  phone: string | null
+  stage: string | null
+  status: string
+  match_reason: string
+}
+
 function NewLeadSlideOver({
   open,
   onClose,
@@ -112,30 +122,59 @@ function NewLeadSlideOver({
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [duplicates, setDuplicates] = useState<DuplicateLead[]>([])
+  const [showDupWarning, setShowDupWarning] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
+  const buildBody = () => {
     const body: Record<string, unknown> = { ...form }
     if (form.budget_min) body.budget_min = parseInt(form.budget_min)
     if (form.budget_max) body.budget_max = parseInt(form.budget_max)
     if (!form.assigned_to) delete body.assigned_to
+    return body
+  }
 
+  const doCreate = async () => {
+    setLoading(true)
+    setError('')
     const res = await fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify(buildBody()),
     })
     if (res.ok) {
       onCreated()
       onClose()
       setForm({ full_name: '', email: '', phone: '', source: '', stage: '', status: 'active', notes: '', budget_min: '', budget_max: '', timeline: '', pre_approved: false, assigned_to: '' })
+      setDuplicates([])
+      setShowDupWarning(false)
     } else {
       const data = await res.json()
       setError(data.error ?? 'Failed to create lead')
     }
     setLoading(false)
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+    // Check for duplicates first
+    const dupRes = await fetch('/api/leads/duplicates', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ full_name: form.full_name, email: form.email, phone: form.phone }),
+    })
+    if (dupRes.ok) {
+      const { duplicates: found } = await dupRes.json()
+      if (found && found.length > 0) {
+        setDuplicates(found)
+        setShowDupWarning(true)
+        setLoading(false)
+        return
+      }
+    }
+    setLoading(false)
+    await doCreate()
   }
 
   if (!open) return null
@@ -215,13 +254,38 @@ function NewLeadSlideOver({
               <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm resize-none" />
             </div>
           </div>
+          {showDupWarning && duplicates.length > 0 && (
+            <div className="rounded-lg border border-[#f59e0b]/30 bg-[#f59e0b]/5 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <svg className="w-4 h-4 text-[#f59e0b] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <span className="text-sm font-medium text-[#f59e0b]">Possible duplicate{duplicates.length > 1 ? 's' : ''} found</span>
+              </div>
+              <div className="space-y-2 mb-3">
+                {duplicates.map((dup) => (
+                  <div key={dup.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d]">
+                    <div>
+                      <div className="text-sm font-medium text-white">{dup.full_name}</div>
+                      <div className="text-xs text-[#b3b3b3]">{dup.email ?? dup.phone ?? '—'} · Matched on {dup.match_reason}</div>
+                    </div>
+                    <a href={`/app/leads/${dup.id}`} target="_blank" rel="noreferrer" className="text-xs text-[#0ea5e9] hover:underline">View →</a>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => { setShowDupWarning(false); setDuplicates([]) }} className="flex-1 py-2 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-xs transition-colors">Cancel</button>
+                <button type="button" onClick={doCreate} className="flex-1 py-2 rounded-lg bg-[#f59e0b] text-white text-xs font-medium hover:bg-[#f59e0b]/90 transition-colors">Create Anyway</button>
+              </div>
+            </div>
+          )}
           {error && <div className="text-sm text-[#0ea5e9] bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 rounded-lg px-3 py-2">{error}</div>}
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
-            <button type="submit" disabled={loading} className="flex-1 py-2.5 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors disabled:opacity-50">
-              {loading ? 'Creating...' : 'Create Lead'}
-            </button>
-          </div>
+          {!showDupWarning && (
+            <div className="flex gap-3 pt-2">
+              <button type="button" onClick={onClose} className="flex-1 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
+              <button type="submit" disabled={loading} className="flex-1 py-2.5 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors disabled:opacity-50">
+                {loading ? 'Checking...' : 'Create Lead'}
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>
