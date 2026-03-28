@@ -160,7 +160,7 @@ export default function ReportsPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#2d2d2d" />
                     <XAxis dataKey="stage" tick={{ fill: '#b3b3b3', fontSize: 11 }} angle={-30} textAnchor="end" />
                     <YAxis tick={{ fill: '#b3b3b3', fontSize: 11 }} tickFormatter={(v) => formatCurrency(v)} />
-                    <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [formatCurrency(v), 'Deal Value']} />
+                    <Tooltip contentStyle={tooltipStyle} formatter={(v) => [formatCurrency(Number(v)), 'Deal Value']} />
                     <Bar dataKey="value" fill="#0ea5e9" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -208,7 +208,7 @@ export default function ReportsPage() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#2d2d2d" />
                     <XAxis dataKey="month" tick={{ fill: '#b3b3b3', fontSize: 11 }} />
                     <YAxis tick={{ fill: '#b3b3b3', fontSize: 11 }} tickFormatter={formatCurrency} />
-                    <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [formatCurrency(v), 'Revenue']} />
+                    <Tooltip contentStyle={tooltipStyle} formatter={(v) => [formatCurrency(Number(v)), 'Revenue']} />
                     <Bar dataKey="value" fill="#22c55e" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
