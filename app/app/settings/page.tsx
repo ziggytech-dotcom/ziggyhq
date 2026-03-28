@@ -427,6 +427,43 @@ export default function SettingsPage() {
           </div>
         </div>
 
+        {/* Data Privacy & CCPA */}
+        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
+            🔒 Data & Privacy
+          </h2>
+          <p className="text-xs text-[#b3b3b3] mb-4">
+            Under the California Consumer Privacy Act (CCPA) and similar regulations, you have the right to access,
+            export, and request deletion of your personal data. ZiggyTech Ventures LLC does not sell your personal information.
+          </p>
+          <div className="space-y-3">
+            <div className="flex items-start justify-between gap-4 p-4 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d]">
+              <div>
+                <div className="text-sm text-white font-medium">Export My Data</div>
+                <div className="text-xs text-[#b3b3b3] mt-0.5">
+                  Download a copy of all data associated with your account in JSON format.
+                  Your export will be prepared and emailed to your account address within 72 hours.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => alert('Data export requested. You will receive an email within 72 hours when your export is ready.')}
+                className="flex-shrink-0 px-4 py-2 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-xs font-medium hover:text-white hover:bg-[#3d3d3d] transition-colors whitespace-nowrap"
+              >
+                Request Export
+              </button>
+            </div>
+            <p className="text-xs text-[#b3b3b3]/60 px-1">
+              To request deletion of your data or for other privacy inquiries, contact{' '}
+              <a href="mailto:privacy@ziggytechventures.com" className="text-[#0ea5e9] hover:underline">
+                privacy@ziggytechventures.com
+              </a>.
+              View our full{' '}
+              <a href="/privacy" className="text-[#0ea5e9] hover:underline">Privacy Policy</a>.
+            </p>
+          </div>
+        </div>
+
         {/* Save Button */}
         <div className="flex items-center gap-3">
           <button

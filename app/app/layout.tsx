@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import Sidebar from '@/app/components/Sidebar'
+import Footer from '@/app/components/Footer'
 
 export default async function AppLayout({
   children,
@@ -63,8 +64,11 @@ export default async function AppLayout({
         userEmail={user.email ?? ''}
         userName={userFullName || userName}
       />
-      <main className="flex-1 lg:ml-64 min-h-screen overflow-y-auto pt-14 lg:pt-0">
-        {children}
+      <main className="flex-1 lg:ml-64 min-h-screen overflow-y-auto pt-14 lg:pt-0 flex flex-col">
+        <div className="flex-1">
+          {children}
+        </div>
+        <Footer />
       </main>
     </div>
   )

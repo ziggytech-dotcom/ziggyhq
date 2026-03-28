@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import CookieBanner from "@/app/components/CookieBanner";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -37,6 +38,7 @@ export default function RootLayout({
     <html lang="en" className={`${bebasNeue.variable} ${spaceGrotesk.variable} h-full`}>
       <body className="h-full bg-background text-white antialiased">
         {children}
+        <CookieBanner />
       </body>
     </html>
   );

@@ -366,6 +366,18 @@ export default function SequencesPage() {
         </button>
       </div>
 
+      {/* CAN-SPAM compliance notice */}
+      <div className="mb-6 flex items-start gap-3 px-4 py-3 rounded-xl bg-[#0ea5e9]/5 border border-[#0ea5e9]/20">
+        <svg className="w-4 h-4 text-[#0ea5e9] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p className="text-xs text-[#b3b3b3]">
+          <span className="text-white font-medium">CAN-SPAM Compliance: </span>
+          All sequences include an unsubscribe link per CAN-SPAM requirements.
+          Recipients who unsubscribe are automatically removed from future emails within 10 business days.
+        </p>
+      </div>
+
       {loading ? (
         <div className="text-[#b3b3b3] text-sm py-8 text-center">Loading...</div>
       ) : sequences.length === 0 ? (
