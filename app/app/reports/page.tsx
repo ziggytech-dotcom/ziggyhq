@@ -21,7 +21,7 @@ interface ReportData {
   wonLeads: number
   conversionRate: number
   range: string
-  // New analytics
+  // Analytics
   stageValues: Record<string, number>
   totalPipelineValue: number
   winRate: number
@@ -31,6 +31,9 @@ interface ReportData {
   thisMonthRevenue: number
   lastMonthRevenue: number
   topContacts: { id: string; name: string; source: string; stage: string; status: string; dealValue: number }[]
+  // Weighted forecast
+  weightedForecast: { stage: string; dealValue: number; probability: number; weightedValue: number }[]
+  totalWeightedForecast: number
 }
 
 const COLORS = ['#0ea5e9', '#3b82f6', '#22c55e', '#f59e0b', '#8b5cf6', '#06b6d4', '#f97316', '#ec4899']
@@ -366,6 +369,65 @@ export default function ReportsPage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Pipeline Forecasting */}
+          <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden mb-6">
+            <div className="px-6 py-4 border-b border-[#2d2d2d] flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold text-white">Pipeline Forecast (Weighted)</h2>
+                <p className="text-xs text-[#b3b3b3] mt-0.5">Deal value × close probability per stage</p>
+              </div>
+              <div className="text-right">
+                <div className="text-xs text-[#b3b3b3]">Weighted Total</div>
+                <div className="text-lg font-bold text-[#22c55e]">{formatCurrency(data.totalWeightedForecast)}</div>
+              </div>
+            </div>
+            {data.weightedForecast.length === 0 ? (
+              <div className="px-6 py-8 text-center">
+                <p className="text-[#b3b3b3] text-sm">No forecast data yet</p>
+                <p className="text-xs text-[#b3b3b3]/60 mt-1">Set stage probabilities in Settings → Pipeline Forecast, then add budget values to leads</p>
+              </div>
+            ) : (
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[#2d2d2d]">
+                    {['Stage', 'Total Deal Value', 'Probability', 'Weighted Value'].map((h) => (
+                      <th key={h} className="text-left text-xs font-medium text-[#b3b3b3] px-6 py-3 uppercase tracking-wider">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#2d2d2d]">
+                  {data.weightedForecast.map((f) => (
+                    <tr key={f.stage} className="hover:bg-[#2d2d2d]/20">
+                      <td className="px-6 py-3 text-sm text-white font-medium">{f.stage}</td>
+                      <td className="px-6 py-3 text-sm text-[#b3b3b3]">{formatCurrency(f.dealValue)}</td>
+                      <td className="px-6 py-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-20 h-1.5 bg-[#2d2d2d] rounded-full overflow-hidden">
+                            <div
+                              className="h-full rounded-full"
+                              style={{
+                                width: `${f.probability}%`,
+                                backgroundColor: f.probability >= 70 ? '#22c55e' : f.probability >= 40 ? '#f59e0b' : '#0ea5e9',
+                              }}
+                            />
+                          </div>
+                          <span className="text-xs text-white font-medium">{f.probability}%</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-3 text-sm font-bold text-[#22c55e]">{formatCurrency(f.weightedValue)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t border-[#2d2d2d] bg-[#0a0a0a]">
+                    <td colSpan={3} className="px-6 py-3 text-xs font-medium text-[#b3b3b3] uppercase tracking-wider">Weighted Forecast Total</td>
+                    <td className="px-6 py-3 text-base font-bold text-[#22c55e]">{formatCurrency(data.totalWeightedForecast)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            )}
           </div>
 
           {/* Agent performance table */}

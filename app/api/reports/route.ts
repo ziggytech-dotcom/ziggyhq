@@ -24,15 +24,18 @@ export async function GET(request: Request) {
   else since = new Date(now.getTime() - 30 * 86400000)
 
   const admin = createAdminClient()
-  const [leadsRes, activitiesRes, agentsRes] = await Promise.all([
+  const [leadsRes, activitiesRes, agentsRes, settingsRes] = await Promise.all([
     admin.from('crm_leads').select('id, full_name, stage, status, source, lead_score, pre_approved, created_at, last_contacted_at, assigned_to, budget_max, budget_min').eq('org_id', orgId),
     admin.from('crm_lead_activities').select('type, created_at, lead_id').eq('org_id', orgId).gte('created_at', since.toISOString()),
     admin.from('crm_users').select('id, full_name, email').eq('org_id', orgId).eq('status', 'active'),
+    admin.from('crm_organizations').select('settings_json').eq('id', orgId).single(),
   ])
 
   const leads = leadsRes.data ?? []
   const activities = activitiesRes.data ?? []
   const agents = agentsRes.data ?? []
+  const orgSettings = (settingsRes.data?.settings_json ?? {}) as Record<string, unknown>
+  const stageProbabilities = (orgSettings.stage_probabilities ?? {}) as Record<string, number>
 
   // ── Stage counts (pipeline overview) ────────────────────────────────────────
   const stageCounts: Record<string, number> = {}
@@ -177,6 +180,22 @@ export async function GET(request: Request) {
   // ── Total pipeline value ─────────────────────────────────────────────────────
   const totalPipelineValue = Object.values(stageValues).reduce((s, v) => s + v, 0)
 
+  // ── Weighted forecast by stage (deal_value × probability) ───────────────────
+  const weightedForecast: { stage: string; dealValue: number; probability: number; weightedValue: number }[] = []
+  for (const [stage, dealValue] of Object.entries(stageValues)) {
+    if (dealValue > 0) {
+      const probability = stageProbabilities[stage] ?? 0
+      weightedForecast.push({
+        stage,
+        dealValue,
+        probability,
+        weightedValue: Math.round(dealValue * (probability / 100)),
+      })
+    }
+  }
+  weightedForecast.sort((a, b) => b.weightedValue - a.weightedValue)
+  const totalWeightedForecast = weightedForecast.reduce((s, f) => s + f.weightedValue, 0)
+
   return Response.json({
     // Existing fields
     stageCounts,
@@ -200,5 +219,7 @@ export async function GET(request: Request) {
     thisMonthRevenue,
     lastMonthRevenue,
     topContacts,
+    weightedForecast,
+    totalWeightedForecast,
   })
 }

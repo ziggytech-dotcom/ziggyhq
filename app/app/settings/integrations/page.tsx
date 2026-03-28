@@ -45,9 +45,12 @@ function IntegrationsContent() {
     const em = searchParams.get('email')
     if (s === 'gmail_connected') {
       setBanner({ type: 'success', msg: `Gmail connected${em ? `: ${em}` : ''}!` })
+    } else if (s === 'outlook_connected') {
+      setBanner({ type: 'success', msg: `Outlook connected${em ? `: ${em}` : ''}!` })
     } else if (e) {
       const msgs: Record<string, string> = {
         gmail_denied: 'Gmail connection was denied.',
+        outlook_denied: 'Outlook connection was denied.',
         token_exchange_failed: 'Failed to exchange token. Try again.',
         invalid_state: 'Invalid OAuth state. Try again.',
       }
@@ -164,9 +167,36 @@ function IntegrationsContent() {
         )}
       </div>
 
+      {/* Outlook section */}
+      <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-[#2d2d2d] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-[#0078d4] flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 4.5A1.5 1.5 0 0 1 4.5 3h15A1.5 1.5 0 0 1 21 4.5v15a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-15ZM12 7l-7 4v1l7 4 7-4v-1L12 7Z"/>
+              </svg>
+            </div>
+            <div>
+              <div className="text-sm font-semibold text-white">Outlook / Microsoft 365</div>
+              <div className="text-xs text-[#b3b3b3]">Sync emails from Outlook or Microsoft 365 accounts</div>
+            </div>
+          </div>
+          <a
+            href="/api/outlook/connect"
+            className="flex items-center gap-2 px-4 py-2 bg-[#0078d4] text-white rounded-lg text-sm font-medium hover:bg-[#0078d4]/90 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            Connect Outlook
+          </a>
+        </div>
+        <div className="px-6 py-4 text-xs text-[#b3b3b3]">
+          Requires <code className="bg-[#2d2d2d] px-1 rounded">MICROSOFT_CLIENT_ID</code> and <code className="bg-[#2d2d2d] px-1 rounded">MICROSOFT_CLIENT_SECRET</code> environment variables.
+        </div>
+      </div>
+
       {/* How it works */}
       <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
-        <h3 className="text-sm font-semibold text-white mb-4">How Gmail Sync Works</h3>
+        <h3 className="text-sm font-semibold text-white mb-4">How Email Sync Works</h3>
         <ul className="space-y-2">
           {[
             'Connect your Gmail account via secure OAuth',

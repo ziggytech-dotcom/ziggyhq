@@ -74,6 +74,22 @@ interface Lender {
   email: string | null
 }
 
+interface CustomFieldDef {
+  id: string
+  name: string
+  label: string
+  field_type: string
+  options: string[] | null
+  is_required: boolean
+  position: number
+}
+
+interface EmailAccount {
+  id: string
+  email: string
+  provider: string
+}
+
 const PROPERTY_TYPES = ['Single Family', 'Condo/Townhouse', 'Multi-Family', 'Land', 'Commercial', 'Mobile/Manufactured', 'Other']
 const LOAN_TYPES = ['Conventional', 'FHA', 'VA', 'USDA', 'Jumbo', 'Non-QM', 'Cash', 'Other']
 
@@ -101,6 +117,8 @@ const activityColors: Record<string, string> = {
   call: '#3b82f6',
   sms: '#22c55e',
   email: '#f59e0b',
+  email_sent: '#f59e0b',
+  email_received: '#22c55e',
   note: '#b3b3b3',
   stage_change: '#0ea5e9',
   assignment: '#8b5cf6',
@@ -139,6 +157,8 @@ export default function LeadDetail({
   enrollments: initialEnrollments,
   lenders,
   orgId,
+  customFieldDefs,
+  emailAccounts,
 }: {
   lead: Lead
   activities: Activity[]
@@ -150,6 +170,8 @@ export default function LeadDetail({
   enrollments: Enrollment[]
   lenders: Lender[]
   orgId: string
+  customFieldDefs: CustomFieldDef[]
+  emailAccounts: EmailAccount[]
 }) {
   const router = useRouter()
   const [lead, setLead] = useState(initialLead)
@@ -166,6 +188,23 @@ export default function LeadDetail({
   const [aiCallStatus, setAiCallStatus] = useState<string | null>(null)
   const [aiScriptType, setAiScriptType] = useState('new_lead')
   const [showAiMenu, setShowAiMenu] = useState(false)
+
+  // Log Call modal
+  const [showLogCall, setShowLogCall] = useState(false)
+  const [callForm, setCallForm] = useState({ outcome: 'connected', duration_minutes: '', notes: '', next_followup_date: '' })
+  const [loggingCall, setLoggingCall] = useState(false)
+
+  // Compose Email modal
+  const [showCompose, setShowCompose] = useState(false)
+  const [composeForm, setComposeForm] = useState({ account_id: '', subject: '', body: '' })
+  const [sendingEmail, setSendingEmail] = useState(false)
+  const [composeError, setComposeError] = useState('')
+
+  // Custom fields
+  const [customFields, setCustomFields] = useState<Record<string, unknown>>(
+    (initialLead as unknown as { custom_fields_json: Record<string, unknown> }).custom_fields_json ?? {}
+  )
+  const [savingCustomField, setSavingCustomField] = useState<string | null>(null)
 
   const updateLead = async (updates: Partial<Lead>) => {
     setSaving(true)
@@ -277,6 +316,71 @@ export default function LeadDetail({
 
   const statusStyle = statusColors[lead.status] ?? statusColors.active
 
+  const logCall = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoggingCall(true)
+    const res = await fetch('/api/calls/log', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lead_id: lead.id,
+        outcome: callForm.outcome,
+        duration_minutes: callForm.duration_minutes || undefined,
+        notes: callForm.notes || undefined,
+        next_followup_date: callForm.next_followup_date || undefined,
+      }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setActivities((prev) => [data.activity, ...prev])
+      if (callForm.next_followup_date) {
+        setLead((prev) => ({ ...prev, next_followup_at: new Date(callForm.next_followup_date).toISOString() }))
+      }
+      setShowLogCall(false)
+      setCallForm({ outcome: 'connected', duration_minutes: '', notes: '', next_followup_date: '' })
+    }
+    setLoggingCall(false)
+  }
+
+  const sendEmail = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSendingEmail(true)
+    setComposeError('')
+    const res = await fetch('/api/gmail/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lead_id: lead.id,
+        account_id: composeForm.account_id,
+        to: lead.email,
+        subject: composeForm.subject,
+        body: composeForm.body,
+      }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      setActivities((prev) => [data.activity, ...prev])
+      setShowCompose(false)
+      setComposeForm({ account_id: '', subject: '', body: '' })
+    } else {
+      const d = await res.json()
+      setComposeError(d.error ?? 'Send failed')
+    }
+    setSendingEmail(false)
+  }
+
+  const saveCustomField = async (fieldName: string, value: unknown) => {
+    setSavingCustomField(fieldName)
+    const updated = { ...customFields, [fieldName]: value }
+    setCustomFields(updated)
+    await fetch(`/api/leads/${lead.id}/custom-fields`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fields: { [fieldName]: value } }),
+    })
+    setSavingCustomField(null)
+  }
+
   return (
     <div className="p-8">
       {/* Header */}
@@ -312,18 +416,36 @@ export default function LeadDetail({
           </div>
         </div>
         {/* Quick actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {lead.phone && (
             <a href={`tel:${lead.phone}`} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#3b82f6]/20 text-[#3b82f6] border border-[#3b82f6]/30 text-sm hover:bg-[#3b82f6]/30 transition-colors">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
               Call
             </a>
           )}
+          {lead.phone && (
+            <button
+              onClick={() => setShowLogCall(true)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 text-sm hover:bg-[#3b82f6]/20 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+              Log Call
+            </button>
+          )}
           {lead.email && (
             <a href={`mailto:${lead.email}`} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30 text-sm hover:bg-[#f59e0b]/30 transition-colors">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
               Email
             </a>
+          )}
+          {lead.email && emailAccounts.length > 0 && (
+            <button
+              onClick={() => { setComposeForm((f) => ({ ...f, account_id: emailAccounts[0]?.id ?? '' })); setShowCompose(true) }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20 text-sm hover:bg-[#f59e0b]/20 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+              Compose
+            </button>
           )}
           {lead.phone && (
             <div className="relative">
@@ -366,6 +488,146 @@ export default function LeadDetail({
       {aiCallStatus && (
         <div className={`mb-4 px-4 py-3 rounded-lg text-sm font-medium ${aiCallStatus.startsWith('Error') ? 'bg-red-900/20 border border-red-900/40 text-red-400' : 'bg-[#8b5cf6]/10 border border-[#8b5cf6]/30 text-[#8b5cf6]'}`}>
           {aiCallStatus}
+        </div>
+      )}
+
+      {/* Log Call Modal */}
+      {showLogCall && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowLogCall(false)} />
+          <div className="relative w-full max-w-md bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-semibold text-white">Log Call</h2>
+              <button onClick={() => setShowLogCall(false)} className="text-[#b3b3b3] hover:text-white">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <form onSubmit={logCall} className="space-y-4">
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">Outcome *</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { value: 'connected', label: 'Connected', color: '#22c55e' },
+                    { value: 'no_answer', label: 'No Answer', color: '#f59e0b' },
+                    { value: 'voicemail', label: 'Voicemail', color: '#0ea5e9' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setCallForm((f) => ({ ...f, outcome: opt.value }))}
+                      className="py-2.5 rounded-lg border text-sm font-medium transition-colors"
+                      style={callForm.outcome === opt.value
+                        ? { backgroundColor: `${opt.color}20`, color: opt.color, borderColor: `${opt.color}40` }
+                        : { backgroundColor: '#0a0a0a', color: '#b3b3b3', borderColor: '#2d2d2d' }
+                      }
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">Duration (minutes)</label>
+                <input
+                  type="number"
+                  min={0}
+                  step={0.5}
+                  value={callForm.duration_minutes}
+                  onChange={(e) => setCallForm((f) => ({ ...f, duration_minutes: e.target.value }))}
+                  placeholder="e.g. 5"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">Call Notes</label>
+                <textarea
+                  value={callForm.notes}
+                  onChange={(e) => setCallForm((f) => ({ ...f, notes: e.target.value }))}
+                  rows={3}
+                  placeholder="What was discussed..."
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm resize-none"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">Next Follow-up Date</label>
+                <input
+                  type="date"
+                  value={callForm.next_followup_date}
+                  onChange={(e) => setCallForm((f) => ({ ...f, next_followup_date: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
+                />
+              </div>
+              <div className="flex gap-3 pt-1">
+                <button type="button" onClick={() => setShowLogCall(false)} className="flex-1 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
+                <button type="submit" disabled={loggingCall} className="flex-1 py-2.5 rounded-lg bg-[#3b82f6] text-white text-sm font-medium hover:bg-[#3b82f6]/90 disabled:opacity-50 transition-colors">
+                  {loggingCall ? 'Saving...' : 'Log Call'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Compose Email Modal */}
+      {showCompose && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowCompose(false)} />
+          <div className="relative w-full max-w-lg bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-semibold text-white">Compose Email</h2>
+              <button onClick={() => setShowCompose(false)} className="text-[#b3b3b3] hover:text-white">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <form onSubmit={sendEmail} className="space-y-4">
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">From Account *</label>
+                <select
+                  required
+                  value={composeForm.account_id}
+                  onChange={(e) => setComposeForm((f) => ({ ...f, account_id: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
+                >
+                  <option value="">Select account...</option>
+                  {emailAccounts.map((a) => (
+                    <option key={a.id} value={a.id}>{a.email} ({a.provider})</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">To</label>
+                <div className="px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-[#b3b3b3] text-sm">{lead.email}</div>
+              </div>
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">Subject *</label>
+                <input
+                  required
+                  value={composeForm.subject}
+                  onChange={(e) => setComposeForm((f) => ({ ...f, subject: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">Message *</label>
+                <textarea
+                  required
+                  value={composeForm.body}
+                  onChange={(e) => setComposeForm((f) => ({ ...f, body: e.target.value }))}
+                  rows={6}
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm resize-none"
+                />
+              </div>
+              {composeError && (
+                <div className="px-3 py-2 rounded-lg bg-red-900/20 border border-red-900/40 text-red-400 text-sm">{composeError}</div>
+              )}
+              <div className="flex gap-3 pt-1">
+                <button type="button" onClick={() => setShowCompose(false)} className="flex-1 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
+                <button type="submit" disabled={sendingEmail} className="flex-1 py-2.5 rounded-lg bg-[#f59e0b] text-white text-sm font-medium hover:bg-[#f59e0b]/90 disabled:opacity-50 transition-colors">
+                  {sendingEmail ? 'Sending...' : 'Send Email'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -665,6 +927,61 @@ export default function LeadDetail({
             </div>
           </div>
 
+          {/* Custom Fields */}
+          {customFieldDefs.length > 0 && (
+            <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
+              <h3 className="text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider mb-4">Custom Fields</h3>
+              <div className="space-y-3">
+                {customFieldDefs.map((def) => {
+                  const value = customFields[def.name]
+                  return (
+                    <div key={def.id}>
+                      <div className="text-xs text-[#b3b3b3] mb-1">{def.label}{def.is_required && <span className="text-[#0ea5e9] ml-1">*</span>}</div>
+                      {def.field_type === 'checkbox' ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={!!value}
+                            onChange={(e) => saveCustomField(def.name, e.target.checked)}
+                            className="w-4 h-4 accent-[#0ea5e9]"
+                          />
+                          <span className="text-sm text-[#b3b3b3]">{value ? 'Yes' : 'No'}</span>
+                          {savingCustomField === def.name && <span className="text-xs text-[#b3b3b3]">Saving...</span>}
+                        </div>
+                      ) : def.field_type === 'dropdown' ? (
+                        <select
+                          value={(value as string) ?? ''}
+                          onChange={(e) => saveCustomField(def.name, e.target.value || null)}
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
+                        >
+                          <option value="">Not set</option>
+                          {(def.options ?? []).map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      ) : def.field_type === 'date' ? (
+                        <input
+                          type="date"
+                          value={(value as string) ?? ''}
+                          onChange={(e) => saveCustomField(def.name, e.target.value || null)}
+                          onBlur={(e) => saveCustomField(def.name, e.target.value || null)}
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
+                        />
+                      ) : (
+                        <input
+                          type={def.field_type === 'number' ? 'number' : 'text'}
+                          value={(value as string) ?? ''}
+                          onChange={(e) => setCustomFields((f) => ({ ...f, [def.name]: e.target.value }))}
+                          onBlur={(e) => saveCustomField(def.name, e.target.value || null)}
+                          placeholder={`Enter ${def.label.toLowerCase()}...`}
+                          className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]"
+                        />
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Lead Score */}
           <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
             <h3 className="text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider mb-3">Lead Score</h3>
@@ -766,10 +1083,31 @@ export default function LeadDetail({
                     </div>
                     <div className="flex-1 pb-4">
                       <div className="flex items-baseline justify-between mb-0.5">
-                        <span className="text-sm font-medium text-white capitalize">{activity.type.replace('_', ' ')}</span>
+                        <span className="text-sm font-medium text-white capitalize">{activity.type.replace(/_/g, ' ')}</span>
                         <span className="text-xs text-[#b3b3b3]">{timeAgo(activity.created_at)}</span>
                       </div>
-                      {activity.content && <p className="text-sm text-[#b3b3b3] whitespace-pre-wrap">{activity.content}</p>}
+                      {/* Email subject line */}
+                      {(activity.type === 'email_sent' || activity.type === 'email_received') && (activity as unknown as { email_subject?: string }).email_subject && (
+                        <p className="text-sm text-white font-medium mb-0.5">{(activity as unknown as { email_subject: string }).email_subject}</p>
+                      )}
+                      {/* Call outcome */}
+                      {activity.type === 'call' && (activity as unknown as { call_outcome?: string }).call_outcome && (
+                        <span className="inline-block text-xs px-2 py-0.5 rounded-full mb-1 font-medium capitalize"
+                          style={{
+                            backgroundColor: (activity as unknown as { call_outcome: string }).call_outcome === 'connected' ? '#22c55e20' : (activity as unknown as { call_outcome: string }).call_outcome === 'voicemail' ? '#0ea5e920' : '#f59e0b20',
+                            color: (activity as unknown as { call_outcome: string }).call_outcome === 'connected' ? '#22c55e' : (activity as unknown as { call_outcome: string }).call_outcome === 'voicemail' ? '#0ea5e9' : '#f59e0b',
+                          }}
+                        >
+                          {(activity as unknown as { call_outcome: string }).call_outcome.replace('_', ' ')}
+                        </span>
+                      )}
+                      {activity.content && !activity.content.startsWith('Gmail:') && !activity.content.startsWith('Outlook:') && (
+                        <p className="text-sm text-[#b3b3b3] whitespace-pre-wrap">{activity.content}</p>
+                      )}
+                      {/* Call notes */}
+                      {activity.type === 'call' && (activity as unknown as { call_notes?: string }).call_notes && (
+                        <p className="text-sm text-[#b3b3b3] mt-1 whitespace-pre-wrap">{(activity as unknown as { call_notes: string }).call_notes}</p>
+                      )}
                       {activity.duration_seconds && (
                         <p className="text-xs text-[#b3b3b3] mt-0.5">Duration: {Math.floor(activity.duration_seconds / 60)}:{String(activity.duration_seconds % 60).padStart(2, '0')}</p>
                       )}

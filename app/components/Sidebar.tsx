@@ -108,6 +108,15 @@ const navItems = [
     ),
   },
   {
+    href: '/app/leads/duplicates',
+    label: 'Duplicates',
+    icon: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+      </svg>
+    ),
+  },
+  {
     href: '/app/import',
     label: 'Import',
     icon: (
@@ -233,20 +242,38 @@ export default function Sidebar({ orgName, userEmail, userName }: SidebarProps) 
           </div>
 
           {/* Settings quick links */}
-          <div className="flex items-center gap-1 mb-2">
+          <div className="flex flex-wrap items-center gap-1 mb-2">
             <Link
               href="/app/settings/integrations"
               onClick={closeMobile}
-              className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/integrations') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
+              className={`flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/integrations') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
               title="Integrations"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
               Integrations
             </Link>
             <Link
+              href="/app/settings/custom-fields"
+              onClick={closeMobile}
+              className={`flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/custom-fields') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
+              title="Custom Fields"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+              Fields
+            </Link>
+            <Link
+              href="/app/settings/pipeline-forecast"
+              onClick={closeMobile}
+              className={`flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/pipeline-forecast') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
+              title="Pipeline Forecast"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+              Forecast
+            </Link>
+            <Link
               href="/app/settings/lead-form"
               onClick={closeMobile}
-              className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/lead-form') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
+              className={`flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs transition-colors ${pathname.startsWith('/app/settings/lead-form') ? 'text-[#0ea5e9] bg-[#0ea5e9]/10' : 'text-[#b3b3b3] hover:text-white hover:bg-[#2d2d2d]/50'}`}
               title="Lead Form Widget"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
