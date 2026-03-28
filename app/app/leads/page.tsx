@@ -425,8 +425,22 @@ export default function LeadsPage() {
         </div>
         <Link href="/app/import" className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm font-medium hover:text-white hover:bg-[#3d3d3d] transition-colors">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-          Import
+          Import CSV
         </Link>
+        <button
+          onClick={() => {
+            const params = new URLSearchParams()
+            if (search) params.set('search', search)
+            if (filterStage) params.set('stage', filterStage)
+            if (filterSource) params.set('source', filterSource)
+            if (filterAgent) params.set('assigned_to', filterAgent)
+            window.location.href = `/api/leads/export?${params}`
+          }}
+          className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm font-medium hover:text-white hover:bg-[#3d3d3d] transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" transform="rotate(180 12 12)" /></svg>
+          Export CSV
+        </button>
         <button
           onClick={() => setShowNewLead(true)}
           className="flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
