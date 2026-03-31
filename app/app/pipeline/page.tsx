@@ -305,9 +305,9 @@ export default function PipelinePage() {
   const totalValue = leads.reduce((sum, l) => sum + (l.budget_max ?? l.budget_min ?? 0), 0)
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-[calc(100vh-56px)] lg:h-screen flex flex-col">
       {/* Header */}
-      <div className="px-8 py-6 border-b border-[#2d2d2d] flex items-center justify-between flex-shrink-0">
+      <div className="px-4 sm:px-8 py-4 sm:py-6 border-b border-[#2d2d2d] flex items-center justify-between flex-shrink-0">
         <div>
           <h1 style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '36px', letterSpacing: '0.05em', color: '#ededed' }}>
             PIPELINE

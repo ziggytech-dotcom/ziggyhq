@@ -415,43 +415,45 @@ export default function LeadsPage() {
   }
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-8">
+      <div className="flex items-center justify-between mb-5 sm:mb-6">
         <div>
           <h1 style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '36px', letterSpacing: '0.05em', color: '#ededed' }}>
             LEADS
           </h1>
           <p className="text-[#b3b3b3] text-sm mt-1">{leads.length} lead{leads.length !== 1 ? 's' : ''}</p>
         </div>
-        <Link href="/app/import" className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm font-medium hover:text-white hover:bg-[#3d3d3d] transition-colors">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
-          Import CSV
-        </Link>
-        <button
-          onClick={() => {
-            const params = new URLSearchParams()
-            if (search) params.set('search', search)
-            if (filterStage) params.set('stage', filterStage)
-            if (filterSource) params.set('source', filterSource)
-            if (filterAgent) params.set('assigned_to', filterAgent)
-            window.location.href = `/api/leads/export?${params}`
-          }}
-          className="flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm font-medium hover:text-white hover:bg-[#3d3d3d] transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" transform="rotate(180 12 12)" /></svg>
-          Export CSV
-        </button>
-        <button
-          onClick={() => setShowNewLead(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          New Lead
-        </button>
+        <div className="flex items-center gap-2">
+          <Link href="/app/import" className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm font-medium hover:text-white hover:bg-[#3d3d3d] transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+            Import CSV
+          </Link>
+          <button
+            onClick={() => {
+              const params = new URLSearchParams()
+              if (search) params.set('search', search)
+              if (filterStage) params.set('stage', filterStage)
+              if (filterSource) params.set('source', filterSource)
+              if (filterAgent) params.set('assigned_to', filterAgent)
+              window.location.href = `/api/leads/export?${params}`
+            }}
+            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm font-medium hover:text-white hover:bg-[#3d3d3d] transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" transform="rotate(180 12 12)" /></svg>
+            Export CSV
+          </button>
+          <button
+            onClick={() => setShowNewLead(true)}
+            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+            New Lead
+          </button>
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
+      {/* Filters — horizontal scroll on mobile */}
+      <div className="flex items-center gap-3 mb-5 sm:mb-6 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
         <div className="relative flex-1 min-w-48">
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
           <input
@@ -496,7 +498,43 @@ export default function LeadsPage() {
       ) : view === 'kanban' ? (
         <KanbanView leads={leads} stages={stages} />
       ) : (
-        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden overflow-x-auto">
+        <>
+          {/* Mobile card view */}
+          <div className="sm:hidden space-y-2">
+            {leads.length === 0 ? (
+              <div className="text-center py-12 text-[#b3b3b3] text-sm">
+                No leads found. <button onClick={() => setShowNewLead(true)} className="text-[#0ea5e9] hover:underline">Add your first lead →</button>
+              </div>
+            ) : leads.map((lead) => {
+              const statusStyle = statusColors[lead.status] ?? statusColors.active
+              return (
+                <Link key={lead.id} href={`/app/leads/${lead.id}`}>
+                  <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-4 active:bg-[#2d2d2d]/40 transition-colors">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1 min-w-0 mr-3">
+                        <div className="font-medium text-white truncate">{lead.full_name}</div>
+                        <div className="text-xs text-[#b3b3b3] mt-0.5">{lead.email ?? lead.phone ?? '—'}</div>
+                      </div>
+                      <span
+                        className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize flex-shrink-0"
+                        style={{ backgroundColor: statusStyle.bg, color: statusStyle.text, border: `1px solid ${statusStyle.border}` }}
+                      >
+                        {lead.status}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 flex-wrap text-xs text-[#b3b3b3]">
+                      {lead.stage && <span className="bg-[#2d2d2d] px-2 py-0.5 rounded">{lead.stage}</span>}
+                      {lead.source && <span>{lead.source}</span>}
+                      <span className="ml-auto">Last contact: {timeAgo(lead.last_contacted_at)}</span>
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* Desktop table view */}
+          <div className="hidden sm:block bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden overflow-x-auto">
           <table className="w-full min-w-[640px]">
             <thead>
               <tr className="border-b border-[#2d2d2d]">
@@ -593,7 +631,17 @@ export default function LeadsPage() {
             </tbody>
           </table>
         </div>
+        </>
       )}
+
+      {/* Mobile FAB */}
+      <button
+        onClick={() => setShowNewLead(true)}
+        className="sm:hidden fixed bottom-6 right-6 z-20 w-14 h-14 bg-[#0ea5e9] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[#0ea5e9]/90 active:scale-95 transition-all"
+        aria-label="New Lead"
+      >
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+      </button>
 
       <NewLeadSlideOver
         open={showNewLead}

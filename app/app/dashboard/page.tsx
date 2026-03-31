@@ -1,27 +1,49 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
 async function getStats(orgId: string) {
   const admin = createAdminClient()
   const now = new Date()
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-  const todayStart = new Date(now.setHours(0, 0, 0, 0))
+  const todayStart = new Date(now)
+  todayStart.setHours(0, 0, 0, 0)
+  const todayEnd = new Date(now)
+  todayEnd.setHours(23, 59, 59, 999)
 
-  const [totalLeads, newThisWeek, contactedToday, wonLeads, activities, leads] = await Promise.all([
+  const [totalLeads, newThisWeek, contactedToday, wonLeads, activities, leads, overdueTasks, dueTodayTasks] = await Promise.all([
     admin.from('crm_leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId),
     admin.from('crm_leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', weekAgo.toISOString()),
     admin.from('crm_lead_activities').select('id', { count: 'exact', head: true }).eq('org_id', orgId).gte('created_at', todayStart.toISOString()),
     admin.from('crm_leads').select('id', { count: 'exact', head: true }).eq('org_id', orgId).eq('status', 'won'),
     admin.from('crm_lead_activities').select('*, crm_leads(full_name, id)').eq('org_id', orgId).order('created_at', { ascending: false }).limit(10),
     admin.from('crm_leads').select('stage').eq('org_id', orgId).not('stage', 'is', null),
+    // Overdue: due_at < now AND not completed
+    admin
+      .from('crm_tasks')
+      .select('id, title, due_at, crm_leads(id, full_name)')
+      .eq('org_id', orgId)
+      .is('completed_at', null)
+      .lt('due_at', now.toISOString())
+      .order('due_at', { ascending: true })
+      .limit(5),
+    // Due today: due_at between start and end of today AND not completed
+    admin
+      .from('crm_tasks')
+      .select('id, title, due_at, crm_leads(id, full_name)')
+      .eq('org_id', orgId)
+      .is('completed_at', null)
+      .gte('due_at', todayStart.toISOString())
+      .lte('due_at', todayEnd.toISOString())
+      .order('due_at', { ascending: true })
+      .limit(5),
   ])
 
   const total = totalLeads.count ?? 0
   const won = wonLeads.count ?? 0
   const rate = total > 0 ? Math.round((won / total) * 100) : 0
 
-  // Stage breakdown
   const stageCounts: Record<string, number> = {}
   if (leads.data) {
     for (const lead of leads.data) {
@@ -38,6 +60,8 @@ async function getStats(orgId: string) {
     conversionRate: rate,
     recentActivities: activities.data ?? [],
     stageCounts,
+    overdueTasks: overdueTasks.data ?? [],
+    dueTodayTasks: dueTodayTasks.data ?? [],
   }
 }
 
@@ -52,6 +76,11 @@ function timeAgo(dateStr: string) {
   if (diffHours < 24) return `${diffHours}h ago`
   const diffDays = Math.floor(diffHours / 24)
   return `${diffDays}d ago`
+}
+
+function formatDueDate(dateStr: string) {
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 }
 
 const activityTypeColors: Record<string, string> = {
@@ -91,32 +120,100 @@ export default async function DashboardPage() {
     { label: 'Conversion Rate', value: `${stats.conversionRate}%`, icon: '🎯', color: '#0ea5e9' },
   ]
 
+  const overdueCount = stats.overdueTasks.length
+  const dueTodayCount = stats.dueTodayTasks.length
+
   return (
-    <div className="p-8">
-      <div className="mb-8">
+    <div className="p-4 sm:p-8">
+      <div className="mb-6 sm:mb-8">
         <h1 style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '36px', letterSpacing: '0.05em', color: '#ededed' }}>
           DASHBOARD
         </h1>
         <p className="text-[#b3b3b3] text-sm mt-1">Welcome back — here&apos;s what&apos;s happening</p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      {/* Stats Grid — 2-col on mobile, 4-col on desktop */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {statCards.map((card) => (
-          <div key={card.label} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
+          <div key={card.label} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-4 sm:p-5">
             <div className="flex items-start justify-between mb-3">
               <span className="text-xl">{card.icon}</span>
               <div className="w-2 h-2 rounded-full mt-1" style={{ backgroundColor: card.color }} />
             </div>
-            <div className="text-3xl font-bold text-white mb-1">{card.value}</div>
+            <div className="text-2xl sm:text-3xl font-bold text-white mb-1">{card.value}</div>
             <div className="text-xs text-[#b3b3b3]">{card.label}</div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      {/* Tasks Alert Widget */}
+      {(overdueCount > 0 || dueTodayCount > 0) && (
+        <div className="mb-6 sm:mb-8 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-4 sm:p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+              <svg className="w-4 h-4 text-[#f59e0b]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Tasks Needing Attention
+            </h2>
+            <Link href="/app/tasks" className="text-xs text-[#0ea5e9] hover:underline">View all</Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {overdueCount > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-semibold text-[#e11d48] uppercase tracking-wide">Overdue</span>
+                  <span className="text-xs bg-[#e11d48]/20 text-[#e11d48] border border-[#e11d48]/30 px-1.5 py-0.5 rounded-full font-medium">{overdueCount}</span>
+                </div>
+                <div className="space-y-2">
+                  {stats.overdueTasks.map((task: { id: string; title: string; due_at: string; crm_leads?: { id: string; full_name: string }[] | null }) => (
+                    <div key={task.id} className="flex items-start gap-2 text-sm">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#e11d48] mt-1.5 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-white truncate">{task.title}</div>
+                        <div className="text-xs text-[#e11d48]">
+                          Due {formatDueDate(task.due_at)}
+                          {task.crm_leads?.[0] && (
+                            <span className="text-[#b3b3b3]"> · {task.crm_leads[0].full_name}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {dueTodayCount > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-semibold text-[#f59e0b] uppercase tracking-wide">Due Today</span>
+                  <span className="text-xs bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30 px-1.5 py-0.5 rounded-full font-medium">{dueTodayCount}</span>
+                </div>
+                <div className="space-y-2">
+                  {stats.dueTodayTasks.map((task: { id: string; title: string; due_at: string; crm_leads?: { id: string; full_name: string }[] | null }) => (
+                    <div key={task.id} className="flex items-start gap-2 text-sm">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#f59e0b] mt-1.5 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <div className="text-white truncate">{task.title}</div>
+                        <div className="text-xs text-[#f59e0b]">
+                          Due {formatDueDate(task.due_at)}
+                          {task.crm_leads?.[0] && (
+                            <span className="text-[#b3b3b3]"> · {task.crm_leads[0].full_name}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {/* Recent Activity */}
-        <div className="col-span-2 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+        <div className="sm:col-span-2 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5 sm:p-6">
           <h2 className="text-sm font-semibold text-white mb-4">Recent Activity</h2>
           <div className="space-y-3">
             {stats.recentActivities.length === 0 ? (
@@ -147,7 +244,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Pipeline Breakdown */}
-        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5 sm:p-6">
           <h2 className="text-sm font-semibold text-white mb-4">Pipeline Stages</h2>
           <div className="space-y-3">
             {Object.entries(stats.stageCounts).length === 0 ? (

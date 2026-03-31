@@ -95,11 +95,25 @@ export async function POST(request: Request) {
     return Response.json({ error: 'lead_id and phone are required' }, { status: 400 })
   }
 
-  const apiKey = process.env.BLAND_API_KEY
-  if (!apiKey) return Response.json({ error: 'Bland.ai not configured' }, { status: 500 })
+  const admin = createAdminClient()
+
+  // Load Bland.ai integration config from org_integrations (BYOK)
+  const { data: integration } = await admin
+    .from('org_integrations')
+    .select('config')
+    .eq('org_id', caller.org_id)
+    .eq('provider', 'bland_ai')
+    .single()
+
+  if (!integration) {
+    return Response.json({ error: 'Bland.ai not configured', not_configured: true }, { status: 500 })
+  }
+
+  const integrationConfig = integration.config as Record<string, unknown>
+  const apiKey = integrationConfig.api_key as string
+  const integrationAgentConfig = (integrationConfig.agent_config ?? {}) as Partial<AiCallerSettings>
 
   // Load org settings for AI caller config
-  const admin = createAdminClient()
   const { data: org } = await admin
     .from('crm_organizations')
     .select('name, settings_json')
@@ -109,13 +123,16 @@ export async function POST(request: Request) {
   const settings = (org?.settings_json ?? {}) as Record<string, unknown>
   const aiCaller = (settings.ai_caller ?? {}) as Partial<AiCallerSettings>
 
+  // Merge: org settings.ai_caller as base, integration.config.agent_config takes priority
+  const mergedAiCaller: Partial<AiCallerSettings> = { ...aiCaller, ...integrationAgentConfig }
+
   const callerConfig: AiCallerSettings = {
-    name: aiCaller.name ?? 'Emma',
-    voice: aiCaller.voice ?? 'maya',
-    brokerage: aiCaller.brokerage ?? org?.name ?? 'our real estate team',
-    callback_phone: aiCaller.callback_phone ?? process.env.BLAND_PHONE_NUMBER ?? '',
-    disclose_if_asked: aiCaller.disclose_if_asked !== false,
-    scripts: (aiCaller.scripts ?? {}) as AiCallerSettings['scripts'],
+    name: mergedAiCaller.name ?? 'Emma',
+    voice: mergedAiCaller.voice ?? aiCaller.voice ?? 'maya',
+    brokerage: mergedAiCaller.brokerage ?? org?.name ?? 'our real estate team',
+    callback_phone: mergedAiCaller.callback_phone ?? process.env.BLAND_PHONE_NUMBER ?? '',
+    disclose_if_asked: mergedAiCaller.disclose_if_asked !== false,
+    scripts: (mergedAiCaller.scripts ?? {}) as AiCallerSettings['scripts'],
   }
 
   // Clean phone to E.164
@@ -134,7 +151,7 @@ export async function POST(request: Request) {
     finalTask = callerConfig.scripts?.listing_inquiry || task
   }
 
-  const fromNumber = process.env.BLAND_PHONE_NUMBER ?? '+17254256788'
+  const fromNumber = integrationAgentConfig.callback_phone || process.env.BLAND_PHONE_NUMBER || '+17254256788'
 
   const payload = {
     phone_number: e164,

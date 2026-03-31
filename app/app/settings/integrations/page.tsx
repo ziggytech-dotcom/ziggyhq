@@ -20,6 +20,23 @@ interface TwilioStatus {
   connected_at?: string | null
 }
 
+interface BlandStatus {
+  connected: boolean
+  api_key_masked?: string | null
+  agent_config?: {
+    name?: string
+    brokerage?: string
+    callback_phone?: string
+    disclose_if_asked?: boolean
+    scripts?: {
+      new_lead?: string
+      home_value?: string
+      listing_inquiry?: string
+      voicemail?: string
+    }
+  }
+}
+
 function timeAgo(d: string | null) {
   if (!d) return 'Never'
   const diff = Date.now() - new Date(d).getTime()
@@ -38,6 +55,54 @@ function IntegrationsContent() {
   const [syncing, setSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<string | null>(null)
   const [banner, setBanner] = useState<{ type: 'success' | 'error'; msg: string } | null>(null)
+
+  // Bland.ai state
+  const [blandStatus, setBlandStatus] = useState<BlandStatus | null>(null)
+  const [blandLoading, setBlandLoading] = useState(true)
+  const [blandForm, setBlandForm] = useState({
+    api_key: '',
+    name: 'Emma',
+    brokerage: '',
+    callback_phone: '',
+    disclose_if_asked: true,
+  })
+  const [blandSaving, setBlandSaving] = useState(false)
+  const [blandError, setBlandError] = useState<string | null>(null)
+
+  const loadBland = useCallback(async () => {
+    setBlandLoading(true)
+    const res = await fetch('/api/integrations/bland')
+    if (res.ok) { const d = await res.json(); setBlandStatus(d) }
+    setBlandLoading(false)
+  }, [])
+
+  const handleBlandConnect = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setBlandSaving(true)
+    setBlandError(null)
+    const res = await fetch('/api/integrations/bland', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        api_key: blandForm.api_key,
+        agent_config: {
+          name: blandForm.name,
+          brokerage: blandForm.brokerage,
+          callback_phone: blandForm.callback_phone,
+          disclose_if_asked: blandForm.disclose_if_asked,
+        },
+      }),
+    })
+    const d = await res.json()
+    if (res.ok) {
+      setBlandForm({ api_key: '', name: 'Emma', brokerage: '', callback_phone: '', disclose_if_asked: true })
+      setBanner({ type: 'success', msg: 'Bland.ai connected successfully!' })
+      loadBland()
+    } else {
+      setBlandError(d.error ?? 'Failed to connect')
+    }
+    setBlandSaving(false)
+  }
 
   // Twilio state
   const [twilioStatus, setTwilioStatus] = useState<TwilioStatus | null>(null)
@@ -112,8 +177,9 @@ function IntegrationsContent() {
   useEffect(() => {
     load()
     loadTwilio()
+    loadBland()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [load, loadTwilio])
+  }, [load, loadTwilio, loadBland])
 
   useEffect(() => {
     const s = searchParams.get('success')
@@ -383,6 +449,137 @@ function IntegrationsContent() {
                 className="flex items-center gap-2 px-4 py-2 bg-[#e11d48] text-white rounded-lg text-sm font-medium hover:bg-[#e11d48]/90 disabled:opacity-50 transition-colors"
               >
                 {twilioSaving ? 'Connecting...' : 'Connect Twilio'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+
+      {/* Bland.ai section */}
+      <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-[#2d2d2d] flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-[#7c3aed] flex items-center justify-center flex-shrink-0">
+            <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a10 10 0 100 20A10 10 0 0012 2zm0 18a8 8 0 110-16 8 8 0 010 16zm-1-9h2v5h-2V11zm0-4h2v2h-2V7z"/>
+            </svg>
+          </div>
+          <div className="flex-1">
+            <div className="text-sm font-semibold text-white">Bland.ai (AI Calling)</div>
+            <div className="text-xs text-[#b3b3b3]">Connect your own Bland.ai account for AI-powered outbound calls.</div>
+          </div>
+          {blandStatus?.connected && (
+            <span className="text-xs text-[#22c55e] bg-[#22c55e]/10 border border-[#22c55e]/20 px-2 py-0.5 rounded flex-shrink-0">Connected</span>
+          )}
+        </div>
+
+        {blandLoading ? (
+          <div className="px-6 py-4 text-[#b3b3b3] text-sm">Loading...</div>
+        ) : blandStatus?.connected ? (
+          <div>
+            <div className="px-6 py-4 space-y-2">
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-[#b3b3b3] w-24 flex-shrink-0">API Key</span>
+                <span className="text-white font-mono text-xs">{blandStatus.api_key_masked}</span>
+              </div>
+              {blandStatus.agent_config?.name && (
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="text-[#b3b3b3] w-24 flex-shrink-0">Agent Name</span>
+                  <span className="text-white">{blandStatus.agent_config.name}</span>
+                </div>
+              )}
+              {blandStatus.agent_config?.brokerage && (
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="text-[#b3b3b3] w-24 flex-shrink-0">Brokerage</span>
+                  <span className="text-white">{blandStatus.agent_config.brokerage}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-[#b3b3b3] w-24 flex-shrink-0">Disclosure</span>
+                <span className="text-white">{blandStatus.agent_config?.disclose_if_asked !== false ? 'Disclose if asked' : 'Redirect if asked'}</span>
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-[#0a0a0a] border-t border-[#2d2d2d] flex justify-end">
+              <button
+                onClick={async () => {
+                  if (!confirm('Disconnect Bland.ai? AI calling will stop working.')) return
+                  await fetch('/api/integrations/bland', { method: 'DELETE' })
+                  setBlandStatus({ connected: false })
+                  setBanner({ type: 'success', msg: 'Bland.ai disconnected.' })
+                }}
+                className="px-3 py-1.5 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-xs hover:text-red-400 transition-colors"
+              >
+                Disconnect
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleBlandConnect} className="px-6 py-5 space-y-4">
+            {blandError && (
+              <div className="px-3 py-2 rounded-lg bg-red-900/20 border border-red-900/40 text-red-400 text-sm">{blandError}</div>
+            )}
+            <div className="grid grid-cols-1 gap-3">
+              <div>
+                <label className="block text-xs text-[#b3b3b3] mb-1.5">Bland.ai API Key</label>
+                <input
+                  required
+                  type="password"
+                  value={blandForm.api_key}
+                  onChange={(e) => setBlandForm(f => ({ ...f, api_key: e.target.value }))}
+                  placeholder="sk-..."
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#7c3aed] text-sm font-mono"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-[#b3b3b3] mb-1.5">AI Agent Name</label>
+                  <input
+                    value={blandForm.name}
+                    onChange={(e) => setBlandForm(f => ({ ...f, name: e.target.value }))}
+                    placeholder="Emma"
+                    className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#7c3aed] text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-[#b3b3b3] mb-1.5">Callback Phone</label>
+                  <input
+                    value={blandForm.callback_phone}
+                    onChange={(e) => setBlandForm(f => ({ ...f, callback_phone: e.target.value }))}
+                    placeholder="+17025551234"
+                    className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#7c3aed] text-sm font-mono"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-[#b3b3b3] mb-1.5">Brokerage / Company Name</label>
+                <input
+                  value={blandForm.brokerage}
+                  onChange={(e) => setBlandForm(f => ({ ...f, brokerage: e.target.value }))}
+                  placeholder="Your Real Estate Team"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#7c3aed] text-sm"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="bland_disclose"
+                  checked={blandForm.disclose_if_asked}
+                  onChange={(e) => setBlandForm(f => ({ ...f, disclose_if_asked: e.target.checked }))}
+                  className="w-4 h-4 rounded border-[#2d2d2d] bg-[#0a0a0a] accent-[#7c3aed]"
+                />
+                <label htmlFor="bland_disclose" className="text-sm text-[#b3b3b3]">Disclose if asked whether this is AI</label>
+              </div>
+            </div>
+            <div className="flex items-center justify-between pt-1">
+              <p className="text-xs text-[#b3b3b3]/60">
+                Find your API key at{' '}
+                <span className="text-[#b3b3b3]">app.bland.ai → API Keys</span>
+              </p>
+              <button
+                type="submit"
+                disabled={blandSaving}
+                className="flex items-center gap-2 px-4 py-2 bg-[#7c3aed] text-white rounded-lg text-sm font-medium hover:bg-[#7c3aed]/90 disabled:opacity-50 transition-colors"
+              >
+                {blandSaving ? 'Connecting...' : 'Connect Bland.ai'}
               </button>
             </div>
           </form>
