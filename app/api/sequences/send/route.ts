@@ -1,6 +1,7 @@
 // Called by a cron or manual trigger to send due sequence emails
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Resend } from 'resend'
+import { sendSmsToLead, getOrgTwilioConfig } from '@/lib/sms'
 
 function applyMergeTags(text: string, lead: Record<string, string | null>, agentName: string): string {
   return text
@@ -96,6 +97,49 @@ export async function POST(request: Request) {
       if (agent) agentName = agent.full_name ?? agent.email
     }
 
+    // --- SMS step ---
+    if (currentStep.type === 'sms') {
+      const smsBody = applyMergeTags(currentStep.body ?? '', lead, agentName)
+      if (!lead.phone) {
+        // No phone — skip and log warning
+        await admin.from('crm_lead_activities').insert({
+          lead_id: lead.id,
+          org_id: enrollment.org_id,
+          type: 'note',
+          content: 'Sequence SMS step skipped — lead has no phone number',
+        })
+      } else {
+        const twilioConfig = await getOrgTwilioConfig(admin, enrollment.org_id)
+        if (!twilioConfig) {
+          await admin.from('crm_lead_activities').insert({
+            lead_id: lead.id,
+            org_id: enrollment.org_id,
+            type: 'note',
+            content: 'Sequence SMS step skipped — Twilio not connected. Go to Settings → Integrations.',
+          })
+        } else {
+          try {
+            await sendSmsToLead({ admin, org_id: enrollment.org_id, lead_id: lead.id, message: smsBody })
+          } catch {
+            // Failed — skip for now
+          }
+        }
+      }
+
+      // Advance to next step
+      const nextStepIndex = enrollment.current_step + 1
+      const nextStep = steps[nextStepIndex]
+      if (nextStep) {
+        const nextSendAt = new Date(Date.now() + nextStep.delay_hours * 3600000).toISOString()
+        await admin.from('crm_sequence_enrollments').update({ current_step: nextStepIndex, next_send_at: nextSendAt }).eq('id', enrollment.id)
+      } else {
+        await admin.from('crm_sequence_enrollments').update({ status: 'completed' }).eq('id', enrollment.id)
+      }
+      sent++
+      continue
+    }
+
+    // --- Email step (default) ---
     const subject = applyMergeTags(currentStep.subject, lead, agentName)
     const htmlBody = applyMergeTags(currentStep.body, lead, agentName).replace(/\n/g, '<br>')
 

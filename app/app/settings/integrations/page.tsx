@@ -13,6 +13,13 @@ interface EmailAccount {
   created_at: string
 }
 
+interface TwilioStatus {
+  connected: boolean
+  account_sid_masked?: string | null
+  phone_number?: string | null
+  connected_at?: string | null
+}
+
 function timeAgo(d: string | null) {
   if (!d) return 'Never'
   const diff = Date.now() - new Date(d).getTime()
@@ -32,6 +39,70 @@ function IntegrationsContent() {
   const [syncResult, setSyncResult] = useState<string | null>(null)
   const [banner, setBanner] = useState<{ type: 'success' | 'error'; msg: string } | null>(null)
 
+  // Twilio state
+  const [twilioStatus, setTwilioStatus] = useState<TwilioStatus | null>(null)
+  const [twilioLoading, setTwilioLoading] = useState(true)
+  const [twilioForm, setTwilioForm] = useState({ account_sid: '', auth_token: '', phone_number: '' })
+  const [twilioSaving, setTwilioSaving] = useState(false)
+  const [twilioError, setTwilioError] = useState<string | null>(null)
+  const [testPhone, setTestPhone] = useState('')
+  const [testingSms, setTestingSms] = useState(false)
+  const [showTestInput, setShowTestInput] = useState(false)
+
+  const loadTwilio = useCallback(async () => {
+    setTwilioLoading(true)
+    const res = await fetch('/api/integrations/twilio')
+    if (res.ok) { const d = await res.json(); setTwilioStatus(d) }
+    setTwilioLoading(false)
+  }, [])
+
+  const handleTwilioConnect = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setTwilioSaving(true)
+    setTwilioError(null)
+    const res = await fetch('/api/integrations/twilio', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(twilioForm),
+    })
+    const d = await res.json()
+    if (res.ok) {
+      setTwilioForm({ account_sid: '', auth_token: '', phone_number: '' })
+      setBanner({ type: 'success', msg: 'Twilio connected successfully!' })
+      loadTwilio()
+    } else {
+      setTwilioError(d.error ?? 'Failed to connect')
+    }
+    setTwilioSaving(false)
+  }
+
+  const handleTwilioDisconnect = async () => {
+    if (!confirm('Disconnect Twilio? SMS features will stop working.')) return
+    await fetch('/api/integrations/twilio', { method: 'DELETE' })
+    setTwilioStatus({ connected: false })
+    setBanner({ type: 'success', msg: 'Twilio disconnected.' })
+  }
+
+  const handleTestSms = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!testPhone) return
+    setTestingSms(true)
+    const res = await fetch('/api/integrations/twilio', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to_phone: testPhone }),
+    })
+    const d = await res.json()
+    if (res.ok) {
+      setBanner({ type: 'success', msg: `Test SMS sent to ${testPhone}!` })
+      setShowTestInput(false)
+      setTestPhone('')
+    } else {
+      setBanner({ type: 'error', msg: d.error ?? 'Test SMS failed' })
+    }
+    setTestingSms(false)
+  }
+
   const load = useCallback(async () => {
     const res = await fetch('/api/email-accounts')
     if (res.ok) { const d = await res.json(); setAccounts(d.accounts ?? []) }
@@ -40,6 +111,11 @@ function IntegrationsContent() {
 
   useEffect(() => {
     load()
+    loadTwilio()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [load, loadTwilio])
+
+  useEffect(() => {
     const s = searchParams.get('success')
     const e = searchParams.get('error')
     const em = searchParams.get('email')
@@ -192,6 +268,125 @@ function IntegrationsContent() {
         <div className="px-6 py-4 text-xs text-[#b3b3b3]">
           Requires <code className="bg-[#2d2d2d] px-1 rounded">MICROSOFT_CLIENT_ID</code> and <code className="bg-[#2d2d2d] px-1 rounded">MICROSOFT_CLIENT_SECRET</code> environment variables.
         </div>
+      </div>
+
+      {/* Twilio section */}
+      <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden mb-6">
+        <div className="px-6 py-4 border-b border-[#2d2d2d] flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-[#e11d48] flex items-center justify-center flex-shrink-0">
+            <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+            </svg>
+          </div>
+          <div className="flex-1">
+            <div className="text-sm font-semibold text-white">Twilio SMS</div>
+            <div className="text-xs text-[#b3b3b3]">Connect your own Twilio account to send and receive SMS. Your workspace pays Twilio directly for usage.</div>
+          </div>
+          {twilioStatus?.connected && (
+            <span className="text-xs text-[#22c55e] bg-[#22c55e]/10 border border-[#22c55e]/20 px-2 py-0.5 rounded flex-shrink-0">Connected</span>
+          )}
+        </div>
+
+        {twilioLoading ? (
+          <div className="px-6 py-4 text-[#b3b3b3] text-sm">Loading...</div>
+        ) : twilioStatus?.connected ? (
+          <div>
+            <div className="px-6 py-4 space-y-2">
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-[#b3b3b3] w-24 flex-shrink-0">Account SID</span>
+                <span className="text-white font-mono text-xs">{twilioStatus.account_sid_masked}</span>
+              </div>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-[#b3b3b3] w-24 flex-shrink-0">Phone Number</span>
+                <span className="text-white">{twilioStatus.phone_number}</span>
+              </div>
+              <div className="flex items-center gap-4 text-sm">
+                <span className="text-[#b3b3b3] w-24 flex-shrink-0">Connected</span>
+                <span className="text-white">{timeAgo(twilioStatus.connected_at ?? null)}</span>
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-[#0a0a0a] border-t border-[#2d2d2d] flex items-center gap-3 flex-wrap">
+              {showTestInput ? (
+                <form onSubmit={handleTestSms} className="flex items-center gap-2 flex-1">
+                  <input
+                    type="tel"
+                    value={testPhone}
+                    onChange={(e) => setTestPhone(e.target.value)}
+                    placeholder="+1 (555) 000-0000"
+                    className="flex-1 max-w-[200px] px-3 py-1.5 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-white text-xs focus:outline-none focus:border-[#22c55e]"
+                    autoFocus
+                  />
+                  <button type="submit" disabled={testingSms || !testPhone} className="px-3 py-1.5 rounded-lg bg-[#22c55e] text-white text-xs font-medium hover:bg-[#22c55e]/90 disabled:opacity-50 transition-colors">
+                    {testingSms ? 'Sending...' : 'Send'}
+                  </button>
+                  <button type="button" onClick={() => setShowTestInput(false)} className="px-3 py-1.5 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-xs hover:text-white transition-colors">
+                    Cancel
+                  </button>
+                </form>
+              ) : (
+                <button onClick={() => setShowTestInput(true)} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20 text-xs hover:bg-[#22c55e]/20 transition-colors">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                  Test SMS
+                </button>
+              )}
+              <button onClick={handleTwilioDisconnect} className="px-3 py-1.5 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-xs hover:text-red-400 transition-colors ml-auto">
+                Disconnect
+              </button>
+            </div>
+          </div>
+        ) : (
+          <form onSubmit={handleTwilioConnect} className="px-6 py-5 space-y-4">
+            {twilioError && (
+              <div className="px-3 py-2 rounded-lg bg-red-900/20 border border-red-900/40 text-red-400 text-sm">{twilioError}</div>
+            )}
+            <div className="grid grid-cols-1 gap-3">
+              <div>
+                <label className="block text-xs text-[#b3b3b3] mb-1.5">Account SID</label>
+                <input
+                  required
+                  value={twilioForm.account_sid}
+                  onChange={(e) => setTwilioForm((f) => ({ ...f, account_sid: e.target.value }))}
+                  placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#e11d48] text-sm font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-[#b3b3b3] mb-1.5">Auth Token</label>
+                <input
+                  required
+                  type="password"
+                  value={twilioForm.auth_token}
+                  onChange={(e) => setTwilioForm((f) => ({ ...f, auth_token: e.target.value }))}
+                  placeholder="Your Twilio auth token"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#e11d48] text-sm font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-[#b3b3b3] mb-1.5">Twilio Phone Number</label>
+                <input
+                  required
+                  value={twilioForm.phone_number}
+                  onChange={(e) => setTwilioForm((f) => ({ ...f, phone_number: e.target.value }))}
+                  placeholder="+15550001234"
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#e11d48] text-sm font-mono"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between pt-1">
+              <p className="text-xs text-[#b3b3b3]/60">
+                Find these in your{' '}
+                <span className="text-[#b3b3b3]">Twilio Console → Account Info</span>
+              </p>
+              <button
+                type="submit"
+                disabled={twilioSaving}
+                className="flex items-center gap-2 px-4 py-2 bg-[#e11d48] text-white rounded-lg text-sm font-medium hover:bg-[#e11d48]/90 disabled:opacity-50 transition-colors"
+              >
+                {twilioSaving ? 'Connecting...' : 'Connect Twilio'}
+              </button>
+            </div>
+          </form>
+        )}
       </div>
 
       {/* How it works */}

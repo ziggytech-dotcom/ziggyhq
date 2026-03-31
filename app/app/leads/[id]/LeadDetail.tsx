@@ -116,6 +116,8 @@ interface Enrollment {
 const activityColors: Record<string, string> = {
   call: '#3b82f6',
   sms: '#22c55e',
+  sms_sent: '#22c55e',
+  sms_received: '#b3b3b3',
   email: '#f59e0b',
   email_sent: '#f59e0b',
   email_received: '#22c55e',
@@ -159,6 +161,7 @@ export default function LeadDetail({
   orgId,
   customFieldDefs,
   emailAccounts,
+  twilioConnected,
 }: {
   lead: Lead
   activities: Activity[]
@@ -172,6 +175,7 @@ export default function LeadDetail({
   orgId: string
   customFieldDefs: CustomFieldDef[]
   emailAccounts: EmailAccount[]
+  twilioConnected: boolean
 }) {
   const router = useRouter()
   const [lead, setLead] = useState(initialLead)
@@ -199,6 +203,12 @@ export default function LeadDetail({
   const [composeForm, setComposeForm] = useState({ account_id: '', subject: '', body: '' })
   const [sendingEmail, setSendingEmail] = useState(false)
   const [composeError, setComposeError] = useState('')
+
+  // SMS modal
+  const [showSmsSend, setShowSmsSend] = useState(false)
+  const [smsMessage, setSmsMessage] = useState('')
+  const [sendingSms, setSendingSms] = useState(false)
+  const [smsError, setSmsError] = useState('')
 
   // Custom fields
   const [customFields, setCustomFields] = useState<Record<string, unknown>>(
@@ -369,6 +379,36 @@ export default function LeadDetail({
     setSendingEmail(false)
   }
 
+  const sendSms = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSendingSms(true)
+    setSmsError('')
+    const res = await fetch('/api/sms/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead_id: lead.id, message: smsMessage }),
+    })
+    if (res.ok) {
+      const data = await res.json()
+      const activity: Activity = {
+        id: data.sid ?? Date.now().toString(),
+        type: 'sms_sent',
+        direction: 'outbound',
+        content: smsMessage,
+        duration_seconds: null,
+        created_at: new Date().toISOString(),
+        users: null,
+      }
+      setActivities((prev) => [activity, ...prev])
+      setShowSmsSend(false)
+      setSmsMessage('')
+    } else {
+      const d = await res.json()
+      setSmsError(d.error ?? 'Send failed')
+    }
+    setSendingSms(false)
+  }
+
   const saveCustomField = async (fieldName: string, value: unknown) => {
     setSavingCustomField(fieldName)
     const updated = { ...customFields, [fieldName]: value }
@@ -446,6 +486,26 @@ export default function LeadDetail({
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
               Compose
             </button>
+          )}
+          {lead.phone && (
+            twilioConnected ? (
+              <button
+                onClick={() => setShowSmsSend(true)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20 text-sm hover:bg-[#22c55e]/20 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                Send SMS
+              </button>
+            ) : (
+              <a
+                href="/app/settings/integrations"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] border border-[#2d2d2d] text-sm hover:text-white transition-colors"
+                title="Connect Twilio in Settings to enable SMS"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                Connect Twilio in Settings
+              </a>
+            )
           )}
           {lead.phone && (
             <div className="relative">
@@ -624,6 +684,49 @@ export default function LeadDetail({
                 <button type="button" onClick={() => setShowCompose(false)} className="flex-1 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
                 <button type="submit" disabled={sendingEmail} className="flex-1 py-2.5 rounded-lg bg-[#f59e0b] text-white text-sm font-medium hover:bg-[#f59e0b]/90 disabled:opacity-50 transition-colors">
                   {sendingEmail ? 'Sending...' : 'Send Email'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* SMS Compose Modal */}
+      {showSmsSend && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setShowSmsSend(false)} />
+          <div className="relative w-full max-w-md bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-base font-semibold text-white">Send SMS</h2>
+              <button onClick={() => setShowSmsSend(false)} className="text-[#b3b3b3] hover:text-white">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            <form onSubmit={sendSms} className="space-y-4">
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">To</label>
+                <div className="px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-[#b3b3b3] text-sm">{lead.phone}</div>
+              </div>
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">Message *</label>
+                <textarea
+                  required
+                  value={smsMessage}
+                  onChange={(e) => setSmsMessage(e.target.value)}
+                  rows={4}
+                  maxLength={1600}
+                  placeholder="Type your SMS message..."
+                  className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#22c55e] text-sm resize-none"
+                />
+                <div className="text-xs text-[#b3b3b3]/60 text-right mt-1">{smsMessage.length}/1600</div>
+              </div>
+              {smsError && (
+                <div className="px-3 py-2 rounded-lg bg-red-900/20 border border-red-900/40 text-red-400 text-sm">{smsError}</div>
+              )}
+              <div className="flex gap-3 pt-1">
+                <button type="button" onClick={() => setShowSmsSend(false)} className="flex-1 py-2.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white text-sm transition-colors">Cancel</button>
+                <button type="submit" disabled={sendingSms || !smsMessage.trim()} className="flex-1 py-2.5 rounded-lg bg-[#22c55e] text-white text-sm font-medium hover:bg-[#22c55e]/90 disabled:opacity-50 transition-colors">
+                  {sendingSms ? 'Sending...' : 'Send SMS'}
                 </button>
               </div>
             </form>
@@ -1071,7 +1174,29 @@ export default function LeadDetail({
               <p className="text-[#b3b3b3] text-sm">No activity yet</p>
             ) : (
               <div className="space-y-4">
-                {activities.map((activity, idx) => (
+                {activities.map((activity, idx) => {
+                  // SMS bubble rendering
+                  if (activity.type === 'sms_sent' || activity.type === 'sms_received') {
+                    const isSent = activity.type === 'sms_sent'
+                    return (
+                      <div key={activity.id} className={`flex mb-3 ${isSent ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[75%] ${isSent ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
+                          <div
+                            className="px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words"
+                            style={isSent
+                              ? { backgroundColor: '#22c55e20', border: '1px solid #22c55e40', color: '#e2e8f0', borderBottomRightRadius: '4px' }
+                              : { backgroundColor: '#2d2d2d', border: '1px solid #3d3d3d', color: '#e2e8f0', borderBottomLeftRadius: '4px' }
+                            }
+                          >
+                            {activity.content}
+                          </div>
+                          <span className="text-[10px] text-[#b3b3b3]/60 px-1">{timeAgo(activity.created_at)}</span>
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  return (
                   <div key={activity.id} className="flex gap-3">
                     <div className="flex flex-col items-center">
                       <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${activityColors[activity.type] ?? '#b3b3b3'}20`, border: `1px solid ${activityColors[activity.type] ?? '#b3b3b3'}40` }}>
@@ -1116,7 +1241,8 @@ export default function LeadDetail({
                       )}
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </div>
