@@ -1,6 +1,8 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { calculateLeadScore } from '@/lib/lead-score'
+import { triggerZapierWebhook } from '@/lib/zapier'
+import { upsertSharedContact } from '@/lib/sharedContacts'
 
 async function getOrgId() {
   const supabase = await createClient()
@@ -80,6 +82,24 @@ export async function PATCH(
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  triggerZapierWebhook(orgId, 'lead.updated', { lead: data })
+  if ('stage' in updates) {
+    triggerZapierWebhook(orgId, 'lead.stage_changed', { lead: data, stage: data.stage })
+  }
+
+  // Sync contact fields to shared_contacts if name/email/phone changed (best-effort)
+  const contactFields = ['full_name', 'email', 'phone']
+  if (contactFields.some((f) => f in updates)) {
+    const nameParts = (data.full_name || '').trim().split(' ')
+    void upsertSharedContact(orgId, {
+      first_name: nameParts[0] || null,
+      last_name: nameParts.slice(1).join(' ') || null,
+      email: data.email || null,
+      phone: data.phone || null,
+    }, id)
+  }
+
   return Response.json({ lead: data })
 }
 

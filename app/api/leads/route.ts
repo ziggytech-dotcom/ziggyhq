@@ -2,6 +2,8 @@ import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { calculateLeadScore } from '@/lib/lead-score'
+import { triggerZapierWebhook } from '@/lib/zapier'
+import { upsertSharedContact } from '@/lib/sharedContacts'
 
 async function getOrgId() {
   const supabase = await createClient()
@@ -103,5 +105,17 @@ export async function POST(request: Request) {
     .single()
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  triggerZapierWebhook(orgId, 'lead.created', { lead: data })
+
+  // Sync to shared_contacts (best-effort)
+  const nameParts = (full_name || '').trim().split(' ')
+  void upsertSharedContact(orgId, {
+    first_name: nameParts[0] || null,
+    last_name: nameParts.slice(1).join(' ') || null,
+    email: email || null,
+    phone: phone || null,
+  }, data.id)
+
   return Response.json({ lead: data }, { status: 201 })
 }
