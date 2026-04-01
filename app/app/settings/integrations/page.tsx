@@ -586,6 +586,58 @@ function IntegrationsContent() {
         )}
       </div>
 
+      {/* Zapier */}
+      <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-[#FF4A00]/10 flex items-center justify-center">
+              <span className="text-[#FF4A00] font-bold text-sm">Z</span>
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-white">Zapier</h3>
+              <p className="text-xs text-[#666]">Connect ZiggyHQ to 5,000+ apps</p>
+            </div>
+          </div>
+          <a
+            href="https://zapier.com/developer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-3 py-1.5 bg-[#FF4A00] text-white rounded-lg text-xs font-medium hover:bg-[#FF4A00]/90 transition-colors"
+          >
+            Connect Zapier →
+          </a>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <p className="text-xs font-medium text-[#b3b3b3] mb-2">Triggers (ZiggyHQ → Zapier)</p>
+            <ul className="space-y-1">
+              {['lead.created', 'lead.updated', 'lead.stage_changed', 'call.completed', 'sequence.enrolled'].map((t) => (
+                <li key={t} className="flex items-center gap-2 text-xs text-[#666]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#FF4A00] flex-shrink-0" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="text-xs font-medium text-[#b3b3b3] mb-2">Actions (Zapier → ZiggyHQ)</p>
+            <ul className="space-y-1">
+              {['Create Lead', 'Update Lead Stage'].map((a) => (
+                <li key={a} className="flex items-center gap-2 text-xs text-[#666]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#0ea5e9] flex-shrink-0" />
+                  {a}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <p className="mt-4 text-xs text-[#555]">
+          Copy your workspace API key from{' '}
+          <a href="/app/settings/api" className="text-[#0ea5e9] hover:underline">Settings → API</a>{' '}
+          to authenticate Zapier actions.
+        </p>
+      </div>
+
       {/* How it works */}
       <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
         <h3 className="text-sm font-semibold text-white mb-4">How Email Sync Works</h3>

@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { triggerZapierWebhook } from '@/lib/zapier'
 
 async function getOrgId() {
   const supabase = await createClient()
@@ -51,5 +52,8 @@ export async function POST(
     .upsert(enrollments, { onConflict: 'sequence_id,lead_id', ignoreDuplicates: false })
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
+
+  triggerZapierWebhook(orgId, 'sequence.enrolled', { sequence_id: sequenceId, lead_ids, enrolled: lead_ids.length })
+
   return Response.json({ enrolled: lead_ids.length })
 }

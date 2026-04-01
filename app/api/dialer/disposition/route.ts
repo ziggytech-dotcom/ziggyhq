@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
+import { triggerZapierWebhook } from '@/lib/zapier'
 
 type Disposition =
   | 'answered_interested'
@@ -87,6 +88,14 @@ export async function POST(request: Request) {
     .update({ last_contacted_at: new Date().toISOString() })
     .eq('id', lead_id)
     .eq('org_id', user.org_id)
+
+  triggerZapierWebhook(user.org_id, 'call.completed', {
+    lead_id,
+    call_sid,
+    disposition,
+    duration: duration ?? null,
+    notes: notes ?? null,
+  })
 
   return Response.json({ success: true, task_created: taskCreated })
 }
