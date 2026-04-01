@@ -489,44 +489,30 @@ export default function TasksPage() {
           )}
         </div>
       ) : (
-        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden">
-          {/* Table header */}
-          <div className="grid grid-cols-[2rem_1fr_140px_130px_100px_90px_90px] gap-x-4 px-4 py-2.5 border-b border-[#2d2d2d] text-[10px] font-semibold text-[#b3b3b3] uppercase tracking-wider">
-            <div />
-            <div>Task</div>
-            <div>Assigned To</div>
-            <div>Due Date</div>
-            <div>Lead</div>
-            <div>Priority</div>
-            <div>Status</div>
-          </div>
-
-          {/* Rows */}
-          <div className="divide-y divide-[#2d2d2d]">
+        <>
+          {/* Mobile card view */}
+          <div className="sm:hidden space-y-2">
             {filtered.map((task) => {
               const overdue = isOverdue(task)
               const due = formatDueDate(task.due_at)
               const isCompleting = completingId === task.id
-
               return (
                 <div
                   key={task.id}
-                  className={`grid grid-cols-[2rem_1fr_140px_130px_100px_90px_90px] gap-x-4 px-4 py-3.5 items-center transition-colors hover:bg-[#2d2d2d]/20 ${
-                    overdue ? 'border-l-2 border-l-[#e11d48] bg-[#e11d48]/[0.03]' : 'border-l-2 border-l-transparent'
+                  className={`bg-[#1a1a1a] border rounded-xl p-4 ${
+                    overdue ? 'border-[#e11d48]/40 bg-[#e11d48]/[0.03]' : 'border-[#2d2d2d]'
                   }`}
                 >
-                  {/* Checkbox */}
-                  <div>
+                  <div className="flex items-start gap-3">
                     <button
                       onClick={() => !task.completed_at && markComplete(task.id)}
                       disabled={isCompleting || !!task.completed_at}
-                      title={task.completed_at ? 'Completed' : 'Mark complete'}
-                      className={`w-5 h-5 rounded border flex items-center justify-center transition-all flex-shrink-0 ${
+                      className={`mt-0.5 w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition-all ${
                         task.completed_at
                           ? 'bg-[#22c55e] border-[#22c55e]'
                           : isCompleting
                           ? 'border-[#22c55e] bg-[#22c55e]/20 animate-pulse'
-                          : 'border-[#2d2d2d] bg-[#0a0a0a] hover:border-[#22c55e] hover:bg-[#22c55e]/10'
+                          : 'border-[#2d2d2d] bg-[#0a0a0a]'
                       }`}
                     >
                       {(task.completed_at || isCompleting) && (
@@ -535,64 +521,122 @@ export default function TasksPage() {
                         </svg>
                       )}
                     </button>
-                  </div>
-
-                  {/* Title + description */}
-                  <div className="min-w-0">
-                    <div className={`text-sm font-medium truncate ${task.completed_at ? 'text-[#b3b3b3] line-through' : 'text-white'}`}>
-                      {task.title}
+                    <div className="flex-1 min-w-0">
+                      <div className={`font-medium text-sm ${task.completed_at ? 'text-[#b3b3b3] line-through' : 'text-white'}`}>
+                        {task.title}
+                      </div>
+                      {task.description && (
+                        <div className="text-xs text-[#b3b3b3] mt-0.5 line-clamp-2">{task.description}</div>
+                      )}
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
+                        <span className="text-xs font-medium" style={{ color: due.color }}>{due.label}</span>
+                        <PriorityBadge priority={task.priority} />
+                        <StatusBadge task={task} />
+                      </div>
+                      {(task.crm_leads || task.crm_users) && (
+                        <div className="flex items-center gap-3 mt-2 text-xs text-[#b3b3b3]">
+                          {task.crm_leads && (
+                            <Link href={`/app/leads/${task.crm_leads.id}`} className="text-[#0ea5e9]">
+                              {task.crm_leads.full_name}
+                            </Link>
+                          )}
+                          {task.crm_users && <span>{task.crm_users.full_name ?? task.crm_users.email}</span>}
+                        </div>
+                      )}
                     </div>
-                    {task.description && (
-                      <div className="text-xs text-[#b3b3b3] truncate mt-0.5">{task.description}</div>
-                    )}
-                  </div>
-
-                  {/* Assigned rep */}
-                  <div className="min-w-0">
-                    {task.crm_users ? (
-                      <span className="text-sm text-[#b3b3b3] truncate block">
-                        {task.crm_users.full_name ?? task.crm_users.email}
-                      </span>
-                    ) : (
-                      <span className="text-sm text-[#b3b3b3]/40">—</span>
-                    )}
-                  </div>
-
-                  {/* Due date */}
-                  <div>
-                    <span className="text-sm font-medium" style={{ color: due.color }}>
-                      {due.label}
-                    </span>
-                  </div>
-
-                  {/* Lead link */}
-                  <div className="min-w-0">
-                    {task.crm_leads ? (
-                      <Link
-                        href={`/app/leads/${task.crm_leads.id}`}
-                        className="text-sm text-[#0ea5e9] hover:text-[#0ea5e9]/80 truncate block transition-colors"
-                      >
-                        {task.crm_leads.full_name}
-                      </Link>
-                    ) : (
-                      <span className="text-sm text-[#b3b3b3]/40">—</span>
-                    )}
-                  </div>
-
-                  {/* Priority */}
-                  <div>
-                    <PriorityBadge priority={task.priority} />
-                  </div>
-
-                  {/* Status */}
-                  <div>
-                    <StatusBadge task={task} />
                   </div>
                 </div>
               )
             })}
           </div>
-        </div>
+
+          {/* Desktop table view */}
+          <div className="hidden sm:block bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden">
+            {/* Table header */}
+            <div className="grid grid-cols-[2rem_1fr_140px_130px_100px_90px_90px] gap-x-4 px-4 py-2.5 border-b border-[#2d2d2d] text-[10px] font-semibold text-[#b3b3b3] uppercase tracking-wider">
+              <div />
+              <div>Task</div>
+              <div>Assigned To</div>
+              <div>Due Date</div>
+              <div>Lead</div>
+              <div>Priority</div>
+              <div>Status</div>
+            </div>
+
+            {/* Rows */}
+            <div className="divide-y divide-[#2d2d2d]">
+              {filtered.map((task) => {
+                const overdue = isOverdue(task)
+                const due = formatDueDate(task.due_at)
+                const isCompleting = completingId === task.id
+
+                return (
+                  <div
+                    key={task.id}
+                    className={`grid grid-cols-[2rem_1fr_140px_130px_100px_90px_90px] gap-x-4 px-4 py-3.5 items-center transition-colors hover:bg-[#2d2d2d]/20 ${
+                      overdue ? 'border-l-2 border-l-[#e11d48] bg-[#e11d48]/[0.03]' : 'border-l-2 border-l-transparent'
+                    }`}
+                  >
+                    <div>
+                      <button
+                        onClick={() => !task.completed_at && markComplete(task.id)}
+                        disabled={isCompleting || !!task.completed_at}
+                        title={task.completed_at ? 'Completed' : 'Mark complete'}
+                        className={`w-5 h-5 rounded border flex items-center justify-center transition-all flex-shrink-0 ${
+                          task.completed_at
+                            ? 'bg-[#22c55e] border-[#22c55e]'
+                            : isCompleting
+                            ? 'border-[#22c55e] bg-[#22c55e]/20 animate-pulse'
+                            : 'border-[#2d2d2d] bg-[#0a0a0a] hover:border-[#22c55e] hover:bg-[#22c55e]/10'
+                        }`}
+                      >
+                        {(task.completed_at || isCompleting) && (
+                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                    <div className="min-w-0">
+                      <div className={`text-sm font-medium truncate ${task.completed_at ? 'text-[#b3b3b3] line-through' : 'text-white'}`}>
+                        {task.title}
+                      </div>
+                      {task.description && (
+                        <div className="text-xs text-[#b3b3b3] truncate mt-0.5">{task.description}</div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      {task.crm_users ? (
+                        <span className="text-sm text-[#b3b3b3] truncate block">
+                          {task.crm_users.full_name ?? task.crm_users.email}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-[#b3b3b3]/40">—</span>
+                      )}
+                    </div>
+                    <div>
+                      <span className="text-sm font-medium" style={{ color: due.color }}>{due.label}</span>
+                    </div>
+                    <div className="min-w-0">
+                      {task.crm_leads ? (
+                        <Link
+                          href={`/app/leads/${task.crm_leads.id}`}
+                          className="text-sm text-[#0ea5e9] hover:text-[#0ea5e9]/80 truncate block transition-colors"
+                        >
+                          {task.crm_leads.full_name}
+                        </Link>
+                      ) : (
+                        <span className="text-sm text-[#b3b3b3]/40">—</span>
+                      )}
+                    </div>
+                    <div><PriorityBadge priority={task.priority} /></div>
+                    <div><StatusBadge task={task} /></div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </>
       )}
 
       {showNewTask && (

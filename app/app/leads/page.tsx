@@ -190,7 +190,7 @@ function NewLeadSlideOver({
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Full Name *</label>
               <input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm" />
@@ -512,8 +512,8 @@ export default function LeadsPage() {
                   <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-4 active:bg-[#2d2d2d]/40 transition-colors">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1 min-w-0 mr-3">
-                        <div className="font-medium text-white truncate">{lead.full_name}</div>
-                        <div className="text-xs text-[#b3b3b3] mt-0.5">{lead.email ?? lead.phone ?? '—'}</div>
+                        <div className="font-semibold text-white truncate">{lead.full_name}</div>
+                        {lead.stage && <div className="text-xs text-[#b3b3b3] mt-0.5">{lead.stage}</div>}
                       </div>
                       <span
                         className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium capitalize flex-shrink-0"
@@ -522,10 +522,28 @@ export default function LeadsPage() {
                         {lead.status}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 flex-wrap text-xs text-[#b3b3b3]">
-                      {lead.stage && <span className="bg-[#2d2d2d] px-2 py-0.5 rounded">{lead.stage}</span>}
-                      {lead.source && <span>{lead.source}</span>}
-                      <span className="ml-auto">Last contact: {timeAgo(lead.last_contacted_at)}</span>
+                    <div className="flex items-center gap-3 mt-2">
+                      {lead.phone && (
+                        <a
+                          href={`tel:${lead.phone}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1.5 text-xs text-[#3b82f6] bg-[#3b82f6]/10 px-2.5 py-1.5 rounded-lg"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                          Call
+                        </a>
+                      )}
+                      {lead.email && (
+                        <a
+                          href={`mailto:${lead.email}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1.5 text-xs text-[#f59e0b] bg-[#f59e0b]/10 px-2.5 py-1.5 rounded-lg"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                          Email
+                        </a>
+                      )}
+                      <span className="ml-auto text-xs text-[#b3b3b3]">{timeAgo(lead.last_contacted_at)}</span>
                     </div>
                   </div>
                 </Link>
@@ -637,7 +655,7 @@ export default function LeadsPage() {
       {/* Mobile FAB */}
       <button
         onClick={() => setShowNewLead(true)}
-        className="sm:hidden fixed bottom-6 right-6 z-20 w-14 h-14 bg-[#0ea5e9] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[#0ea5e9]/90 active:scale-95 transition-all"
+        className="sm:hidden fixed bottom-20 right-4 z-20 w-14 h-14 bg-[#0ea5e9] text-white rounded-full shadow-lg flex items-center justify-center hover:bg-[#0ea5e9]/90 active:scale-95 transition-all"
         aria-label="New Lead"
       >
         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>

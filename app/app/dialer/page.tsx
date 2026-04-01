@@ -410,81 +410,95 @@ export default function DialerPage() {
               </div>
 
               {/* Call controls */}
-              <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex flex-col gap-3">
                 {callStatus === 'idle' && (
-                  <button
-                    onClick={startCall}
-                    disabled={!currentLead?.phone}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-[#22c55e] text-white rounded-lg text-sm font-medium hover:bg-[#22c55e]/90 disabled:opacity-50 transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                    Dial {currentLead?.full_name?.split(' ')[0]}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={startCall}
+                      disabled={!currentLead?.phone}
+                      className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 bg-[#22c55e] text-white rounded-xl sm:rounded-lg text-base sm:text-sm font-semibold sm:font-medium hover:bg-[#22c55e]/90 disabled:opacity-50 transition-colors"
+                    >
+                      <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                      Dial {currentLead?.full_name?.split(' ')[0]}
+                    </button>
+                    {queueIndex < queue.length - 1 && (
+                      <button onClick={skipLead} className="px-4 py-3 sm:py-2.5 rounded-xl sm:rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-sm hover:text-white transition-colors">
+                        Skip →
+                      </button>
+                    )}
+                  </div>
                 )}
 
                 {(callStatus === 'dialing' || callStatus === 'connected') && (
                   <>
-                    <button
-                      onClick={() => setMuted(m => !m)}
-                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                        muted ? 'bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30' : 'bg-[#2d2d2d] text-[#b3b3b3] hover:text-white'
-                      }`}
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        {muted
-                          ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                          : <><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.364a9 9 0 000-12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></>
-                        }
-                      </svg>
-                      {muted ? 'Unmute' : 'Mute'}
-                    </button>
-
-                    <button
-                      onClick={() => setOnHold(h => !h)}
-                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                        onHold ? 'bg-[#0ea5e9]/20 text-[#0ea5e9] border border-[#0ea5e9]/30' : 'bg-[#2d2d2d] text-[#b3b3b3] hover:text-white'
-                      }`}
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {onHold ? 'Resume' : 'Hold'}
-                    </button>
-
-                    {callStatus === 'connected' && (
-                      <button
-                        onClick={handleVoicemailDrop}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#8b5cf6]/20 text-[#8b5cf6] border border-[#8b5cf6]/30 text-sm font-medium hover:bg-[#8b5cf6]/30 transition-colors"
-                      >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                        </svg>
-                        Voicemail Drop
-                      </button>
-                    )}
-
+                    {/* Mobile: prominent hang up first */}
                     <button
                       onClick={hangUp}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#e11d48] text-white text-sm font-medium hover:bg-[#e11d48]/90 transition-colors ml-auto"
+                      className="w-full sm:hidden flex items-center justify-center gap-2 py-4 rounded-xl bg-[#e11d48] text-white text-base font-semibold active:scale-95 transition-all"
                     >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z" />
                       </svg>
                       Hang Up
                     </button>
-                  </>
-                )}
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <button
+                        onClick={() => setMuted(m => !m)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          muted ? 'bg-[#f59e0b]/20 text-[#f59e0b] border border-[#f59e0b]/30' : 'bg-[#2d2d2d] text-[#b3b3b3] hover:text-white'
+                        }`}
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          {muted
+                            ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                            : <><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18.364a9 9 0 000-12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></>
+                          }
+                        </svg>
+                        {muted ? 'Unmute' : 'Mute'}
+                      </button>
 
-                {callStatus === 'idle' && queueIndex < queue.length - 1 && (
-                  <button onClick={skipLead} className="px-4 py-2.5 rounded-lg bg-[#2d2d2d] text-[#b3b3b3] text-sm hover:text-white transition-colors">
-                    Skip →
-                  </button>
+                      <button
+                        onClick={() => setOnHold(h => !h)}
+                        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          onHold ? 'bg-[#0ea5e9]/20 text-[#0ea5e9] border border-[#0ea5e9]/30' : 'bg-[#2d2d2d] text-[#b3b3b3] hover:text-white'
+                        }`}
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {onHold ? 'Resume' : 'Hold'}
+                      </button>
+
+                      {callStatus === 'connected' && (
+                        <button
+                          onClick={handleVoicemailDrop}
+                          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#8b5cf6]/20 text-[#8b5cf6] border border-[#8b5cf6]/30 text-sm font-medium hover:bg-[#8b5cf6]/30 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                          </svg>
+                          Voicemail Drop
+                        </button>
+                      )}
+
+                      {/* Desktop hang up */}
+                      <button
+                        onClick={hangUp}
+                        className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-lg bg-[#e11d48] text-white text-sm font-medium hover:bg-[#e11d48]/90 transition-colors ml-auto"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 8l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M5 3a2 2 0 00-2 2v1c0 8.284 6.716 15 15 15h1a2 2 0 002-2v-3.28a1 1 0 00-.684-.948l-4.493-1.498a1 1 0 00-1.21.502l-1.13 2.257a11.042 11.042 0 01-5.516-5.517l2.257-1.128a1 1 0 00.502-1.21L9.228 3.683A1 1 0 008.279 3H5z" />
+                        </svg>
+                        Hang Up
+                      </button>
+                    </div>
+                  </>
                 )}
 
                 {callStatus === 'ended' && !showDisposition && (
                   <button
                     onClick={nextCall}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 bg-[#0ea5e9] text-white rounded-xl sm:rounded-lg text-base sm:text-sm font-semibold sm:font-medium hover:bg-[#0ea5e9]/90 transition-colors"
                   >
                     Next Call →
                   </button>

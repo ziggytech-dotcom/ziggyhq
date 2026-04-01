@@ -64,7 +64,7 @@ export default async function AppLayout({
         userEmail={user.email ?? ''}
         userName={userFullName || userName}
       />
-      <main className="flex-1 lg:ml-64 min-h-screen overflow-y-auto pt-14 lg:pt-0 flex flex-col">
+      <main className="flex-1 lg:ml-64 min-h-screen overflow-y-auto pt-14 pb-16 lg:pt-0 lg:pb-0 flex flex-col">
         <div className="flex-1">
           {children}
         </div>
