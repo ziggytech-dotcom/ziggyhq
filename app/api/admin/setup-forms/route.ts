@@ -1,11 +1,11 @@
 /**
  * One-time setup endpoint to create lead capture forms tables.
  * Hit GET /api/admin/setup-forms to create tables if they don't exist.
- * Uses service role key — authenticated via SETUP_SECRET env var.
+ * Uses service role key -- authenticated via SETUP_SECRET env var.
  */
 import { createAdminClient } from '@/lib/supabase/admin'
 
-const SETUP_SECRET = process.env.SETUP_SECRET ?? 'ziggyhq-setup-2026'
+const SETUP_SECRET = process.env.SETUP_SECRET
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     })
   }
 
-  // Tables don't exist — return the SQL to run
+  // Tables don't exist -- return the SQL to run
   const sql = `
 -- Run this SQL in your Supabase Dashboard SQL Editor:
 -- https://supabase.com/dashboard/project/tabrmsrxtqnuwivgwggb/sql/new

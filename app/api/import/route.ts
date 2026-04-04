@@ -94,7 +94,7 @@ export async function POST(request: Request) {
       const d = phoneDigits.slice(-10)
       phone = `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`
     } else if (row.phone?.trim()) {
-      warnings.push({ row: i + 2, message: 'Phone number invalid format — imported as-is', name })
+      warnings.push({ row: i + 2, message: 'Phone number invalid format -- imported as-is', name })
       phone = row.phone.trim()
     }
 

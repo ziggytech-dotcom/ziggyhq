@@ -145,7 +145,7 @@ export default function LendersPage() {
           PARTNER LENDERS
         </h1>
       </div>
-      <p className="text-[#b3b3b3] text-sm mb-6 ml-8">Add your preferred lenders — they'll appear in the lead detail financing section for quick selection.</p>
+      <p className="text-[#b3b3b3] text-sm mb-6 ml-8">Add your preferred lenders &mdash; they'll appear in the lead detail financing section for quick selection.</p>
 
       <div className="ml-8">
         <button onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#0ea5e9] text-white text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors mb-6">
@@ -322,7 +322,7 @@ function LenderCard({ lender, onEdit, onDelete, deleting }: {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
           <span className="text-white font-medium text-sm">{lender.name}</span>
-          {lender.company && <span className="text-[#b3b3b3] text-xs">— {lender.company}</span>}
+          {lender.company && <span className="text-[#b3b3b3] text-xs">&mdash; {lender.company}</span>}
         </div>
         <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-[#b3b3b3] mb-2">
           {lender.phone && <span>📞 {lender.phone}</span>}

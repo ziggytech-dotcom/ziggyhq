@@ -37,7 +37,7 @@ function isOverdue(task: Task): boolean {
 }
 
 function formatDueDate(dateStr: string | null): { label: string; color: string } {
-  if (!dateStr) return { label: '—', color: '#b3b3b3' }
+  if (!dateStr) return { label: '--', color: '#b3b3b3' }
   const d = new Date(dateStr)
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -59,7 +59,7 @@ const PRIORITY_CONFIG = {
 }
 
 function PriorityBadge({ priority }: { priority: Task['priority'] }) {
-  if (!priority) return <span className="text-[#b3b3b3] text-xs">—</span>
+  if (!priority) return <span className="text-[#b3b3b3] text-xs">&mdash;</span>
   const cfg = PRIORITY_CONFIG[priority]
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
@@ -611,7 +611,7 @@ export default function TasksPage() {
                           {task.crm_users.full_name ?? task.crm_users.email}
                         </span>
                       ) : (
-                        <span className="text-sm text-[#b3b3b3]/40">—</span>
+                        <span className="text-sm text-[#b3b3b3]/40">&mdash;</span>
                       )}
                     </div>
                     <div>
@@ -626,7 +626,7 @@ export default function TasksPage() {
                           {task.crm_leads.full_name}
                         </Link>
                       ) : (
-                        <span className="text-sm text-[#b3b3b3]/40">—</span>
+                        <span className="text-sm text-[#b3b3b3]/40">&mdash;</span>
                       )}
                     </div>
                     <div><PriorityBadge priority={task.priority} /></div>

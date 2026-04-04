@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — ZiggyHQ',
+  title: 'Terms of Service -- ZiggyHQ',
   description: 'The Terms of Service for ZiggyTech Ventures LLC and the ZiggyHQ platform.',
 }
 
@@ -22,7 +22,7 @@ export default function TermsOfServicePage() {
       {/* Content */}
       <main className="max-w-3xl mx-auto px-8 py-12">
         <div className="mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1a1a1a] border border-[#2d2d2d] text-xs text-[#f59e0b]">
-          ⚠️ Draft — Pending Attorney Review
+          ⚠️ Draft -- Pending Attorney Review
         </div>
 
         <h1 className="mt-4 text-4xl font-bold text-white" style={{ fontFamily: 'var(--font-bebas-neue)', letterSpacing: '0.05em' }}>
@@ -44,7 +44,7 @@ export default function TermsOfServicePage() {
             </p>
             <p className="mt-3">
               By accessing, registering for, or using any product or service within the ZiggyTech Business Suite
-              — including ZiggyHQ — you acknowledge that you have read, understood, and agree to be bound by these
+              -- including ZiggyHQ -- you acknowledge that you have read, understood, and agree to be bound by these
               Terms and all policies incorporated herein by reference, including our{' '}
               <Link href="/privacy" className="text-[#0ea5e9] hover:underline">Privacy Policy</Link> and{' '}
               <Link href="/cookies" className="text-[#0ea5e9] hover:underline">Cookie Policy</Link>.

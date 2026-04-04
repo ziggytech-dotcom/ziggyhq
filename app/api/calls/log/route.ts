@@ -1,4 +1,4 @@
-// POST /api/calls/log — manually log a call outcome against a lead
+// POST /api/calls/log -- manually log a call outcome against a lead
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 

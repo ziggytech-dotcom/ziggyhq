@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   const content = lines.join('\n') || `Call ${status ?? 'completed'}`
 
   // Find the initial "call initiated" activity by searching for the call_id in content
-  // Use ilike instead of jsonb contains — more reliable
+  // Use ilike instead of jsonb contains -- more reliable
   const { data: existing } = await admin
     .from('crm_lead_activities')
     .select('id')
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       })
       .eq('id', existing.id)
   } else {
-    // No initial entry found — insert fresh
+    // No initial entry found -- insert fresh
     await admin.from('crm_lead_activities').insert({
       lead_id: metadata.lead_id,
       org_id: metadata.org_id,

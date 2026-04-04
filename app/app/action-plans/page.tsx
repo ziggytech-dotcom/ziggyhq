@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import TogglePlan from './TogglePlan'
 import CreatePlanModal from './CreatePlanModal'
+import DeletePlanButton from './DeletePlanButton'
 
 export default async function ActionPlansPage() {
   const supabase = await createClient()
@@ -98,16 +99,7 @@ export default async function ActionPlansPage() {
                   <Link href={`/app/action-plans/${plan.id}`} className="px-3 py-1.5 rounded-lg border border-[#2d2d2d] text-[#b3b3b3] hover:text-white hover:border-[#0ea5e9]/40 text-sm transition-colors">
                     Edit
                   </Link>
-                  <button
-                    onClick={async () => {
-                      if (!confirm(`Delete "${plan.name}"? This cannot be undone.`)) return
-                      await fetch(`/api/action-plans/${plan.id}`, { method: 'DELETE' })
-                      window.location.reload()
-                    }}
-                    className="px-3 py-1.5 rounded-lg border border-red-900/40 text-red-400 hover:bg-red-900/20 hover:border-red-500/40 text-sm transition-colors"
-                  >
-                    Delete
-                  </button>
+                  <DeletePlanButton planId={plan.id} planName={plan.name} />
                 </div>
               </div>
             </div>

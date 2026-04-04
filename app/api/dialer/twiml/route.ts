@@ -1,4 +1,4 @@
-// No auth — this endpoint is called directly by Twilio to fetch TwiML instructions
+// No auth -- this endpoint is called directly by Twilio to fetch TwiML instructions
 export async function GET() {
   const twiml = `<?xml version="1.0" encoding="UTF-8"?>
 <Response>

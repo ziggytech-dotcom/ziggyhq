@@ -352,7 +352,7 @@ function EditListModal({
               ))}
               {conditions.length === 0 && (
                 <div className="text-center py-4 text-[#b3b3b3] text-xs border border-dashed border-[#2d2d2d] rounded-lg">
-                  No conditions — list will include all leads
+                  No conditions -- list will include all leads
                 </div>
               )}
             </div>
@@ -437,7 +437,7 @@ export default function SmartListsPage() {
           <h1 style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '36px', letterSpacing: '0.05em', color: '#ededed' }}>
             SMART LISTS
           </h1>
-          <p className="text-[#b3b3b3] text-sm mt-1">Dynamic lists with AND/OR conditions — auto-update in real time</p>
+          <p className="text-[#b3b3b3] text-sm mt-1">Dynamic lists with AND/OR conditions &mdash; auto-update in real time</p>
         </div>
         <button onClick={() => setEditingList({})}
           className="flex items-center gap-2 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 transition-colors">
@@ -509,10 +509,10 @@ export default function SmartListsPage() {
                           <tr key={lead.id} className="hover:bg-[#2d2d2d]/20 transition-colors">
                             <td className="px-4 py-3">
                               <Link href={`/app/leads/${lead.id}`} className="text-sm font-medium text-white hover:text-[#0ea5e9]">{lead.full_name}</Link>
-                              <div className="text-xs text-[#b3b3b3]">{lead.phone ?? lead.email ?? '—'}</div>
+                              <div className="text-xs text-[#b3b3b3]">{lead.phone ?? lead.email ?? '--'}</div>
                             </td>
-                            <td className="px-4 py-3 text-sm text-[#b3b3b3]">{lead.stage ?? '—'}</td>
-                            <td className="px-4 py-3 text-sm text-[#b3b3b3]">{lead.source ?? '—'}</td>
+                            <td className="px-4 py-3 text-sm text-[#b3b3b3]">{lead.stage ?? '--'}</td>
+                            <td className="px-4 py-3 text-sm text-[#b3b3b3]">{lead.source ?? '--'}</td>
                             <td className="px-4 py-3">
                               <span className="text-sm font-medium" style={{ color: lead.lead_score >= 70 ? '#22c55e' : lead.lead_score >= 40 ? '#f59e0b' : '#0ea5e9' }}>{lead.lead_score}</span>
                             </td>

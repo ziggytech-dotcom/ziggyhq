@@ -1,4 +1,4 @@
-// POST /api/leads/merge — merge two leads (keep_id wins, delete_id is removed)
+// POST /api/leads/merge -- merge two leads (keep_id wins, delete_id is removed)
 // All activities, notes, enrollments from delete_id are re-assigned to keep_id
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'

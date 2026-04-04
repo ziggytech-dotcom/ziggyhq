@@ -23,16 +23,16 @@ function getScheduledCallTime(delayMinutes: number, callStart: number, callEnd: 
   const pstDay   = parseInt(parts.find(p => p.type === 'day')!.value)
   const pstHour  = parseInt(parts.find(p => p.type === 'hour')!.value)
 
-  // Within hours — return as-is
+  // Within hours -- return as-is
   if (pstHour >= callStart && pstHour < callEnd) {
     return Math.floor(scheduledMs / 1000)
   }
 
-  // Outside hours — find next callStart window
+  // Outside hours -- find next callStart window
   let targetYear = pstYear, targetMonth = pstMonth, targetDay = pstDay, targetOffset = tzOffset
 
   if (pstHour >= callEnd) {
-    // After hours — push to next day
+    // After hours -- push to next day
     const next = new Date(Date.UTC(pstYear, pstMonth - 1, pstDay + 1))
     const np = new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/Los_Angeles', year: 'numeric', month: 'numeric', day: 'numeric'
@@ -45,13 +45,13 @@ function getScheduledCallTime(delayMinutes: number, callStart: number, callEnd: 
     }).formatToParts(next).find(p => p.type === 'timeZoneName')?.value ?? 'GMT-7'
     targetOffset = parseInt(nextTzStr.replace('GMT', ''))
   }
-  // Before hours — same day, just push to callStart
+  // Before hours -- same day, just push to callStart
 
   // UTC = local_hour - tz_offset  (e.g. 9 AM PDT → 9 - (-7) = 16:00 UTC)
   return Math.floor(Date.UTC(targetYear, targetMonth - 1, targetDay, callStart - targetOffset, 0, 0) / 1000)
 }
 
-// Inbound lead webhook — accepts new leads from any source
+// Inbound lead webhook -- accepts new leads from any source
 // Auth: ?api_key=ORG_WEBHOOK_KEY or Authorization: Bearer ORG_WEBHOOK_KEY
 // POST body (all optional except at least one of: full_name, email, phone)
 // {
@@ -65,7 +65,7 @@ function getScheduledCallTime(delayMinutes: number, callStart: number, callEnd: 
 export async function POST(request: Request) {
   const admin = createAdminClient()
 
-  // Auth — match api_key to an org's webhook_key in settings_json
+  // Auth -- match api_key to an org's webhook_key in settings_json
   const url = new URL(request.url)
   const apiKey = url.searchParams.get('api_key') ??
     request.headers.get('authorization')?.replace('Bearer ', '').trim()
@@ -147,7 +147,7 @@ export async function POST(request: Request) {
     return Response.json({ error: error.message }, { status: 500 })
   }
 
-  // Apply routing rules — auto-assign if a rule matches
+  // Apply routing rules -- auto-assign if a rule matches
   const assignedTo = await applyRoutingRules({
     id: lead.id,
     org_id: org.id,
@@ -164,7 +164,7 @@ export async function POST(request: Request) {
     lead_id: lead.id,
     org_id: org.id,
     type: 'note',
-    content: `New lead received via webhook (source: ${lead.source})${assignedTo ? ` — auto-assigned via routing rule` : ''}`,
+    content: `New lead received via webhook (source: ${lead.source})${assignedTo ? ` -- auto-assigned via routing rule` : ''}`,
   })
 
   // Auto-call if enabled and phone exists
@@ -184,20 +184,20 @@ export async function POST(request: Request) {
       const scriptType = body.script_type ?? 'new_lead'
 
       const aiRule = disclose
-        ? `If they ask "are you a real person?", "are you human?", or "is this AI?" — respond warmly and honestly: "I'm a virtual assistant for ${brokerage} — but I want you to know that someone from the team will be reaching out to you personally very soon!"`
-        : `If they ask whether you are human or AI — simply say "I'm calling on behalf of ${brokerage} and I promise someone will be in touch very soon!" and redirect.`
+        ? `If they ask "are you a real person?", "are you human?", or "is this AI?" -- respond warmly and honestly: "I'm a virtual assistant for ${brokerage} -- but I want you to know that someone from the team will be reaching out to you personally very soon!"`
+        : `If they ask whether you are human or AI -- simply say "I'm calling on behalf of ${brokerage} and I promise someone will be in touch very soon!" and redirect.`
 
       const task = `You are ${callerName}, a warm and friendly assistant calling from ${brokerage}. You are calling ${fullName ?? 'a prospective client'}.
 
-IMPORTANT — follow this exact flow:
+IMPORTANT -- follow this exact flow:
 1. Start with: "Hi there! This is ${callerName} calling from ${brokerage}. Am I speaking with ${fullName ?? 'the right person'}?"
-2. Wait for confirmation, then say: "Hi! We just received your inquiry and I wanted to reach out right away — I know how quickly things move in real estate!"
+2. Wait for confirmation, then say: "Hi! We just received your inquiry and I wanted to reach out right away -- I know how quickly things move in real estate!"
 3. Ask: "Are you currently looking to buy${scriptType === 'home_value' ? ' or sell' : ''} a home?"
 4. Ask about their timeline
 5. Ask about their budget or price range
 6. Ask if they are pre-approved
 7. Ask what areas they are interested in
-8. Close: "Perfect — I have everything I need. Your agent will be reaching out to you personally very soon. Is this the best number to reach you?"
+8. Close: "Perfect -- I have everything I need. Your agent will be reaching out to you personally very soon. Is this the best number to reach you?"
 
 Keep it warm, natural, conversational. Lead the conversation. Under 3 minutes. If they ask to be removed, thank them and end politely.
 ${aiRule}`
@@ -208,7 +208,7 @@ ${aiRule}`
       const scheduledTime = getScheduledCallTime(callDelayMinutes, callHoursStart, callHoursEnd)
       const callAt = new Date(scheduledTime * 1000)
       const delayedMsg = scheduledTime > Math.floor((Date.now() + callDelayMinutes * 60 * 1000) / 1000) + 60
-        ? ` (scheduled for ${callAt.toLocaleString('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit', hour12: true, month: 'short', day: 'numeric' })} PST — outside call hours)`
+        ? ` (scheduled for ${callAt.toLocaleString('en-US', { timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit', hour12: true, month: 'short', day: 'numeric' })} PST -- outside call hours)`
         : ` (calling in ~${Math.round(callDelayMinutes)} min)`
 
       const blandRes = await fetch('https://api.bland.ai/v1/calls', {

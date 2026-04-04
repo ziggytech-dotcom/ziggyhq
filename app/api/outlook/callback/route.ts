@@ -1,4 +1,4 @@
-// GET /api/outlook/callback — Microsoft OAuth2 callback for Outlook
+// GET /api/outlook/callback -- Microsoft OAuth2 callback for Outlook
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest } from 'next/server'
 

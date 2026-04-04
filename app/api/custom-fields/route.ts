@@ -1,5 +1,5 @@
-// GET /api/custom-fields — list field defs for org
-// POST /api/custom-fields — create a new field def (admin only)
+// GET /api/custom-fields -- list field defs for org
+// POST /api/custom-fields -- create a new field def (admin only)
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 

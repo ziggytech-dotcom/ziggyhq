@@ -10,7 +10,7 @@ async function getOrgUser() {
   return data
 }
 
-// GET — return masked Bland.ai config
+// GET -- return masked Bland.ai config
 export async function GET() {
   const orgUser = await getOrgUser()
   if (!orgUser?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -35,7 +35,7 @@ export async function GET() {
   })
 }
 
-// POST — save Bland.ai config (validates API key first)
+// POST -- save Bland.ai config (validates API key first)
 export async function POST(request: Request) {
   const orgUser = await getOrgUser()
   if (!orgUser?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -86,7 +86,7 @@ export async function POST(request: Request) {
   return Response.json({ success: true })
 }
 
-// DELETE — remove Bland.ai integration
+// DELETE -- remove Bland.ai integration
 export async function DELETE() {
   const orgUser = await getOrgUser()
   if (!orgUser?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })

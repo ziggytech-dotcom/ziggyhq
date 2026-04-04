@@ -1,4 +1,4 @@
-// Lead scoring engine — 0–100
+// Lead scoring engine -- 0–100
 
 interface LeadData {
   source?: string | null

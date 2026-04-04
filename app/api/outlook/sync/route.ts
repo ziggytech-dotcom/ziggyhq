@@ -1,4 +1,4 @@
-// POST /api/outlook/sync — sync recent emails from Outlook via Microsoft Graph
+// POST /api/outlook/sync -- sync recent emails from Outlook via Microsoft Graph
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest } from 'next/server'
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
   const authHeader = request.headers.get('authorization')
   if (authHeader === `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`) {
-    // cron mode — all orgs
+    // cron mode -- all orgs
   } else {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

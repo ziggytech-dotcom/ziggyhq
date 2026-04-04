@@ -69,7 +69,7 @@ function ScoreBar({ score }: { score: number }) {
 }
 
 function timeAgo(dateStr: string | null) {
-  if (!dateStr) return '—'
+  if (!dateStr) return '--'
   const date = new Date(dateStr)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
@@ -265,7 +265,7 @@ function NewLeadSlideOver({
                   <div key={dup.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d]">
                     <div>
                       <div className="text-sm font-medium text-white">{dup.full_name}</div>
-                      <div className="text-xs text-[#b3b3b3]">{dup.email ?? dup.phone ?? '—'} · Matched on {dup.match_reason}</div>
+                      <div className="text-xs text-[#b3b3b3]">{dup.email ?? dup.phone ?? '--'} · Matched on {dup.match_reason}</div>
                     </div>
                     <a href={`/app/leads/${dup.id}`} target="_blank" rel="noreferrer" className="text-xs text-[#0ea5e9] hover:underline">View →</a>
                   </div>
@@ -452,7 +452,7 @@ export default function LeadsPage() {
         </div>
       </div>
 
-      {/* Filters — horizontal scroll on mobile */}
+      {/* Filters -- horizontal scroll on mobile */}
       <div className="flex items-center gap-3 mb-5 sm:mb-6 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap">
         <div className="relative flex-1 min-w-48">
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#b3b3b3]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -594,14 +594,14 @@ export default function LeadsPage() {
                           <Link href={`/app/leads/${lead.id}`} className="text-sm font-medium text-white hover:text-[#0ea5e9] transition-colors">
                             {lead.full_name}
                           </Link>
-                          <div className="text-xs text-[#b3b3b3]">{lead.email ?? lead.phone ?? '—'}</div>
+                          <div className="text-xs text-[#b3b3b3]">{lead.email ?? lead.phone ?? '--'}</div>
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[#b3b3b3]">{lead.stage ?? '—'}</span>
+                        <span className="text-sm text-[#b3b3b3]">{lead.stage ?? '--'}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-[#b3b3b3]">{lead.source ?? '—'}</span>
+                        <span className="text-sm text-[#b3b3b3]">{lead.source ?? '--'}</span>
                       </td>
                       <td className="px-4 py-3">
                         <ScoreBar score={lead.lead_score} />
@@ -612,7 +612,7 @@ export default function LeadsPage() {
                           <span className={new Date(lead.next_followup_at) < new Date() ? 'text-[#0ea5e9]' : ''}>
                             {new Date(lead.next_followup_at).toLocaleDateString()}
                           </span>
-                        ) : '—'}
+                        ) : '--'}
                       </td>
                       <td className="px-4 py-3">
                         <span
@@ -623,7 +623,7 @@ export default function LeadsPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-xs text-[#b3b3b3]">
-                        {lead.users ? (lead.users.full_name ?? lead.users.email) : '—'}
+                        {lead.users ? (lead.users.full_name ?? lead.users.email) : '--'}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

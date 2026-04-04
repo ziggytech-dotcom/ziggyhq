@@ -13,7 +13,7 @@ async function getOrgTemplate(): Promise<string> {
   return org?.industry_template ?? 'general'
 }
 
-// GET /api/templates — returns current org's template
+// GET /api/templates -- returns current org's template
 export async function GET() {
   const templateId = await getOrgTemplate()
   const template = getTemplate(templateId)

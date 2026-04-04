@@ -1,4 +1,4 @@
-// PATCH /api/leads/[id]/custom-fields — update custom_fields_json on a lead
+// PATCH /api/leads/[id]/custom-fields -- update custom_fields_json on a lead
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 

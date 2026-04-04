@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Cookie Policy — ZiggyHQ',
+  title: 'Cookie Policy -- ZiggyHQ',
   description: 'How ZiggyTech Ventures LLC uses cookies and similar tracking technologies.',
 }
 
@@ -22,7 +22,7 @@ export default function CookiePolicyPage() {
       {/* Content */}
       <main className="max-w-3xl mx-auto px-8 py-12">
         <div className="mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1a1a1a] border border-[#2d2d2d] text-xs text-[#f59e0b]">
-          ⚠️ Draft — Pending Attorney Review
+          ⚠️ Draft -- Pending Attorney Review
         </div>
 
         <h1 className="mt-4 text-4xl font-bold text-white" style={{ fontFamily: 'var(--font-bebas-neue)', letterSpacing: '0.05em' }}>
@@ -57,9 +57,9 @@ export default function CookiePolicyPage() {
             </p>
             <p className="mt-3">Similar technologies we may use include:</p>
             <ul className="list-disc list-inside space-y-1.5 mt-3">
-              <li><strong className="text-white">Local storage</strong> — browser-based key-value storage (used for preferences like cookie consent dismissal)</li>
-              <li><strong className="text-white">Session storage</strong> — temporary storage cleared when you close your browser</li>
-              <li><strong className="text-white">Web beacons / pixels</strong> — small images used to track email opens or page visits</li>
+              <li><strong className="text-white">Local storage</strong> &mdash; browser-based key-value storage (used for preferences like cookie consent dismissal)</li>
+              <li><strong className="text-white">Session storage</strong> &mdash; temporary storage cleared when you close your browser</li>
+              <li><strong className="text-white">Web beacons / pixels</strong> &mdash; small images used to track email opens or page visits</li>
             </ul>
           </section>
 

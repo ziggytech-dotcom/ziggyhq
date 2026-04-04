@@ -87,7 +87,7 @@ export default async function TeamPage() {
                       </span>
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-white">{member.full_name ?? '—'}</div>
+                      <div className="text-sm font-medium text-white">{member.full_name ?? '--'}</div>
                       <div className="text-xs text-[#b3b3b3]">{member.email}</div>
                     </div>
                   </div>

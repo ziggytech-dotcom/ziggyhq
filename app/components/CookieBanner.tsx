@@ -15,7 +15,7 @@ export default function CookieBanner() {
         setVisible(true)
       }
     } catch {
-      // localStorage unavailable — don't show banner
+      // localStorage unavailable -- don't show banner
     }
   }, [])
 

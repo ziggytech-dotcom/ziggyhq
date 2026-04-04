@@ -208,7 +208,7 @@ export default function Sidebar({ orgName, userEmail, userName }: SidebarProps) 
             </div>
             <div className="flex items-center gap-2">
               <NotificationBell />
-              {/* Close button — mobile only */}
+              {/* Close button -- mobile only */}
               <button
                 onClick={closeMobile}
                 className="lg:hidden p-1 text-[#b3b3b3] hover:text-white transition-colors"
@@ -311,7 +311,7 @@ export default function Sidebar({ orgName, userEmail, userName }: SidebarProps) 
         </div>
       </aside>
 
-      {/* Mobile top bar — hamburger button */}
+      {/* Mobile top bar -- hamburger button */}
       <div className="fixed top-0 left-0 right-0 h-14 bg-[#1a1a1a] border-b border-[#2d2d2d] flex items-center px-4 z-10 lg:hidden">
         <button
           onClick={() => setMobileOpen(true)}

@@ -220,7 +220,7 @@ function AgentCard({
                   <span className="text-[#22c55e] font-medium">Split: {agent.commission_split}</span>
                 )}
                 {!agent.phone && !agent.license_number && !agent.commission_split && (
-                  <span className="text-[#b3b3b3]/50 italic">No profile details — click Edit to add</span>
+                  <span className="text-[#b3b3b3]/50 italic">No profile details &mdash; click Edit to add</span>
                 )}
               </div>
             </>

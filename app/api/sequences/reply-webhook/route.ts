@@ -1,4 +1,4 @@
-// Resend webhook — receives email events (delivered, opened, clicked, bounced, complained)
+// Resend webhook -- receives email events (delivered, opened, clicked, bounced, complained)
 // We use this to detect replies and stop sequences where reply_stops_sequence = true
 // Set up in Resend dashboard: Webhooks → POST https://app.ziggyhq.com/api/sequences/reply-webhook
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -35,18 +35,18 @@ export async function POST(request: Request) {
     await admin.from('crm_sequence_sends').update({ clicked_at: new Date().toISOString() }).eq('id', send.id)
   }
 
-  // email.bounced or email.complained — stop the sequence
+  // email.bounced or email.complained -- stop the sequence
   if (type === 'email.bounced' || type === 'email.complained' || type === 'email.unsubscribed') {
     await admin.from('crm_sequence_enrollments').update({ status: 'unsubscribed' }).eq('id', send.enrollment_id)
     await admin.from('crm_lead_activities').insert({
       lead_id: send.lead_id,
       org_id: send.org_id,
       type: 'email',
-      content: `Email sequence stopped — ${type.replace('email.', '')} (${resendId})`,
+      content: `Email sequence stopped -- ${type.replace('email.', '')} (${resendId})`,
     })
   }
 
-  // email.replied — stop the sequence if reply_stops_sequence is true
+  // email.replied -- stop the sequence if reply_stops_sequence is true
   if (type === 'email.replied') {
     const { data: enrollment } = await admin
       .from('crm_sequence_enrollments')
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
         lead_id: send.lead_id,
         org_id: send.org_id,
         type: 'email',
-        content: 'Lead replied to email sequence — sequence stopped automatically',
+        content: 'Lead replied to email sequence -- sequence stopped automatically',
       })
     }
   }

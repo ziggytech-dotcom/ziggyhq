@@ -11,7 +11,7 @@ export interface SharedContactData {
 
 /**
  * Upsert a contact into the shared_contacts table (best-effort, non-fatal).
- * source: 'ziggyhq' — identifies this record came from ZiggyHQ CRM.
+ * source: 'ziggyhq' -- identifies this record came from ZiggyHQ CRM.
  * workspace_id: the org_id used throughout ZiggyHQ (matches hub workspace).
  */
 export async function upsertSharedContact(
@@ -56,10 +56,10 @@ export async function upsertSharedContact(
         await supabase.from('shared_contacts').insert(payload)
       }
     } else {
-      // No email — always insert (can't deduplicate without email)
+      // No email -- always insert (can't deduplicate without email)
       await supabase.from('shared_contacts').insert(payload)
     }
   } catch {
-    // Best-effort — never fail the primary operation due to shared contacts
+    // Best-effort -- never fail the primary operation due to shared contacts
   }
 }

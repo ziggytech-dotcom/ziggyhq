@@ -1,4 +1,4 @@
-// POST /api/followup-check — run by cron/scheduler to auto-create follow-up tasks
+// POST /api/followup-check -- run by cron/scheduler to auto-create follow-up tasks
 // Called with Authorization: Bearer SUPABASE_SERVICE_ROLE_KEY
 import { createAdminClient } from '@/lib/supabase/admin'
 

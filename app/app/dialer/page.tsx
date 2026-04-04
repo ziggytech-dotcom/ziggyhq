@@ -26,8 +26,8 @@ type Disposition =
   | 'callback_requested'
 
 const DISPOSITION_LABELS: Record<Disposition, { label: string; color: string }> = {
-  answered_interested: { label: 'Answered — Interested', color: '#22c55e' },
-  answered_not_interested: { label: 'Answered — Not Interested', color: '#f59e0b' },
+  answered_interested: { label: 'Answered -- Interested', color: '#22c55e' },
+  answered_not_interested: { label: 'Answered -- Not Interested', color: '#f59e0b' },
   voicemail: { label: 'Voicemail', color: '#8b5cf6' },
   no_answer: { label: 'No Answer', color: '#b3b3b3' },
   wrong_number: { label: 'Wrong Number', color: '#e11d48' },
@@ -35,7 +35,7 @@ const DISPOSITION_LABELS: Record<Disposition, { label: string; color: string }> 
 }
 
 function formatPhone(p: string | null) {
-  if (!p) return '—'
+  if (!p) return '--'
   const d = p.replace(/\D/g, '').slice(-10)
   if (d.length === 10) return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`
   return p
@@ -380,7 +380,7 @@ export default function DialerPage() {
                   <div className="text-xs text-[#b3b3b3] uppercase tracking-wider mb-1">
                     Lead {queueIndex + 1} of {queue.length}
                   </div>
-                  <h2 className="text-xl font-bold text-white">{currentLead?.full_name ?? '—'}</h2>
+                  <h2 className="text-xl font-bold text-white">{currentLead?.full_name ?? '--'}</h2>
                   <div className="text-[#0ea5e9] text-lg font-mono mt-1">{formatPhone(currentLead?.phone ?? null)}</div>
                   {currentLead?.stage && <div className="text-xs text-[#b3b3b3] mt-1">{currentLead.stage} · {currentLead.source}</div>}
                 </div>

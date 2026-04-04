@@ -1,4 +1,4 @@
-// GET /api/outlook/connect — start Microsoft OAuth2 flow for Outlook email sync
+// GET /api/outlook/connect -- start Microsoft OAuth2 flow for Outlook email sync
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 

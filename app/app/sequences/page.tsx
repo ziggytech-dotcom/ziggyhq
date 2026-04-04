@@ -148,7 +148,7 @@ function SequenceEditor({
             <div>
               <label className="block text-sm text-[#b3b3b3] mb-1.5">Enroll From Smart List (optional)</label>
               <select value={smartListId} onChange={(e) => setSmartListId(e.target.value)} className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white focus:outline-none focus:border-[#0ea5e9] text-sm">
-                <option value="">None — enroll manually</option>
+                <option value="">None &mdash; enroll manually</option>
                 {smartLists.map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
               </select>
               <p className="text-xs text-[#b3b3b3]/60 mt-1">When set, leads added to this smart list are auto-enrolled in this sequence.</p>
@@ -224,7 +224,7 @@ function SequenceEditor({
                 ))}
                 {steps.length === 0 && (
                   <div className="text-center py-6 text-[#b3b3b3] text-sm border border-dashed border-[#2d2d2d] rounded-lg">
-                    No steps yet — <button onClick={addStep} className="text-[#0ea5e9] hover:underline">add first step →</button>
+                    No steps yet -- <button onClick={addStep} className="text-[#0ea5e9] hover:underline">add first step →</button>
                   </div>
                 )}
               </div>

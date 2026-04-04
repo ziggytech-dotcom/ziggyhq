@@ -1,5 +1,5 @@
 /**
- * Public endpoint — no auth required.
+ * Public endpoint -- no auth required.
  * Called by the embeddable form script to submit a lead.
  * POST /api/forms/[id]/submit
  */

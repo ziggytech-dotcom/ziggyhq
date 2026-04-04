@@ -1,4 +1,4 @@
-// Industry template definitions — each template provides pipeline stages,
+// Industry template definitions -- each template provides pipeline stages,
 // default lead sources, custom fields, and terminology for the vertical.
 
 export interface CustomField {
@@ -168,7 +168,7 @@ export const INDUSTRY_TEMPLATES: Record<string, IndustryTemplate> = {
   general: {
     id: 'general',
     label: 'General / Other',
-    description: 'Fully customizable — build your own stages and fields',
+    description: 'Fully customizable -- build your own stages and fields',
     icon: '⚙️',
     pipeline_stages: ['New', 'Contacted', 'Qualified', 'Proposal', 'Negotiation', 'Won'],
     lead_sources: ['Website', 'Referral', 'Google', 'Facebook', 'Cold Outreach', 'Email Campaign', 'Event', 'Partner', 'Other'],

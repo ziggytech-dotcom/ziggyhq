@@ -1,4 +1,4 @@
-// POST /api/gmail/send — send an email via connected Gmail account and log as activity
+// POST /api/gmail/send -- send an email via connected Gmail account and log as activity
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 
@@ -69,7 +69,7 @@ export async function POST(request: Request) {
   if (!account) return Response.json({ error: 'Email account not found' }, { status: 404 })
 
   const accessToken = await getValidToken(account)
-  if (!accessToken) return Response.json({ error: 'Could not obtain valid access token — reconnect Gmail' }, { status: 400 })
+  if (!accessToken) return Response.json({ error: 'Could not obtain valid access token -- reconnect Gmail' }, { status: 400 })
 
   // Build RFC 2822 message
   const rawEmail = [

@@ -433,7 +433,7 @@ CREATE TABLE IF NOT EXISTS crm_form_submissions (
 );`}
               </div>
               <button onClick={() => { setSetupRequired(false); loadForms() }} className="mt-3 text-xs text-[#b3b3b3] hover:text-white underline">
-                I&apos;ve run the SQL — check again
+                I&apos;ve run the SQL -- check again
               </button>
             </div>
           </div>

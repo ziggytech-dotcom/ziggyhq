@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   
-  // Public routes — no auth needed
+  // Public routes -- no auth needed
   const publicRoutes = ['/login', '/signup', '/forgot-password', '/_next', '/api/auth', '/favicon.ico']
   const isPublic = publicRoutes.some(route => pathname.startsWith(route))
   

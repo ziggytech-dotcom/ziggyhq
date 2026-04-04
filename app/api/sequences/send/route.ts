@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     const steps = (sequence.crm_sequence_steps ?? []).sort((a: { step_order: number }, b: { step_order: number }) => a.step_order - b.step_order)
     let currentStep = steps[enrollment.current_step]
     if (!currentStep) {
-      // No more steps — complete enrollment
+      // No more steps -- complete enrollment
       await admin.from('crm_sequence_enrollments').update({ status: 'completed' }).eq('id', enrollment.id)
       continue
     }
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
       continue
     }
 
-    // Check conditional logic — skip step if condition not met
+    // Check conditional logic -- skip step if condition not met
     if (currentStep.condition_type) {
       const prevStepIndex = enrollment.current_step - 1
       let conditionMet = true
@@ -101,12 +101,12 @@ export async function POST(request: Request) {
     if (currentStep.type === 'sms') {
       const smsBody = applyMergeTags(currentStep.body ?? '', lead, agentName)
       if (!lead.phone) {
-        // No phone — skip and log warning
+        // No phone -- skip and log warning
         await admin.from('crm_lead_activities').insert({
           lead_id: lead.id,
           org_id: enrollment.org_id,
           type: 'note',
-          content: 'Sequence SMS step skipped — lead has no phone number',
+          content: 'Sequence SMS step skipped -- lead has no phone number',
         })
       } else {
         const twilioConfig = await getOrgTwilioConfig(admin, enrollment.org_id)
@@ -115,13 +115,13 @@ export async function POST(request: Request) {
             lead_id: lead.id,
             org_id: enrollment.org_id,
             type: 'note',
-            content: 'Sequence SMS step skipped — Twilio not connected. Go to Settings → Integrations.',
+            content: 'Sequence SMS step skipped -- Twilio not connected. Go to Settings → Integrations.',
           })
         } else {
           try {
             await sendSmsToLead({ admin, org_id: enrollment.org_id, lead_id: lead.id, message: smsBody })
           } catch {
-            // Failed — skip for now
+            // Failed -- skip for now
           }
         }
       }
@@ -182,7 +182,7 @@ export async function POST(request: Request) {
 
       sent++
     } catch {
-      // Failed to send — skip for now
+      // Failed to send -- skip for now
     }
   }
 

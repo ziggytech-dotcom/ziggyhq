@@ -34,7 +34,7 @@ export async function GET() {
       return Response.json({
         forms: [],
         setupRequired: true,
-        setupUrl: '/api/admin/setup-forms?secret=ziggyhq-setup-2026',
+        setupUrl: '/api/admin/setup-forms',
         message: 'Forms table not yet created. Visit /api/admin/setup-forms for instructions.',
       })
     }

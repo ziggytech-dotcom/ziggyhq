@@ -1,4 +1,4 @@
-// POST /api/leads/duplicates — check for duplicates before creating/updating a lead
+// POST /api/leads/duplicates -- check for duplicates before creating/updating a lead
 // Returns any leads that match on email, phone, or name (fuzzy)
 import { NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'

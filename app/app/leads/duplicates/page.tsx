@@ -60,7 +60,7 @@ export default function DuplicatesPage() {
       body: JSON.stringify({ keep_id: keepId, delete_id: deleteId }),
     })
     if (res.ok) {
-      setMergeMsg('Merge complete — duplicate deleted.')
+      setMergeMsg('Merge complete -- duplicate deleted.')
       setResults(null)
       setKeepId(null)
       setDeleteId(null)
@@ -151,7 +151,7 @@ export default function DuplicatesPage() {
 
           {results.length === 0 ? (
             <div className="px-6 py-8 text-center text-[#b3b3b3] text-sm">
-              No matching records — these contact details appear unique in your CRM.
+              No matching records -- these contact details appear unique in your CRM.
             </div>
           ) : (
             <>

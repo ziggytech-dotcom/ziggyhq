@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — ZiggyHQ',
+  title: 'Privacy Policy -- ZiggyHQ',
   description: 'How ZiggyTech Ventures LLC collects, uses, and protects your data.',
 }
 
@@ -22,7 +22,7 @@ export default function PrivacyPolicyPage() {
       {/* Content */}
       <main className="max-w-3xl mx-auto px-8 py-12">
         <div className="mb-2 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1a1a1a] border border-[#2d2d2d] text-xs text-[#f59e0b]">
-          ⚠️ Draft — Pending Attorney Review
+          ⚠️ Draft -- Pending Attorney Review
         </div>
 
         <h1 className="mt-4 text-4xl font-bold text-white" style={{ fontFamily: 'var(--font-bebas-neue)', letterSpacing: '0.05em' }}>
@@ -39,7 +39,7 @@ export default function PrivacyPolicyPage() {
             <p>
               ZiggyTech Ventures LLC ("ZiggyTech," "we," "us," or "our") is a Nevada limited liability company
               (EIN: 41-4738365) that provides a suite of B2B SaaS products (the "Business Suite") to small and
-              mid-sized businesses across the United States, including <strong className="text-white">ZiggyHQ</strong> — our CRM and business operations hub.
+              mid-sized businesses across the United States, including <strong className="text-white">ZiggyHQ</strong> &mdash; our CRM and business operations hub.
             </p>
             <p className="mt-3">
               This Privacy Policy describes how we collect, use, disclose, and protect information in connection
@@ -51,11 +51,11 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-base font-semibold text-white mb-3">2. Data Processor / Data Controller Distinction</h2>
             <p>
               ZiggyTech operates primarily as a <strong className="text-white">data processor</strong>, not a data controller.
-              Our customers (the businesses using our Services) are the data controllers — they determine the purposes
+              Our customers (the businesses using our Services) are the data controllers -- they determine the purposes
               and means by which personal data of their clients, employees, and contacts is processed through our platform.
             </p>
             <p className="mt-3">
-              ZiggyTech acts as a data controller in limited circumstances — for example, when processing account
+              ZiggyTech acts as a data controller in limited circumstances -- for example, when processing account
               registration information, billing data, and usage analytics for our own business purposes.
             </p>
           </section>
@@ -72,7 +72,7 @@ export default function PrivacyPolicyPage() {
               <div>
                 <h3 className="text-white font-medium mb-1">3.2 Account Information (Controller Role)</h3>
                 <p>Business name, owner name, email address, phone number, billing address, and payment information
-                  (processed by Stripe — we do not store raw card data).</p>
+                  (processed by Stripe -- we do not store raw card data).</p>
               </div>
               <div>
                 <h3 className="text-white font-medium mb-1">3.3 Automatically Collected Data</h3>
@@ -101,9 +101,9 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-base font-semibold text-white mb-3">5. Data Sharing</h2>
             <p>We may share your information with:</p>
             <ul className="list-disc list-inside space-y-1.5 mt-3">
-              <li><strong className="text-white">Service providers</strong> — Stripe (payments), Supabase (database), Resend (email), Bland.ai (AI calling)</li>
-              <li><strong className="text-white">Legal requirements</strong> — when required by law or valid legal process</li>
-              <li><strong className="text-white">Business transfers</strong> — in connection with a merger, acquisition, or sale of assets</li>
+              <li><strong className="text-white">Service providers</strong> &mdash; Stripe (payments), Supabase (database), Resend (email), Bland.ai (AI calling)</li>
+              <li><strong className="text-white">Legal requirements</strong> &mdash; when required by law or valid legal process</li>
+              <li><strong className="text-white">Business transfers</strong> &mdash; in connection with a merger, acquisition, or sale of assets</li>
             </ul>
           </section>
 

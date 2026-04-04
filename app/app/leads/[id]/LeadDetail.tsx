@@ -833,7 +833,7 @@ export default function LeadDetail({
           <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
             <h3 className="text-xs font-semibold text-[#b3b3b3] uppercase tracking-wider mb-4">Details</h3>
             <div className="space-y-3">
-              {/* Budget — inline edit */}
+              {/* Budget -- inline edit */}
               <div>
                 <div className="text-xs text-[#b3b3b3] mb-0.5">Budget Min</div>
                 {editField === 'budget_min' ? (
@@ -862,7 +862,7 @@ export default function LeadDetail({
                   </div>
                 )}
               </div>
-              {/* Timeline — inline edit */}
+              {/* Timeline -- inline edit */}
               <div>
                 <div className="text-xs text-[#b3b3b3] mb-0.5">Timeline</div>
                 {editField === 'timeline' ? (
@@ -877,7 +877,7 @@ export default function LeadDetail({
                   </div>
                 )}
               </div>
-              {/* Property Type — dropdown */}
+              {/* Property Type -- dropdown */}
               <div>
                 <div className="text-xs text-[#b3b3b3] mb-1">Property Type</div>
                 <select value={lead.property_type ?? ''} onChange={(e) => updateLead({ property_type: e.target.value || null })} className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]">
@@ -916,7 +916,7 @@ export default function LeadDetail({
                         {LOAN_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                       </select>
                     </div>
-                    {/* Lender — partner autopopulate or manual */}
+                    {/* Lender -- partner autopopulate or manual */}
                     <div>
                       <div className="text-xs text-[#b3b3b3] mb-1">Lender</div>
                       <select
@@ -932,7 +932,7 @@ export default function LeadDetail({
                         className="w-full px-2 py-1.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9] mb-2"
                       >
                         <option value="">Select partner lender...</option>
-                        {lenders.map((l) => <option key={l.id} value={l.id}>{l.name}{l.company ? ` — ${l.company}` : ''}</option>)}
+                        {lenders.map((l) => <option key={l.id} value={l.id}>{l.name}{l.company ? ` -- ${l.company}` : ''}</option>)}
                       </select>
                       {/* Manual lender fields */}
                       {[

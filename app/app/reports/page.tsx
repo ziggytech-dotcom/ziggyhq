@@ -127,7 +127,7 @@ export default function ReportsPage() {
               { label: 'Total Leads', value: data.totalLeads, sub: `+${data.newInRange} in period`, color: '#3b82f6' },
               { label: 'Pipeline Value', value: formatCurrency(data.totalPipelineValue), sub: `${stageValueData.length} stages`, color: '#0ea5e9' },
               { label: 'Win Rate', value: `${data.winRate}%`, sub: `${data.wonLeads} closed won`, color: '#22c55e' },
-              { label: 'Avg Deal Time', value: data.avgDealDays != null ? `${data.avgDealDays}d` : '—', sub: 'days to close', color: '#f59e0b' },
+              { label: 'Avg Deal Time', value: data.avgDealDays != null ? `${data.avgDealDays}d` : '--', sub: 'days to close', color: '#f59e0b' },
             ].map((card) => (
               <div key={card.label} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-5">
                 <div className="text-3xl font-bold mb-1" style={{ color: card.color }}>{card.value}</div>
@@ -156,7 +156,7 @@ export default function ReportsPage() {
             <div className="col-span-2 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
               <h2 className="text-sm font-semibold text-white mb-4">Pipeline Value by Stage</h2>
               {stageValueData.length === 0 ? (
-                <p className="text-[#b3b3b3] text-sm">No deal value data — add budget to leads to see this chart</p>
+                <p className="text-[#b3b3b3] text-sm">No deal value data &mdash; add budget to leads to see this chart</p>
               ) : (
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={stageValueData} margin={{ top: 0, right: 0, bottom: 40, left: 10 }}>
@@ -192,7 +192,7 @@ export default function ReportsPage() {
               <div>
                 <h2 className="text-sm font-semibold text-white mb-1">Avg Response</h2>
                 <div className="text-2xl font-bold text-[#f59e0b]">
-                  {data.avgResponseHours != null ? `${data.avgResponseHours}h` : '—'}
+                  {data.avgResponseHours != null ? `${data.avgResponseHours}h` : '--'}
                 </div>
                 <p className="text-xs text-[#b3b3b3]">Time to first contact</p>
               </div>
@@ -204,7 +204,7 @@ export default function ReportsPage() {
             <div className="col-span-2 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
               <h2 className="text-sm font-semibold text-white mb-4">Monthly Revenue Tracked (Closed Deals)</h2>
               {monthlyRevenueData.every(d => d.value === 0) ? (
-                <p className="text-[#b3b3b3] text-sm">No revenue data yet — mark leads as won with budget to track</p>
+                <p className="text-[#b3b3b3] text-sm">No revenue data yet &mdash; mark leads as won with budget to track</p>
               ) : (
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={monthlyRevenueData}>
@@ -251,7 +251,7 @@ export default function ReportsPage() {
           {/* Row 3: Monthly new leads + Funnel */}
           <div className="grid grid-cols-3 gap-6 mb-6">
             <div className="col-span-2 bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
-              <h2 className="text-sm font-semibold text-white mb-4">Monthly Trends — New Leads</h2>
+              <h2 className="text-sm font-semibold text-white mb-4">Monthly Trends &mdash; New Leads</h2>
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={monthlyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#2d2d2d" />
@@ -340,7 +340,7 @@ export default function ReportsPage() {
               </thead>
               <tbody className="divide-y divide-[#2d2d2d]">
                 {data.topContacts.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-8 text-[#b3b3b3] text-sm">No contacts with deal value — add budget max to leads</td></tr>
+                  <tr><td colSpan={5} className="text-center py-8 text-[#b3b3b3] text-sm">No contacts with deal value &mdash; add budget max to leads</td></tr>
                 ) : (
                   data.topContacts.map((c, i) => (
                     <tr key={c.id} className="hover:bg-[#2d2d2d]/20">

@@ -11,7 +11,7 @@ async function getOrgId() {
   return data ?? null
 }
 
-// GET — return masked Twilio config
+// GET -- return masked Twilio config
 export async function GET() {
   const userRecord = await getOrgId()
   if (!userRecord?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -35,7 +35,7 @@ export async function GET() {
   })
 }
 
-// POST — save Twilio config (validates credentials first)
+// POST -- save Twilio config (validates credentials first)
 export async function POST(request: Request) {
   const userRecord = await getOrgId()
   if (!userRecord?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
   return Response.json({ success: true })
 }
 
-// PATCH — send a test SMS
+// PATCH -- send a test SMS
 export async function PATCH(request: Request) {
   const userRecord = await getOrgId()
   if (!userRecord?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })
@@ -95,7 +95,7 @@ export async function PATCH(request: Request) {
   try {
     const client = twilio(cfg.account_sid, cfg.auth_token)
     await client.messages.create({
-      body: 'Test SMS from ZiggyHQ — your Twilio integration is working!',
+      body: 'Test SMS from ZiggyHQ -- your Twilio integration is working!',
       from: cfg.phone_number,
       to: to_phone,
     })
@@ -106,7 +106,7 @@ export async function PATCH(request: Request) {
   }
 }
 
-// DELETE — remove Twilio integration
+// DELETE -- remove Twilio integration
 export async function DELETE() {
   const userRecord = await getOrgId()
   if (!userRecord?.org_id) return Response.json({ error: 'Unauthorized' }, { status: 401 })

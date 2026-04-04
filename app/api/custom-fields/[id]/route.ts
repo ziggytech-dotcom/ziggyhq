@@ -1,5 +1,5 @@
-// PUT /api/custom-fields/[id] — update a field def
-// DELETE /api/custom-fields/[id] — delete a field def
+// PUT /api/custom-fields/[id] -- update a field def
+// DELETE /api/custom-fields/[id] -- delete a field def
 import { createAdminClient } from '@/lib/supabase/admin'
 import { createClient } from '@/lib/supabase/server'
 

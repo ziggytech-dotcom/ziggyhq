@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
   let orgId: string | null = null
 
   if (authHeader === `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`) {
-    // Cron mode — sync all accounts
+    // Cron mode -- sync all accounts
   } else {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
       const internalDate = parseInt(msgData.internalDate ?? '0')
       const createdAt = new Date(internalDate).toISOString()
 
-      // Upsert to avoid duplicates — use gmail message ID
+      // Upsert to avoid duplicates -- use gmail message ID
       const { data: existing } = await admin
         .from('crm_lead_activities')
         .select('id')

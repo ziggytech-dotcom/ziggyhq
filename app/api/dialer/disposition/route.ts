@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     await admin
       .from('crm_lead_activities')
       .update({
-        content: `Outbound call — ${disposition.replace(/_/g, ' ')}${notes ? `: ${notes}` : ''}`,
+        content: `Outbound call -- ${disposition.replace(/_/g, ' ')}${notes ? `: ${notes}` : ''}`,
         metadata: {
           ...existingMeta,
           disposition,

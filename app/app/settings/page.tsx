@@ -268,7 +268,7 @@ export default function SettingsPage() {
           <h2 className="text-sm font-semibold text-white mb-1 flex items-center gap-2">
             ⚡ Lead Capture & Auto-Call
           </h2>
-          <p className="text-xs text-[#b3b3b3] mb-4">New leads submitted via your website or Zapier are automatically added to your CRM — and Emma calls them within 60 seconds.</p>
+          <p className="text-xs text-[#b3b3b3] mb-4">New leads submitted via your website or Zapier are automatically added to your CRM &mdash; and Emma calls them within 60 seconds.</p>
 
           {/* Auto-call toggle */}
           <div className="flex items-start justify-between gap-4 mb-4">
@@ -311,7 +311,7 @@ export default function SettingsPage() {
               </select>
             </div>
           </div>
-          <p className="text-xs text-[#b3b3b3]/60 mb-4">Leads outside call hours are queued — Emma calls at {callHoursStart >= 12 ? `${callHoursStart-12} PM` : `${callHoursStart} AM`} PST next window. Required by TCPA.</p>
+          <p className="text-xs text-[#b3b3b3]/60 mb-4">Leads outside call hours are queued &mdash; Emma calls at {callHoursStart >= 12 ? `${callHoursStart-12} PM` : `${callHoursStart} AM`} PST next window. Required by TCPA.</p>
 
           {/* Webhook key */}
           <div>
@@ -351,15 +351,15 @@ export default function SettingsPage() {
               <select value={aiCaller.voice} onChange={(e) => setAiCaller((p) => ({ ...p, voice: e.target.value }))}
                 className="w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#8b5cf6]">
                 <optgroup label="Female (Recommended)">
-                  <option value="maya">Maya — Warm, professional ⭐</option>
-                  <option value="evelyn">Evelyn — Polished, confident</option>
-                  <option value="june">June — Friendly, casual</option>
-                  <option value="sarah">Sarah — Clear, trustworthy</option>
+                  <option value="maya">Maya &mdash; Warm, professional ⭐</option>
+                  <option value="evelyn">Evelyn &mdash; Polished, confident</option>
+                  <option value="june">June &mdash; Friendly, casual</option>
+                  <option value="sarah">Sarah &mdash; Clear, trustworthy</option>
                 </optgroup>
                 <optgroup label="Male">
-                  <option value="ryan">Ryan — Friendly, approachable</option>
-                  <option value="derek">Derek — Professional, calm</option>
-                  <option value="josh">Josh — Energetic, warm</option>
+                  <option value="ryan">Ryan &mdash; Friendly, approachable</option>
+                  <option value="derek">Derek &mdash; Professional, calm</option>
+                  <option value="josh">Josh &mdash; Energetic, warm</option>
                 </optgroup>
               </select>
             </div>
@@ -377,7 +377,7 @@ export default function SettingsPage() {
           <div className="mt-4 pt-4 border-t border-[#2d2d2d] flex items-start justify-between gap-4">
             <div>
               <div className="text-sm text-white font-medium">Disclose AI if asked</div>
-              <div className="text-xs text-[#b3b3b3] mt-0.5">If a lead asks "are you a real person?", the AI responds honestly that it's a virtual assistant. Recommended — keeps you legally protected.</div>
+              <div className="text-xs text-[#b3b3b3] mt-0.5">If a lead asks "are you a real person?", the AI responds honestly that it's a virtual assistant. Recommended -- keeps you legally protected.</div>
             </div>
             <button
               type="button"

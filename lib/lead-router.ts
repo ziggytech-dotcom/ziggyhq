@@ -1,4 +1,4 @@
-// Lead routing engine — applies routing rules to assign new leads automatically
+// Lead routing engine -- applies routing rules to assign new leads automatically
 import { createAdminClient } from '@/lib/supabase/admin'
 
 interface RoutingLead {

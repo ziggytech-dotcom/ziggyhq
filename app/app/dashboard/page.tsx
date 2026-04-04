@@ -129,10 +129,10 @@ export default async function DashboardPage() {
         <h1 style={{ fontFamily: 'var(--font-bebas-neue)', fontSize: '36px', letterSpacing: '0.05em', color: '#ededed' }}>
           DASHBOARD
         </h1>
-        <p className="text-[#b3b3b3] text-sm mt-1">Welcome back — here&apos;s what&apos;s happening</p>
+        <p className="text-[#b3b3b3] text-sm mt-1">Welcome back &mdash; here&apos;s what&apos;s happening</p>
       </div>
 
-      {/* Stats Grid — 2-col on mobile, 4-col on desktop */}
+      {/* Stats Grid -- 2-col on mobile, 4-col on desktop */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {statCards.map((card) => (
           <div key={card.label} className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-4 sm:p-5">
@@ -229,7 +229,7 @@ export default async function DashboardPage() {
                     <div className="text-sm text-white">
                       <span className="font-medium capitalize">{activity.type}</span>
                       {activity.crm_leads && (
-                        <span className="text-[#b3b3b3]"> — {activity.crm_leads.full_name}</span>
+                        <span className="text-[#b3b3b3]"> &mdash; {activity.crm_leads.full_name}</span>
                       )}
                     </div>
                     {activity.content && (

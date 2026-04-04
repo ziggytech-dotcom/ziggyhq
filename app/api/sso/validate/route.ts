@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-// Inline verify — no external deps, Web Crypto API (Node 18+ / Edge)
+// Inline verify -- no external deps, Web Crypto API (Node 18+ / Edge)
 async function verifySSOToken(token: string): Promise<{ access_token: string; refresh_token: string }> {
   const secret = process.env.ZTV_SSO_SECRET
   if (!secret) throw new Error('ZTV_SSO_SECRET not configured')

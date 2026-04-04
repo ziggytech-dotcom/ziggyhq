@@ -24,7 +24,7 @@ const CRM_FIELDS = [
   { key: 'next_followup_at', label: 'Next Follow-up Date' },
 ]
 
-// Auto-mapping rules — detect common CSV column names from FUB, kvCORE, etc.
+// Auto-mapping rules -- detect common CSV column names from FUB, kvCORE, etc.
 const AUTO_MAP: Record<string, string> = {
   'first name': '', 'last name': '', // handled specially below
   'full name': 'full_name', 'name': 'full_name', 'contact name': 'full_name',
@@ -146,7 +146,7 @@ export default function ImportPage() {
     reader.onload = (e) => {
       const text = e.target?.result as string
       const { headers: h, rows: r } = parseCSV(text)
-      if (h.length === 0) { setError('Could not parse CSV — is the file empty?'); return }
+      if (h.length === 0) { setError('Could not parse CSV -- is the file empty?'); return }
       setHeaders(h)
       setCsvRows(r)
       setMapping(buildMapping(h))
@@ -249,7 +249,7 @@ export default function ImportPage() {
                 </button>
               </div>
               <p className="text-xs text-[#b3b3b3] mt-3">
-                In Follow Up Boss: go to <span className="text-white">People → ⋮ → Export</span> and download the CSV. Upload it directly here — columns are auto-mapped.
+                In Follow Up Boss: go to <span className="text-white">People → ⋮ → Export</span> and download the CSV. Upload it directly here &mdash; columns are auto-mapped.
               </p>
             </div>
           </div>
@@ -277,7 +277,7 @@ export default function ImportPage() {
                         onChange={(e) => setMapping((prev) => ({ ...prev, [h]: e.target.value }))}
                         className="w-full px-2 py-1 rounded bg-[#0a0a0a] border border-[#2d2d2d] text-sm text-white focus:outline-none focus:border-[#0ea5e9]"
                       >
-                        <option value="">— Skip this column —</option>
+                        <option value="">&mdash; Skip this column &mdash;</option>
                         {mapping[h] === '__name_part' && <option value="__name_part">Name part (auto-combined)</option>}
                         {CRM_FIELDS.map((f) => <option key={f.key} value={f.key}>{f.label}{f.required ? ' *' : ''}</option>)}
                       </select>
@@ -317,7 +317,7 @@ export default function ImportPage() {
                 <div className="text-xs font-semibold text-[#f59e0b] uppercase tracking-wider mb-2">Skipped ({previewStats.skipped.length})</div>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {previewStats.skipped.slice(0, 20).map((s, i) => (
-                    <div key={i} className="text-xs text-[#b3b3b3]"><span className="text-white">{s.name}</span> — {s.reason}</div>
+                    <div key={i} className="text-xs text-[#b3b3b3]"><span className="text-white">{s.name}</span> &mdash; {s.reason}</div>
                   ))}
                   {previewStats.skipped.length > 20 && <div className="text-xs text-[#b3b3b3]">...and {previewStats.skipped.length - 20} more</div>}
                 </div>
@@ -332,7 +332,7 @@ export default function ImportPage() {
                   {preview.map((lead, i) => (
                     <div key={i} className="flex items-center gap-3 text-sm">
                       <span className="text-white font-medium w-40 truncate">{lead.full_name || '(no name)'}</span>
-                      <span className="text-[#b3b3b3] truncate">{lead.email || lead.phone || '—'}</span>
+                      <span className="text-[#b3b3b3] truncate">{lead.email || lead.phone || '--'}</span>
                       {lead.stage && <span className="px-1.5 py-0.5 rounded bg-[#2d2d2d] text-[#b3b3b3] text-[10px]">{lead.stage}</span>}
                     </div>
                   ))}
