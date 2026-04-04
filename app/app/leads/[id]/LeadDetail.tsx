@@ -1159,7 +1159,7 @@ export default function LeadDetail({
                       {note.pinned && <span className="text-[#0ea5e9] text-xs flex-shrink-0">📌 Pinned</span>}
                     </div>
                     <div className="text-xs text-[#b3b3b3]/60">
-                      {note.users?.full_name ?? note.users?.email} · {timeAgo(note.created_at)}
+                      {note.users?.full_name ?? note.users?.email} &middot; {timeAgo(note.created_at)}
                     </div>
                   </div>
                 ))}

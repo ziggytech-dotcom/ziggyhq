@@ -174,7 +174,7 @@ export default async function DashboardPage() {
                         <div className="text-xs text-[#e11d48]">
                           Due {formatDueDate(task.due_at)}
                           {task.crm_leads?.[0] && (
-                            <span className="text-[#b3b3b3]"> · {task.crm_leads[0].full_name}</span>
+                            <span className="text-[#b3b3b3]"> &middot; {task.crm_leads[0].full_name}</span>
                           )}
                         </div>
                       </div>
@@ -198,7 +198,7 @@ export default async function DashboardPage() {
                         <div className="text-xs text-[#f59e0b]">
                           Due {formatDueDate(task.due_at)}
                           {task.crm_leads?.[0] && (
-                            <span className="text-[#b3b3b3]"> · {task.crm_leads[0].full_name}</span>
+                            <span className="text-[#b3b3b3]"> &middot; {task.crm_leads[0].full_name}</span>
                           )}
                         </div>
                       </div>

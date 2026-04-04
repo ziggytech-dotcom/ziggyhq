@@ -382,7 +382,7 @@ export default function DialerPage() {
                   </div>
                   <h2 className="text-xl font-bold text-white">{currentLead?.full_name ?? '--'}</h2>
                   <div className="text-[#0ea5e9] text-lg font-mono mt-1">{formatPhone(currentLead?.phone ?? null)}</div>
-                  {currentLead?.stage && <div className="text-xs text-[#b3b3b3] mt-1">{currentLead.stage} · {currentLead.source}</div>}
+                  {currentLead?.stage && <div className="text-xs text-[#b3b3b3] mt-1">{currentLead.stage} &middot; {currentLead.source}</div>}
                 </div>
                 <Link
                   href={currentLead ? `/app/leads/${currentLead.id}` : '#'}
@@ -404,7 +404,7 @@ export default function DialerPage() {
                 <span className="text-sm text-[#b3b3b3] capitalize">
                   {callStatus === 'idle' ? 'Ready to dial' :
                    callStatus === 'dialing' ? 'Dialing...' :
-                   callStatus === 'connected' ? `Connected · ${formatDuration(callDuration)}` :
+                   callStatus === 'connected' ? `Connected \u00B7 ${formatDuration(callDuration)}` :
                    'Call ended'}
                 </span>
               </div>

@@ -405,7 +405,7 @@ export default function SequencesPage() {
                   <div className="flex items-center gap-4 text-xs text-[#b3b3b3]">
                     <span>Trigger: <span className="text-white">{TRIGGER_LABELS[seq.trigger] ?? seq.trigger}</span></span>
                     <span>{seq.step_count} step{seq.step_count !== 1 ? 's' : ''}</span>
-                    <span>{seq.active_enrollments} active · {seq.enrollment_count} total</span>
+                    <span>{seq.active_enrollments} active &middot; {seq.enrollment_count} total</span>
                   </div>
                 </div>
 

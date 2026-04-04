@@ -198,7 +198,7 @@ export default function DuplicatesPage() {
                         </span>
                       </div>
                       <div className="text-xs text-[#b3b3b3]">
-                        {[lead.email, lead.phone, lead.stage].filter(Boolean).join(' · ')}
+                        {[lead.email, lead.phone, lead.stage].filter(Boolean).join(' \u00B7 ')}
                       </div>
                     </div>
                   </div>

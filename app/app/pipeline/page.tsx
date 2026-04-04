@@ -172,7 +172,7 @@ function LeadSidebar({ lead, onClose }: { lead: Lead; onClose: () => void }) {
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
               <span className="text-sm font-medium" style={{ color }}>{lead.stage}</span>
-              <span className="text-xs text-[#b3b3b3]">· {days} day{days !== 1 ? 's' : ''} in stage</span>
+              <span className="text-xs text-[#b3b3b3]">&middot; {days} day{days !== 1 ? 's' : ''} in stage</span>
             </div>
           )}
 
@@ -314,7 +314,7 @@ export default function PipelinePage() {
           </h1>
           <p className="text-[#b3b3b3] text-sm mt-1">
             {totalLeads} lead{totalLeads !== 1 ? 's' : ''}
-            {totalValue > 0 && <span> · {formatBudget(null, totalValue)} pipeline value</span>}
+            {totalValue > 0 && <span> &middot; {formatBudget(null, totalValue)} pipeline value</span>}
           </p>
         </div>
         <Link

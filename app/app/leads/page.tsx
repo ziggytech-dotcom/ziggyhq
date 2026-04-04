@@ -265,7 +265,7 @@ function NewLeadSlideOver({
                   <div key={dup.id} className="flex items-center justify-between px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d]">
                     <div>
                       <div className="text-sm font-medium text-white">{dup.full_name}</div>
-                      <div className="text-xs text-[#b3b3b3]">{dup.email ?? dup.phone ?? '--'} · Matched on {dup.match_reason}</div>
+                      <div className="text-xs text-[#b3b3b3]">{dup.email ?? dup.phone ?? '--'} &middot; Matched on {dup.match_reason}</div>
                     </div>
                     <a href={`/app/leads/${dup.id}`} target="_blank" rel="noreferrer" className="text-xs text-[#0ea5e9] hover:underline">View →</a>
                   </div>

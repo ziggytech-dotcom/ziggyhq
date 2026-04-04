@@ -255,7 +255,7 @@ export default function CustomFieldsPage() {
                           {f.is_required && <span className="text-[#0ea5e9] ml-2">required</span>}
                         </div>
                         {f.field_type === 'dropdown' && f.options && (
-                          <div className="text-xs text-[#b3b3b3] mt-0.5">{f.options.join(' · ')}</div>
+                          <div className="text-xs text-[#b3b3b3] mt-0.5">{f.options.join(' \u00B7 ')}</div>
                         )}
                       </div>
                     </div>

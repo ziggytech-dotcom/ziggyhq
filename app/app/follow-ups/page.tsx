@@ -237,7 +237,7 @@ export default function FollowUpsPage() {
             FOLLOW-UPS
           </h1>
           <p className="text-[#b3b3b3] text-sm mt-1">
-            {loading ? 'Loading...' : `${leads.length} follow-up${leads.length !== 1 ? 's' : ''} · ${tasks.length} open task${tasks.length !== 1 ? 's' : ''}`}
+            {loading ? 'Loading...' : `${leads.length} follow-up${leads.length !== 1 ? 's' : ''} \u00B7 ${tasks.length} open task${tasks.length !== 1 ? 's' : ''}`}
           </p>
         </div>
         <div className="flex items-center gap-2">

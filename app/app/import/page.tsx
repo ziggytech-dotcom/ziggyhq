@@ -259,7 +259,7 @@ export default function ImportPage() {
         {step === 'map' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-[#b3b3b3]">{csvRows.length} rows detected · Map your columns below</div>
+              <div className="text-sm text-[#b3b3b3]">{csvRows.length} rows detected &middot; Map your columns below</div>
               <button onClick={reset} className="text-xs text-[#b3b3b3] hover:text-white transition-colors">← Start over</button>
             </div>
             <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl overflow-hidden">

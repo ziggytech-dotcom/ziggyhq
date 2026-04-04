@@ -29,7 +29,7 @@ export default function PrivacyPolicyPage() {
           PRIVACY POLICY
         </h1>
         <p className="text-[#b3b3b3] mt-2 text-sm">
-          ZiggyTech Ventures LLC · Effective Date: [INSERT DATE] · Last Updated: [INSERT DATE]
+          ZiggyTech Ventures LLC &middot; Effective Date: [INSERT DATE] &middot; Last Updated: [INSERT DATE]
         </p>
 
         <div className="mt-10 space-y-8 text-sm leading-relaxed text-[#b3b3b3]">

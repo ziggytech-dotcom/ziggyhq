@@ -481,7 +481,7 @@ CREATE TABLE IF NOT EXISTS crm_form_submissions (
                   <div>
                     <h3 className="text-base font-semibold text-white">{form.title}</h3>
                     <p className="text-xs text-[#b3b3b3] mt-0.5">
-                      {form.fields.length} field{form.fields.length !== 1 ? 's' : ''} · Created {new Date(form.created_at).toLocaleDateString()}
+                      {form.fields.length} field{form.fields.length !== 1 ? 's' : ''} &middot; Created {new Date(form.created_at).toLocaleDateString()}
                     </p>
                   </div>
                   <span className={`text-xs px-2 py-1 rounded-full font-medium ${form.active ? 'bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/20' : 'bg-[#2d2d2d] text-[#b3b3b3] border border-[#2d2d2d]'}`}>
