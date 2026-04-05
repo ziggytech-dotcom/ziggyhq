@@ -29,6 +29,112 @@ interface OrgSettings {
   }
 }
 
+function TeamSettings() {
+  const supabase = createClient()
+  const [members, setMembers] = useState<any[]>([])
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviteRole, setInviteRole] = useState('member')
+  const [loading, setLoading] = useState(false)
+  const [teamMessage, setTeamMessage] = useState('')
+
+  useEffect(() => { loadMembers() }, [])
+
+  async function loadMembers() {
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/team/members', {
+      headers: { Authorization: `Bearer ${session?.access_token}` }
+    })
+    const data = await res.json()
+    setMembers(data.members || [])
+  }
+
+  async function inviteMember() {
+    if (!inviteEmail) return
+    setLoading(true)
+    setTeamMessage('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/team/members', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify({ email: inviteEmail, role: inviteRole })
+    })
+    const data = await res.json()
+    if (data.error) { setTeamMessage(data.error) }
+    else { setTeamMessage('Invitation sent!'); setInviteEmail(''); loadMembers() }
+    setLoading(false)
+  }
+
+  async function removeMember(id: string) {
+    const { data: { session } } = await supabase.auth.getSession()
+    await fetch(`/api/team/members/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${session?.access_token}` }
+    })
+    loadMembers()
+  }
+
+  const activeMembers = members.filter(m => m.status === 'active')
+  const pendingMembers = members.filter(m => m.status === 'pending')
+
+  return (
+    <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-lg font-semibold text-white">Team Members</h2>
+          <p className="text-[#b3b3b3] text-sm mt-0.5">{activeMembers.length} of 5 seats used</p>
+        </div>
+      </div>
+      {teamMessage && (
+        <div className="mb-4 px-4 py-3 rounded-lg bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 text-[#0ea5e9] text-sm">{teamMessage}</div>
+      )}
+      <div className="mb-6 p-4 bg-[#0a0a0a] rounded-xl border border-[#2d2d2d]">
+        <p className="text-sm font-medium text-white mb-3">Invite a team member</p>
+        <div className="flex gap-2">
+          <input type="email" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} placeholder="colleague@company.com" className="flex-1 px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm" />
+          <select value={inviteRole} onChange={e => setInviteRole(e.target.value)} className="px-3 py-2 rounded-lg bg-[#1a1a1a] border border-[#2d2d2d] text-white text-sm focus:outline-none focus:border-[#0ea5e9]">
+            <option value="admin">Admin</option>
+            <option value="member">Member</option>
+            <option value="viewer">Viewer</option>
+          </select>
+          <button onClick={inviteMember} disabled={loading || !inviteEmail} className="px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors whitespace-nowrap">Send Invite</button>
+        </div>
+      </div>
+      {activeMembers.length > 0 && (
+        <div className="space-y-2 mb-4">
+          {activeMembers.map(m => (
+            <div key={m.id} className="flex items-center justify-between px-4 py-3 bg-[#0a0a0a] rounded-xl border border-[#2d2d2d]">
+              <div>
+                <p className="text-sm font-medium text-white">{m.email}</p>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-[#0ea5e9]/10 text-[#0ea5e9] capitalize">{m.role}</span>
+              </div>
+              <button onClick={() => removeMember(m.id)} className="text-xs text-[#b3b3b3] hover:text-[#e11d48] transition-colors">Remove</button>
+            </div>
+          ))}
+        </div>
+      )}
+      {pendingMembers.length > 0 && (
+        <div>
+          <p className="text-xs text-[#b3b3b3] uppercase tracking-wider mb-2">Pending Invitations</p>
+          <div className="space-y-2">
+            {pendingMembers.map(m => (
+              <div key={m.id} className="flex items-center justify-between px-4 py-3 bg-[#0a0a0a] rounded-xl border border-[#2d2d2d] opacity-60">
+                <div>
+                  <p className="text-sm text-white">{m.email}</p>
+                  <span className="text-xs text-[#b3b3b3]">Invitation pending</span>
+                </div>
+                <button onClick={() => removeMember(m.id)} className="text-xs text-[#b3b3b3] hover:text-[#e11d48] transition-colors">Cancel</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {members.length === 0 && (
+        <p className="text-sm text-[#b3b3b3] text-center py-6">No team members yet. Invite your first colleague above.</p>
+      )}
+    </div>
+  )
+}
+
 export default function SettingsPage() {
   const [org, setOrg] = useState<OrgSettings | null>(null)
   const [loading, setLoading] = useState(true)
@@ -525,6 +631,9 @@ export default function SettingsPage() {
             </div>
           )}
         </div>
+
+        {/* Team Management */}
+        <TeamSettings />
 
         {/* Data Privacy & CCPA */}
         <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
