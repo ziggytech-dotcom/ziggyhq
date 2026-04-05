@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { MarketingNav } from '@/app/components/marketing/Nav'
 import { MarketingFooter } from '@/app/components/marketing/Footer'
