@@ -29,6 +29,103 @@ interface OrgSettings {
   }
 }
 
+function IntegrationSettings() {
+  const supabase = createClient()
+  const [integrations, setIntegrations] = useState<any>({})
+  const [saving, setSaving] = useState<string | null>(null)
+  const [message, setMessage] = useState('')
+  const [fields, setFields] = useState<Record<string, string>>({})
+
+  useEffect(() => { loadIntegrations() }, [])
+
+  async function loadIntegrations() {
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/integrations', {
+      headers: { Authorization: `Bearer ${session?.access_token}` }
+    })
+    const data = await res.json()
+    setIntegrations(data.integrations || {})
+    setFields({
+      resend_api_key: data.integrations?.resend_api_key || '',
+      resend_from_name: data.integrations?.resend_from_name || '',
+      resend_from_email: data.integrations?.resend_from_email || '',
+      twilio_account_sid: data.integrations?.twilio_account_sid || '',
+      twilio_auth_token: data.integrations?.twilio_auth_token || '',
+      twilio_phone_number: data.integrations?.twilio_phone_number || '',
+      zapier_webhook_url: data.integrations?.zapier_webhook_url || '',
+    })
+  }
+
+  async function saveIntegration(keys: string[]) {
+    setSaving(keys[0])
+    setMessage('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const payload = Object.fromEntries(keys.map(k => [k, fields[k]]))
+    const res = await fetch('/api/integrations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify(payload)
+    })
+    const data = await res.json()
+    if (data.error) setMessage(data.error)
+    else { setMessage('Saved!'); loadIntegrations() }
+    setSaving(null)
+  }
+
+  const cardClass = "bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6 mb-4"
+  const inputClass = "w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm font-mono"
+  const labelClass = "block text-sm text-[#b3b3b3] mb-1.5"
+  const saveBtn = (keys: string[]) => (
+    <button onClick={() => saveIntegration(keys)} disabled={saving === keys[0]}
+      className="mt-3 px-4 py-2 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
+      {saving === keys[0] ? 'Saving...' : 'Save'}
+    </button>
+  )
+
+  return (
+    <div>
+      <h2 className="text-lg font-semibold text-white mb-6">Integrations</h2>
+      {message && <div className="mb-4 px-4 py-3 rounded-lg bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 text-[#0ea5e9] text-sm">{message}</div>}
+
+      <div className={cardClass}>
+        <h3 className="text-base font-semibold text-white mb-1">Email (Resend)</h3>
+        <p className="text-[#b3b3b3] text-xs mb-4">Get your API key at resend.com → API Keys</p>
+        <div className="space-y-3">
+          <div><label className={labelClass}>API Key</label>
+            <input type="password" value={fields.resend_api_key || ''} onChange={e => setFields({...fields, resend_api_key: e.target.value})} placeholder="re_..." className={inputClass} /></div>
+          <div><label className={labelClass}>From Name</label>
+            <input value={fields.resend_from_name || ''} onChange={e => setFields({...fields, resend_from_name: e.target.value})} placeholder="Your Business Name" className={inputClass} /></div>
+          <div><label className={labelClass}>From Email</label>
+            <input type="email" value={fields.resend_from_email || ''} onChange={e => setFields({...fields, resend_from_email: e.target.value})} placeholder="hello@yourdomain.com" className={inputClass} /></div>
+        </div>
+        {saveBtn(['resend_api_key', 'resend_from_name', 'resend_from_email'])}
+      </div>
+
+      <div className={cardClass}>
+        <h3 className="text-base font-semibold text-white mb-1">SMS & Calling (Twilio)</h3>
+        <p className="text-[#b3b3b3] text-xs mb-4">Get credentials at console.twilio.com → Account Info</p>
+        <div className="space-y-3">
+          <div><label className={labelClass}>Account SID</label>
+            <input value={fields.twilio_account_sid || ''} onChange={e => setFields({...fields, twilio_account_sid: e.target.value})} placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" className={inputClass} /></div>
+          <div><label className={labelClass}>Auth Token</label>
+            <input type="password" value={fields.twilio_auth_token || ''} onChange={e => setFields({...fields, twilio_auth_token: e.target.value})} placeholder="Your auth token" className={inputClass} /></div>
+          <div><label className={labelClass}>Phone Number</label>
+            <input value={fields.twilio_phone_number || ''} onChange={e => setFields({...fields, twilio_phone_number: e.target.value})} placeholder="+17025551234" className={inputClass} /></div>
+        </div>
+        {saveBtn(['twilio_account_sid', 'twilio_auth_token', 'twilio_phone_number'])}
+      </div>
+
+      <div className={cardClass}>
+        <h3 className="text-base font-semibold text-white mb-1">Webhook / Zapier</h3>
+        <p className="text-[#b3b3b3] text-xs mb-4">Connect any tool via webhook. Paste your Zapier webhook URL below.</p>
+        <div><label className={labelClass}>Webhook URL</label>
+          <input value={fields.zapier_webhook_url || ''} onChange={e => setFields({...fields, zapier_webhook_url: e.target.value})} placeholder="https://hooks.zapier.com/..." className={inputClass} /></div>
+        {saveBtn(['zapier_webhook_url'])}
+      </div>
+    </div>
+  )
+}
+
 function TeamSettings() {
   const supabase = createClient()
   const [members, setMembers] = useState<any[]>([])
@@ -631,6 +728,9 @@ export default function SettingsPage() {
             </div>
           )}
         </div>
+
+        {/* Integrations */}
+        <IntegrationSettings />
 
         {/* Team Management */}
         <TeamSettings />
