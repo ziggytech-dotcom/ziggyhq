@@ -232,6 +232,120 @@ function TeamSettings() {
   )
 }
 
+function AutomationSettings() {
+  const supabase = createClient()
+  const [automations, setAutomations] = useState<any[]>([])
+  const [presets, setPresets] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
+
+  useEffect(() => { loadAutomations() }, [])
+
+  async function loadAutomations() {
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/automations', {
+      headers: { Authorization: `Bearer ${session?.access_token}` }
+    })
+    const data = await res.json()
+    setAutomations(data.automations || [])
+    setPresets(data.presets || [])
+  }
+
+  async function enablePreset(preset: any) {
+    setLoading(true)
+    const { data: { session } } = await supabase.auth.getSession()
+    await fetch('/api/automations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify(preset)
+    })
+    setMessage(`"${preset.name}" enabled!`)
+    loadAutomations()
+    setLoading(false)
+  }
+
+  async function toggleAutomation(id: string, enabled: boolean) {
+    const { data: { session } } = await supabase.auth.getSession()
+    await fetch(`/api/automations/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify({ enabled })
+    })
+    loadAutomations()
+  }
+
+  async function deleteAutomation(id: string) {
+    const { data: { session } } = await supabase.auth.getSession()
+    await fetch(`/api/automations/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${session?.access_token}` }
+    })
+    loadAutomations()
+  }
+
+  const enabledPresetNames = automations.map(a => a.name)
+  const availablePresets = presets.filter(p => !enabledPresetNames.includes(p.name))
+
+  return (
+    <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+      <h2 className="text-lg font-semibold text-white mb-1">Automations</h2>
+      <p className="text-[#b3b3b3] text-sm mb-6">Automatically trigger actions when things happen across your apps.</p>
+
+      {message && <div className="mb-4 px-4 py-3 rounded-lg bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-sm">{message}</div>}
+
+      {automations.length > 0 && (
+        <div className="mb-6">
+          <p className="text-xs text-[#b3b3b3] uppercase tracking-wider mb-3">Your Automations</p>
+          <div className="space-y-2">
+            {automations.map(a => (
+              <div key={a.id} className="flex items-center justify-between px-4 py-3 bg-[#0a0a0a] rounded-xl border border-[#2d2d2d]">
+                <div className="flex items-center gap-3">
+                  <div className={`w-2 h-2 rounded-full ${a.enabled ? 'bg-[#22c55e]' : 'bg-[#b3b3b3]'}`} />
+                  <div>
+                    <p className="text-sm font-medium text-white">{a.name}</p>
+                    <p className="text-xs text-[#b3b3b3]">{a.trigger_app} → {a.trigger_event} · {a.run_count} runs</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => toggleAutomation(a.id, !a.enabled)}
+                    className={`text-xs px-3 py-1 rounded-lg transition-colors ${a.enabled ? 'bg-[#2d2d2d] text-[#b3b3b3] hover:text-white' : 'bg-[#22c55e]/10 text-[#22c55e]'}`}>
+                    {a.enabled ? 'Pause' : 'Enable'}
+                  </button>
+                  <button onClick={() => deleteAutomation(a.id)} className="text-xs text-[#b3b3b3] hover:text-[#e11d48] transition-colors">Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {availablePresets.length > 0 && (
+        <div>
+          <p className="text-xs text-[#b3b3b3] uppercase tracking-wider mb-3">Ready-to-Use Automations</p>
+          <div className="space-y-2">
+            {availablePresets.map((preset, i) => (
+              <div key={i} className="flex items-center justify-between px-4 py-3 bg-[#0a0a0a] rounded-xl border border-[#2d2d2d]">
+                <div>
+                  <p className="text-sm font-medium text-white">{preset.name}</p>
+                  <p className="text-xs text-[#b3b3b3]">{preset.trigger_app} → {preset.trigger_event}</p>
+                </div>
+                <button onClick={() => enablePreset(preset)} disabled={loading}
+                  className="text-xs px-3 py-1.5 bg-[#0ea5e9] text-white rounded-lg hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
+                  Enable
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {automations.length === 0 && availablePresets.length === 0 && (
+        <p className="text-sm text-[#b3b3b3] text-center py-6">No automations available.</p>
+      )}
+    </div>
+  )
+}
+
 function WhiteLabelSettings() {
   const supabase = createClient()
   const [fields, setFields] = useState({
@@ -857,6 +971,9 @@ export default function SettingsPage() {
 
         {/* Team Management */}
         <TeamSettings />
+
+        {/* Automations */}
+        <AutomationSettings />
 
         {/* White Label */}
         <WhiteLabelSettings />
