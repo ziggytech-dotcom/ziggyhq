@@ -16,11 +16,11 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "ZiggyHQ",
-  description: "The intelligent CRM for growth-focused teams",
+  title: "ZiggyHQ — CRM & Business Operations",
+  description: "The CRM built for small businesses. Visual pipelines, email sequences, power dialer, team management, and automations — all in one place. 14-day free trial.",
   openGraph: {
-    title: "ZiggyHQ",
-    description: "The intelligent CRM for growth-focused teams",
+    title: "ZiggyHQ — CRM & Business Operations",
+    description: "The CRM built for small businesses. Visual pipelines, email sequences, power dialer, and automations. Start free for 14 days.",
     siteName: "ZiggyHQ",
   },
   icons: {
