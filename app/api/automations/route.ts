@@ -37,6 +37,51 @@ const PRESET_AUTOMATIONS = [
     trigger_app: 'ziggyinvoice',
     trigger_event: 'invoice.paid',
     actions: [{ type: 'send_email', to: '{{client_email}}', subject: 'Thank you for your payment!', body: 'Hi {{client_name}}, thank you for your payment. We appreciate your business!' }]
+  },
+  // ZiggyHR automations
+  {
+    name: 'Offer Letter Signed → Create Employee Record',
+    trigger_app: 'ziggydocs',
+    trigger_event: 'document.signed',
+    trigger_filters: { document_type: 'offer_letter' },
+    actions: [{ type: 'create_record', app: 'ziggyhr', record_type: 'employee', field_map: { first_name: '{{signer_first_name}}', last_name: '{{signer_last_name}}', email: '{{signer_email}}', status: 'active' } }]
+  },
+  {
+    name: 'New Employee Added → Send Welcome Email',
+    trigger_app: 'ziggyhr',
+    trigger_event: 'employee.created',
+    actions: [{ type: 'send_email', to: '{{employee_email}}', subject: 'Welcome to the team!', body: 'Hi {{employee_first_name}}, welcome aboard! Your onboarding checklist is ready.' }]
+  },
+  {
+    name: 'New Contractor Added → Request W-9',
+    trigger_app: 'ziggyhr',
+    trigger_event: 'contractor.created',
+    actions: [{ type: 'send_email', to: '{{contractor_email}}', subject: 'Please complete your W-9', body: 'Hi {{contractor_first_name}}, please complete your W-9 tax form to receive payments.' }]
+  },
+  {
+    name: 'Employee Terminated → Remove Workspace Access',
+    trigger_app: 'ziggyhr',
+    trigger_event: 'employee.terminated',
+    actions: [{ type: 'update_field', app: 'workspace_members', field: 'status', value: 'removed', match_field: 'email', match_value: '{{employee_email}}' }]
+  },
+  // ZiggyPayroll automations
+  {
+    name: 'Payroll Run Completed → Notify Employees',
+    trigger_app: 'ziggypayroll',
+    trigger_event: 'payroll.completed',
+    actions: [{ type: 'send_email', to: '{{employee_email}}', subject: 'Your payment has been processed', body: 'Hi {{employee_name}}, your payment of ${{net_amount}} has been processed and will arrive in your account within 2 business days.' }]
+  },
+  {
+    name: 'New Contractor Added → Set Up in Payroll',
+    trigger_app: 'ziggyhr',
+    trigger_event: 'contractor.created',
+    actions: [{ type: 'create_record', app: 'ziggypayroll', record_type: 'contractor', field_map: { first_name: '{{contractor_first_name}}', last_name: '{{contractor_last_name}}', email: '{{contractor_email}}', pay_type: '1099' } }]
+  },
+  {
+    name: 'Invoice Paid → Create Contractor Payment Record',
+    trigger_app: 'ziggyinvoice',
+    trigger_event: 'invoice.paid',
+    actions: [{ type: 'create_record', app: 'ziggypayroll', record_type: 'payment', field_map: { contractor_email: '{{client_email}}', amount: '{{invoice_amount}}', description: 'Invoice payment - {{invoice_number}}' } }]
   }
 ]
 
