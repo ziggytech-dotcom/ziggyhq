@@ -232,6 +232,129 @@ function TeamSettings() {
   )
 }
 
+function WhiteLabelSettings() {
+  const supabase = createClient()
+  const [fields, setFields] = useState({
+    company_name: '',
+    primary_color: '',
+    logo_url: '',
+    custom_domain: '',
+    email_from_name: '',
+    email_from_address: '',
+    hide_ziggy_branding: false,
+  })
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState('')
+
+  useEffect(() => { loadBranding() }, [])
+
+  async function loadBranding() {
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/white-label', {
+      headers: { Authorization: `Bearer ${session?.access_token}` }
+    })
+    const data = await res.json()
+    if (data.branding) {
+      setFields({
+        company_name: data.branding.company_name || '',
+        primary_color: data.branding.primary_color || '',
+        logo_url: data.branding.logo_url || '',
+        custom_domain: data.branding.custom_domain || '',
+        email_from_name: data.branding.email_from_name || '',
+        email_from_address: data.branding.email_from_address || '',
+        hide_ziggy_branding: data.branding.hide_ziggy_branding || false,
+      })
+    }
+  }
+
+  async function saveBranding() {
+    setSaving(true)
+    setMessage('')
+    const { data: { session } } = await supabase.auth.getSession()
+    const res = await fetch('/api/white-label', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify(fields)
+    })
+    const data = await res.json()
+    if (data.error) setMessage(data.error)
+    else { setMessage('Branding saved!'); loadBranding() }
+    setSaving(false)
+  }
+
+  const inputClass = "w-full px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm"
+  const labelClass = "block text-sm text-[#b3b3b3] mb-1.5"
+
+  return (
+    <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-lg font-semibold text-white">White Label</h2>
+        <span className="text-xs px-2 py-1 rounded-full bg-[#f59e0b]/10 text-[#f59e0b] border border-[#f59e0b]/20">Pro feature</span>
+      </div>
+      <p className="text-[#b3b3b3] text-sm mb-6">Customize the branding your clients and customers see.</p>
+      {message && (
+        <div className="mb-4 px-4 py-3 rounded-lg bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 text-[#0ea5e9] text-sm">{message}</div>
+      )}
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Company Name</label>
+            <input value={fields.company_name} onChange={e => setFields({...fields, company_name: e.target.value})}
+              placeholder="Your Company Name" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Brand Color</label>
+            <div className="flex gap-2">
+              <input type="color" value={fields.primary_color || '#0ea5e9'}
+                onChange={e => setFields({...fields, primary_color: e.target.value})}
+                className="w-10 h-9 rounded-lg border border-[#2d2d2d] bg-[#0a0a0a] cursor-pointer" />
+              <input value={fields.primary_color} onChange={e => setFields({...fields, primary_color: e.target.value})}
+                placeholder="#0ea5e9" className={inputClass} />
+            </div>
+          </div>
+        </div>
+        <div>
+          <label className={labelClass}>Logo URL</label>
+          <input value={fields.logo_url} onChange={e => setFields({...fields, logo_url: e.target.value})}
+            placeholder="https://yourdomain.com/logo.png" className={inputClass} />
+          <p className="text-xs text-[#b3b3b3]/60 mt-1">Upload your logo to any image host and paste the URL here</p>
+        </div>
+        <div>
+          <label className={labelClass}>Custom Domain</label>
+          <input value={fields.custom_domain} onChange={e => setFields({...fields, custom_domain: e.target.value})}
+            placeholder="portal.yourdomain.com" className={inputClass} />
+          <p className="text-xs text-[#b3b3b3]/60 mt-1">Point a CNAME from your domain to us. Verification coming soon.</p>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Email From Name</label>
+            <input value={fields.email_from_name} onChange={e => setFields({...fields, email_from_name: e.target.value})}
+              placeholder="Your Company" className={inputClass} />
+          </div>
+          <div>
+            <label className={labelClass}>Email From Address</label>
+            <input type="email" value={fields.email_from_address} onChange={e => setFields({...fields, email_from_address: e.target.value})}
+              placeholder="hello@yourdomain.com" className={inputClass} />
+          </div>
+        </div>
+        <div className="flex items-center gap-3 p-4 bg-[#0a0a0a] rounded-xl border border-[#2d2d2d]">
+          <input type="checkbox" id="wl_hide_branding" checked={fields.hide_ziggy_branding}
+            onChange={e => setFields({...fields, hide_ziggy_branding: e.target.checked})}
+            className="w-4 h-4 accent-[#0ea5e9]" />
+          <div>
+            <label htmlFor="wl_hide_branding" className="text-sm font-medium text-white cursor-pointer">Remove &quot;Powered by ZiggyTech&quot; branding</label>
+            <p className="text-xs text-[#b3b3b3]">Requires Pro plan</p>
+          </div>
+        </div>
+      </div>
+      <button onClick={saveBranding} disabled={saving}
+        className="mt-6 px-5 py-2.5 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
+        {saving ? 'Saving...' : 'Save Branding'}
+      </button>
+    </div>
+  )
+}
+
 export default function SettingsPage() {
   const [org, setOrg] = useState<OrgSettings | null>(null)
   const [loading, setLoading] = useState(true)
@@ -734,6 +857,9 @@ export default function SettingsPage() {
 
         {/* Team Management */}
         <TeamSettings />
+
+        {/* White Label */}
+        <WhiteLabelSettings />
 
         {/* Data Privacy & CCPA */}
         <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
