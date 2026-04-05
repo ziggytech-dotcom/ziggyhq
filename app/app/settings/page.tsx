@@ -47,6 +47,59 @@ export default function SettingsPage() {
   const [newStage, setNewStage] = useState('')
   const [newSource, setNewSource] = useState('')
 
+  // 2FA state
+  const [mfaFactors, setMfaFactors] = useState<any[]>([])
+  const [mfaEnrolling, setMfaEnrolling] = useState(false)
+  const [mfaQrCode, setMfaQrCode] = useState('')
+  const [mfaSecret, setMfaSecret] = useState('')
+  const [mfaFactorId, setMfaFactorId] = useState('')
+  const [mfaVerifyCode, setMfaVerifyCode] = useState('')
+  const [mfaLoading, setMfaLoading] = useState(false)
+  const [mfaMessage, setMfaMessage] = useState('')
+
+  useEffect(() => {
+    loadMfaFactors()
+  }, [])
+
+  async function loadMfaFactors() {
+    const supabase = createClient()
+    const { data } = await supabase.auth.mfa.listFactors()
+    setMfaFactors(data?.totp || [])
+  }
+
+  async function startMfaEnroll() {
+    setMfaLoading(true)
+    const supabase = createClient()
+    const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp' })
+    if (error) { setMfaMessage(error.message); setMfaLoading(false); return }
+    setMfaQrCode(data.totp.qr_code)
+    setMfaSecret(data.totp.secret)
+    setMfaFactorId(data.id)
+    setMfaEnrolling(true)
+    setMfaLoading(false)
+  }
+
+  async function verifyMfaEnroll() {
+    setMfaLoading(true)
+    const supabase = createClient()
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId: mfaFactorId, code: mfaVerifyCode })
+    if (error) { setMfaMessage('Invalid code. Try again.'); setMfaLoading(false); return }
+    setMfaMessage('2FA enabled successfully!')
+    setMfaEnrolling(false)
+    setMfaVerifyCode('')
+    loadMfaFactors()
+    setMfaLoading(false)
+  }
+
+  async function disableMfa(fid: string) {
+    setMfaLoading(true)
+    const supabase = createClient()
+    await supabase.auth.mfa.unenroll({ factorId: fid })
+    loadMfaFactors()
+    setMfaMessage('2FA disabled.')
+    setMfaLoading(false)
+  }
+
   useEffect(() => {
     const load = async () => {
       const supabase = createClient()
@@ -425,6 +478,52 @@ export default function SettingsPage() {
               <svg className="w-4 h-4 text-[#b3b3b3] group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </a>
           </div>
+        </div>
+
+        {/* Security / 2FA */}
+        <div className="bg-[#1a1a1a] border border-[#2d2d2d] rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-white mb-1">Two-Factor Authentication</h2>
+          <p className="text-[#b3b3b3] text-sm mb-6">
+            Add an extra layer of security to your account using an authenticator app.
+          </p>
+          {mfaMessage && (
+            <div className="mb-4 px-4 py-3 rounded-lg bg-[#0ea5e9]/10 border border-[#0ea5e9]/20 text-[#0ea5e9] text-sm">{mfaMessage}</div>
+          )}
+          {!mfaFactors.some(f => f.status === 'verified') && !mfaEnrolling && (
+            <button onClick={startMfaEnroll} disabled={mfaLoading} className="flex items-center gap-2 px-5 py-2.5 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
+              {mfaLoading ? 'Loading...' : 'Enable Two-Factor Authentication'}
+            </button>
+          )}
+          {mfaEnrolling && (
+            <div className="space-y-4">
+              <p className="text-[#b3b3b3] text-sm">Scan this QR code with Google Authenticator, Authy, or any TOTP app:</p>
+              <img src={mfaQrCode} alt="QR Code" className="w-48 h-48 bg-white p-2 rounded-lg" />
+              <p className="text-xs text-[#b3b3b3]">Can&apos;t scan? Enter this code manually: <span className="font-mono text-white">{mfaSecret}</span></p>
+              <div>
+                <label className="block text-sm text-[#b3b3b3] mb-1.5">Enter the 6-digit code from your app</label>
+                <input type="text" maxLength={6} value={mfaVerifyCode} onChange={e => setMfaVerifyCode(e.target.value.replace(/\D/g, ''))} placeholder="000000" className="w-40 px-3 py-2 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white font-mono text-center text-lg focus:outline-none focus:border-[#0ea5e9]" />
+              </div>
+              <div className="flex gap-3">
+                <button onClick={verifyMfaEnroll} disabled={mfaLoading || mfaVerifyCode.length !== 6} className="px-5 py-2.5 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
+                  {mfaLoading ? 'Verifying...' : 'Verify and Enable'}
+                </button>
+                <button onClick={() => { setMfaEnrolling(false); setMfaQrCode(''); setMfaVerifyCode('') }} className="px-5 py-2.5 border border-[#2d2d2d] text-[#b3b3b3] rounded-lg text-sm hover:text-white transition-colors">Cancel</button>
+              </div>
+            </div>
+          )}
+          {mfaFactors.some(f => f.status === 'verified') && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#22c55e]" />
+                <span className="text-[#22c55e] text-sm font-medium">Two-factor authentication is enabled</span>
+              </div>
+              {mfaFactors.filter(f => f.status === 'verified').map(f => (
+                <button key={f.id} onClick={() => disableMfa(f.id)} disabled={mfaLoading} className="px-5 py-2.5 border border-[#e11d48]/30 text-[#e11d48] rounded-lg text-sm hover:bg-[#e11d48]/10 disabled:opacity-50 transition-colors">
+                  {mfaLoading ? 'Disabling...' : 'Disable Two-Factor Authentication'}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Data Privacy & CCPA */}
