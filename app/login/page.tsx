@@ -1,27 +1,41 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserClient } from '@supabase/ssr'
 import Link from 'next/link'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-
-  const supabase = createClient()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookieOptions: {
+          maxAge: rememberMe ? 60 * 60 * 24 * 30 : undefined, // 30 days or session only
+        }
+      }
+    )
+
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) { setError(error.message); setLoading(false) }
     else { window.location.href = '/app' }
   }
 
   const handleOAuth = async (provider: 'google' | 'apple') => {
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
     await supabase.auth.signInWithOAuth({
       provider,
       options: { redirectTo: `${window.location.origin}/auth/callback` }
@@ -34,7 +48,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="font-bold text-2xl tracking-tight">
+            <span className="font-bold text-4xl tracking-tight">
               <span style={{ color: '#ff1744' }}>Ziggy</span>
               <span style={{ color: '#0ea5e9' }}>HQ</span>
             </span>
@@ -95,6 +109,21 @@ export default function LoginPage() {
                 placeholder="••••••••" required
                 className="w-full px-3 py-2.5 rounded-lg bg-[#0a0a0a] border border-[#2d2d2d] text-white placeholder-[#b3b3b3]/50 focus:outline-none focus:border-[#0ea5e9] text-sm" />
             </div>
+
+            {/* Remember Me */}
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={e => setRememberMe(e.target.checked)}
+                className="w-4 h-4 rounded border border-[#2d2d2d] bg-[#0a0a0a] accent-[#0ea5e9] cursor-pointer"
+              />
+              <label htmlFor="rememberMe" className="text-sm text-[#b3b3b3] cursor-pointer">
+                Remember me for 30 days
+              </label>
+            </div>
+
             <button type="submit" disabled={loading}
               className="w-full py-2.5 bg-[#0ea5e9] text-white rounded-lg text-sm font-medium hover:bg-[#0ea5e9]/90 disabled:opacity-50 transition-colors">
               {loading ? 'Signing in...' : 'Sign In'}
@@ -104,6 +133,14 @@ export default function LoginPage() {
           <p className="text-center text-sm text-[#b3b3b3] mt-6">
             Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-[#0ea5e9] hover:underline">Start free trial</Link>
+          </p>
+
+          {/* Privacy & TOS */}
+          <p className="text-center text-xs text-[#555] mt-4">
+            By signing in you agree to our{' '}
+            <Link href="/terms" className="text-[#555] hover:text-[#b3b3b3] underline">Terms of Service</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="text-[#555] hover:text-[#b3b3b3] underline">Privacy Policy</Link>
           </p>
         </div>
       </div>
